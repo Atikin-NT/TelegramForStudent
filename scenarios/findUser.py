@@ -34,12 +34,16 @@ def switch_fun(findString, chat_id):
 
 
 def start(chat_id):
-    msg = "Напишите find @user, чтобы найти человека в системе"
+    msg = "Напишите @user, чтобы найти человека в системе"
     bot.send_message(chat_id, msg)
 
 
 def find_by_username(chat_id, username):
-    user = db.find_user(username)
+    clear_username_string = str(username).split()
+    if len(clear_username_string) != 1:
+        bot.send_message(chat_id, "Вы неправильно ввели username")
+        return
+    user = db.get_user_by_username(clear_username_string[0][1:])
     msg = "Пользователь не найден, срочно пригласите его сюда!"
     if len(user) != 0:
         msg = mess_about_user(user)
@@ -54,6 +58,10 @@ def menu_in_the_end(chat_id, owner_id):
         {
             "text": "Посмотреть его файлы",
             "callback_data": f"sfl0_{owner_id}"
+        },
+        {
+            "text": "Вернуться назад",
+            "callback_data": "main_menu"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)

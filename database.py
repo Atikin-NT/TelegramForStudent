@@ -31,7 +31,7 @@ def update_user_data(faculty, direction, course, user_id):
     conn.close()
 
 
-def get_user(user_id):
+def get_user_by_id(user_id):
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
     try:
@@ -48,7 +48,7 @@ def get_user(user_id):
     return records
 
 
-def find_user(username):
+def get_user_by_username(username):
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
     try:
@@ -65,6 +65,8 @@ def find_user(username):
     return records
 
 
+# files -----------------------------
+
 def get_files_by_user(user_id, course, subject):
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
@@ -78,6 +80,18 @@ def get_files_by_user(user_id, course, subject):
     return records
 
 
+def get_files_by_file_id(file_id):
+    conn = psycopg2.connect("dbname=mydb user=atikin")
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT * FROM files WHERE file_id = %s", (file_id,))
+    except psycopg2.IntegrityError as e:
+        pass
+    records = cur.fetchall()
+    cur.close()
+    conn.close()
+    return records
+
 def get_subjects():
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
@@ -90,6 +104,18 @@ def get_subjects():
     conn.close()
     return records
 
+
+def get_files_in_profile_page(user_id):
+    conn = psycopg2.connect("dbname=mydb user=atikin")
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT * FROM files WHERE owner = %s", (user_id,))
+    except psycopg2.IntegrityError as e:
+        pass
+    records = cur.fetchall()
+    cur.close()
+    conn.close()
+    return records
 
 # session -------------------------
 

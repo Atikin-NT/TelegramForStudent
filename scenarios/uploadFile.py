@@ -1,6 +1,14 @@
 import database as db
 import botCommands as bot
+import yadisk
 
+ClientID = "daec211d1a30442387e86642832efd60"
+ClientSecret = "970e8b1633cc499e8f3898c50ae3b006"
+TOKEN = "y0_AgAAAABmapUwAAizegAAAADU3hxhdlyBRNdUQ6KD1CMUNSmhh1Ft7yE"
+y = yadisk.YaDisk(token=TOKEN)
+print(y.check_token())
+print(y.get_disk_info())
+# Redirect url https://oauth.yandex.ru/verification_code
 
 #course//sub//name
 def switchFun(callback_query, chat_id):

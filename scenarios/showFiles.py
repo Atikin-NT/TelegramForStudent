@@ -2,6 +2,16 @@ import database as db
 import botCommands as bot
 
 
+def mess_about_file(fileData):
+    filename = fileData[0][1]
+    course = fileData[0][7]
+    subject = fileData[0][8]
+    msg = f"""Имя файла: *{filename}*
+Курс: *{course}*
+Предмет: *{subject}*"""
+    return msg
+
+
 def switchFun(callback_query, chat_id):
     str_callback = str(callback_query)
     if str_callback[3] == "0":  # узнали user_id
@@ -10,6 +20,8 @@ def switchFun(callback_query, chat_id):
         ask_subject(chat_id, str_callback)
     elif str_callback[3] == "2":  # узнали предмет
         show_files_list(chat_id, str_callback)
+    elif str_callback[3] == "9":  # информация о файле
+        show_file_info(chat_id, str_callback)
 
 
 def ask_course(chat_id, owner_file_id):
@@ -72,3 +84,25 @@ def show_files_list(chat_id, callback_query):
             "callback_data": f"download_{file[2]}"
         })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
+
+
+def show_file_info(chat_id, file_id):
+    print(file_id)
+    file = db.get_files_by_file_id(file_id.replace("sfl9_", ""))
+    msg = mess_about_file(file)
+    bot.send_message(chat_id, msg)
+    buttons = [
+        {
+            "text": "Изменить",
+            "callback_data": "reg9"
+        },
+        {
+            "text": "Удалить",
+            "callback_data": "main_menu"
+        },
+        {
+            "text": "Вернуться назад",
+            "callback_data": "main_menu"
+        }
+    ]
+    bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")

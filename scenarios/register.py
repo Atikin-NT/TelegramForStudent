@@ -1,6 +1,7 @@
 import database as db
 import botCommands as bot
-
+import scenarios.profileMenu as profileMenu
+import scenarios.findUser as findUser
 
 def switchFun(callback_query, chat_id):
     str_callback = str(callback_query)
@@ -10,10 +11,18 @@ def switchFun(callback_query, chat_id):
         ask_course(chat_id, str_callback)
     elif str_callback[3] == "2":  # узнали курс
         finish(chat_id, str_callback)
+    elif str_callback[3] == "9":  # узнали курс
+        start(chat_id, None)
 
 
 def start(chat_id, username):
-    db.insert_user(chat_id, username)
+    if username is not None:
+        user = db.get_user_by_username(username)
+        if len(user) != 0:
+            bot.send_message(chat_id, "вы успешно авторизированны!")
+            profileMenu.show_menu(chat_id)
+            return
+        db.insert_user(chat_id, username)
     msg = "В каком факультете вы обучаетесь?"
     buttons = [
         {
@@ -70,5 +79,5 @@ def finish(chat_id, course):
     facultyList = ["IITMM"]
     directionList = ["FIIT"]
     db.update_user_data(facultyList.index(data[0]), directionList.index(data[1]), course.replace("reg2_", ""), chat_id)
-    msg = "Регистрация завершена успешно!\nНажмите /menu для просмотра менюшки"
+    msg = "Данные сохранены!\nНажмите /menu для просмотра менюшки"
     bot.send_message(chat_id, msg)
