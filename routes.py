@@ -11,7 +11,7 @@ def callback_query(msg):
         reg.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
     elif "sfl" in msg["callback_query"]["data"]:
         showFl.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
-    elif "upload" in msg["callback_query"]["data"]:
+    elif "upld" in msg["callback_query"]["data"]:
         uploadFile.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
     elif "prf" in msg["callback_query"]["data"]:
         profileMenu.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
@@ -40,7 +40,7 @@ def input_text(msg):
         if msg["message"]["text"][0] == "@":
             findUser.find_by_username(msg["message"]["chat"]["id"], msg["message"]["text"])
     elif "document" in msg["message"]:
-        uploadFile.ask_course(msg["message"]["document"], msg["message"]["chat"]["id"])
+        uploadFile.upload_document(msg["message"]["document"], msg["message"]["chat"]["id"])
     else:
         bot.send_message(msg["message"]["chat"]["id"], "недопустимое сообщение")
 

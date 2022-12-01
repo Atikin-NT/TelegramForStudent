@@ -1,6 +1,7 @@
 import database as db
 import botCommands as bot
 import scenarios.findUser as findUser
+import scenarios.uploadFile as uploadFile
 
 facultyList = ["IITMM"]
 directionList = ["FIIT"]
@@ -33,6 +34,10 @@ def switchFun(callback_query, chat_id):
         profile_information(chat_id)
     elif str(callback_query) == "prf_myFiles":
         profile_MyFiles(chat_id)
+    elif str(callback_query) == "prf_newFile":
+        profile_newFile(chat_id)
+    elif str(callback_query) == "prf_fileList":
+        profile_fileList(chat_id)
     elif str(callback_query) == "prf_findUser":
         profile_findUser(chat_id)
     else:
@@ -84,6 +89,28 @@ def profile_information(chat_id):
 
 
 def profile_MyFiles(chat_id):
+    buttons = [
+        {
+            "text": "Добавить новый файл",
+            "callback_data": "prf_newFile"
+        },
+        {
+            "text": "Посмотреть список моих файлов",
+            "callback_data": "prf_fileList"
+        },
+        {
+            "text": "Вернуться назад",
+            "callback_data": "main_menu"
+        }
+    ]
+    bot.tel_send_inlinebutton(chat_id, buttons, "something")
+
+
+def profile_newFile(chat_id):
+    uploadFile.ask_course(chat_id)
+
+
+def profile_fileList(chat_id):
     filesList = db.get_files_in_profile_page(chat_id)
     if len(filesList) == 0:
         bot.send_message(chat_id, "у вас нет файлов(")

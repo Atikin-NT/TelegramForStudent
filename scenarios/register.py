@@ -72,6 +72,9 @@ def ask_course(chat_id, direction):
 def finish(chat_id, course):
     session = db.get_session(chat_id)
     db.delete_session(chat_id)
+    if len(session) == 0 or len(session[0]) == 0:
+        bot.send_message(chat_id, "error in registration")
+        return
     data = session[0][1].split("_")
     if len(data) != 2:
         bot.send_message(chat_id, "error in registration")
