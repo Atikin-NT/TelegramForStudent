@@ -67,6 +67,18 @@ def get_user_by_username(username):
 
 # files -----------------------------
 
+def insert_file(filename, user_id, course, subject):
+    conn = psycopg2.connect("dbname=mydb user=atikin")
+    cur = conn.cursor()
+    try:
+        cur.execute("INSERT INTO files (filename, owner, course, subject) VALUES (%s, %s, %s, %s)", (filename, user_id, course, subject,))
+    except psycopg2.IntegrityError as e:
+        pass
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 def get_files_by_user(user_id, course, subject):
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
@@ -91,6 +103,7 @@ def get_files_by_file_id(file_id):
     cur.close()
     conn.close()
     return records
+
 
 def get_subjects():
     conn = psycopg2.connect("dbname=mydb user=atikin")
