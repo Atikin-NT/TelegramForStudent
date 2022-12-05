@@ -40,6 +40,8 @@ def switchFun(callback_query, chat_id):
         profile_fileList(chat_id)
     elif str(callback_query) == "prf_findUser":
         profile_findUser(chat_id)
+    elif str(callback_query) == "prf_fileListAdmin":
+        profile_fileListAdmin(chat_id)
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
@@ -103,6 +105,12 @@ def profile_MyFiles(chat_id):
             "callback_data": "main_menu"
         }
     ]
+    user_info = db.get_user_by_id(chat_id)[0]
+    if user_info[4]:
+        buttons.append({
+            "text": "Файлы на одобрение",
+            "callback_data": "prf_fileListAdmin"
+        })
     bot.tel_send_inlinebutton(chat_id, buttons, "something")
 
 
@@ -120,10 +128,25 @@ def profile_fileList(chat_id):
     for file in filesList:
         buttons.append({
             "text": f"{file[1]}",
-            "callback_data": f"sfl9_{file[0]}"
+            "callback_data": f"sfl8_{file[0]}"
         })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
 def profile_findUser(chat_id):
     findUser.start(chat_id)
+
+
+def profile_fileListAdmin(chat_id):
+    filesList = db.get_files_waiting_for_admin()
+    if len(filesList) == 0:
+        bot.send_message(chat_id, "Файлов на одобрение нет)")
+        return
+    msg = "Список файлов на одобрение:"
+    buttons = []
+    for file in filesList:
+        buttons.append({
+            "text": f"{file[1]}",
+            "callback_data": f"sfl8_{file[0]}"
+        })
+    bot.tel_send_inlinebutton(chat_id, buttons, msg)

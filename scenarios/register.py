@@ -13,6 +13,8 @@ def switchFun(callback_query, chat_id):
         finish(chat_id, str_callback)
     elif str_callback[3] == "9":  # узнали курс
         start(chat_id, None)
+    else:
+        bot.send_message(chat_id, "неизвестная команда")
 
 
 def start(chat_id, username):

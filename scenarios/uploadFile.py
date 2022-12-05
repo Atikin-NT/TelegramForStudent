@@ -76,7 +76,7 @@ def upload_document(document, chat_id):
         bot.send_message("Недопустимый формат (пока только pdf)", chat_id)
         return
     fileID = document["file_id"]
-    db.insert_file(document['file_name'], chat_id, data[0], data[1])
+    db.insert_file(document["file_name"], chat_id, data[0], data[1])
     bot.upload_to_yadisk(fileID, download_path)
     bot.send_message(chat_id, "Файл загружен")
 

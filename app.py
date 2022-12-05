@@ -1,7 +1,7 @@
 from flask import Flask, request
 import routes
 
-# https://api.telegram.org/bot5546823281:AAEPLYc-UWSiffsjfBONg8J5bc6bDMumFK0/setWebhook?url=https://506c-89-109-48-183.eu.ngrok.io
+# https://api.telegram.org/bot5546823281:AAEPLYc-UWSiffsjfBONg8J5bc6bDMumFK0/setWebhook?url=https://2843-89-109-48-183.eu.ngrok.io
 # Ni5Wmvll
 app = Flask(__name__)
 

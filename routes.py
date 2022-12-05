@@ -4,6 +4,7 @@ import scenarios.findUser as findUser
 import scenarios.showFiles as showFl
 import scenarios.profileMenu as profileMenu
 import scenarios.uploadFile as uploadFile
+import scenarios.fileOper as fileOper
 
 
 def callback_query(msg):
@@ -15,6 +16,8 @@ def callback_query(msg):
         uploadFile.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
     elif "prf" in msg["callback_query"]["data"]:
         profileMenu.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
+    elif "fop" in msg["callback_query"]["data"]:
+        fileOper.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
     elif "main_menu" == msg["callback_query"]["data"]:
         profileMenu.show_menu(msg["callback_query"]["message"]["chat"]["id"])
     else:

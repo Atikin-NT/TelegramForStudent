@@ -42,6 +42,20 @@ def tel_send_inlinebutton(chat_id, buttons, text):
     requests.post(url, json=payload)
 
 
+def tel_send_document(chat_id, file_url, caption):
+    method = "sendDocument"
+    url = f'https://api.telegram.org/bot{TOKEN}/{method}'
+
+    payload = {
+        "chat_id": chat_id,
+        "document": file_url,
+        "caption": caption,
+
+    }
+
+    return requests.post(url, json=payload)
+
+
 def upload_to_yadisk(file_id, download_path):
     method = "getFile"
     url = f"https://api.telegram.org/bot{TOKEN}/{method}"
@@ -57,3 +71,9 @@ def upload_to_yadisk(file_id, download_path):
         if not y.exists(path):
             y.mkdir(path)
     y.upload_url(download_url, path + download_path[-1])
+
+
+def download_from_yadisk(chat_id, download_path, caption):
+    file_url = y.get_download_link(download_path)
+    tel_send_document(chat_id, file_url, caption)
+

@@ -83,7 +83,7 @@ def get_files_by_user(user_id, course, subject):
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
     try:
-        cur.execute("SELECT * FROM files WHERE owner = %s and course = %s and subject = %s", (user_id, course, subject))
+        cur.execute("SELECT * FROM files WHERE owner = %s and course = %s and subject = %s and admin_check = true", (user_id, course, subject))
     except psycopg2.IntegrityError as e:
         pass
     records = cur.fetchall()
@@ -105,6 +105,33 @@ def get_files_by_file_id(file_id):
     return records
 
 
+def get_files_waiting_for_admin():
+    conn = psycopg2.connect("dbname=mydb user=atikin")
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT * FROM files WHERE admin_check = false")
+    except psycopg2.IntegrityError as e:
+        pass
+    records = cur.fetchall()
+    cur.close()
+    conn.close()
+    return records
+
+
+def change_file_admin_status(file_id, status):
+    conn = psycopg2.connect("dbname=mydb user=atikin")
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE files SET admin_check = %s WHERE file_id = %s", (status, file_id,))
+    except psycopg2.IntegrityError as e:
+        pass
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+# subjects -----------------------------
+
 def get_subjects():
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
@@ -122,7 +149,7 @@ def get_files_in_profile_page(user_id):
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
     try:
-        cur.execute("SELECT * FROM files WHERE owner = %s", (user_id,))
+        cur.execute("SELECT * FROM files WHERE owner = %s and admin_check = true", (user_id,))
     except psycopg2.IntegrityError as e:
         pass
     records = cur.fetchall()

@@ -2,13 +2,21 @@ import database as db
 import botCommands as bot
 
 
-def mess_about_file(fileData):
+def mess_about_file(fileData, admin = False):
     filename = fileData[0][1]
-    course = fileData[0][7]
-    subject = fileData[0][8]
+    course = fileData[0][6]
+    subject = fileData[0][7]
     msg = f"""Имя файла: *{filename}*
 Курс: *{course}*
 Предмет: *{subject}*"""
+
+    if admin:
+        msg += f"""file_id: *{fileData[0][0]}*
+owner: *{fileData[0][2]}*
+is_private: *{fileData[0][3]}*
+cost: *{fileData[0][4]}*
+admin_check: *{fileData[0][8]}*"""
+
     return msg
 
 
@@ -20,8 +28,10 @@ def switchFun(callback_query, chat_id):
         ask_subject(chat_id, str_callback)
     elif str_callback[3] == "2":  # узнали предмет
         show_files_list(chat_id, str_callback)
-    elif str_callback[3] == "9":  # информация о файле
+    elif str_callback[3] == "8":  # информация о файле
         show_file_info(chat_id, str_callback)
+    else:
+        bot.send_message(chat_id, "неизвестная команда")
 
 
 def ask_course(chat_id, owner_file_id):
@@ -81,28 +91,79 @@ def show_files_list(chat_id, callback_query):
     for file in filesList:
         buttons.append({
             "text": f"{file[1]}",
-            "callback_data": f"download_{file[2]}"
+            "callback_data": f"sfl9_{file[0]}"
         })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
 def show_file_info(chat_id, file_id):
-    print(file_id)
-    file = db.get_files_by_file_id(file_id.replace("sfl9_", ""))
+    user_is_admin = db.get_user_by_id(chat_id)[0]
+    file = db.get_files_by_file_id(file_id.replace("sfl8_", ""))
     msg = mess_about_file(file)
     bot.send_message(chat_id, msg)
     buttons = [
         {
-            "text": "Изменить",
-            "callback_data": "reg9"
+            "text": "Скачать",
+            "callback_data": f"fop3_{file[0][0]}"
         },
         {
-            "text": "Удалить",
-            "callback_data": "main_menu"
-        },
-        {
-            "text": "Вернуться назад",
+            "text": "Назад в меню",
             "callback_data": "main_menu"
         }
     ]
+    # if chat_id == file[0][2] or user_is_admin[4]:
+    #     buttons.append({
+    #         "text": "Удалить",
+    #         "callback_data": f"fop_2{file[0][0]}"
+    #     })
+    if user_is_admin[4]:
+        if file[0][8]:
+            buttons.append({
+                {
+                    "text": "Заблокировать",
+                    "callback_data": f"fop1_{file[0]}"
+                }
+            })
+        else:
+            buttons.append({
+                {
+                    "text": "Одобрить",
+                    "callback_data": f"fop0_{file[0]}"
+                }
+            })
+    bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")
+
+
+def show_file_info_for_admin(chat_id, file_id):
+    file = db.get_files_by_file_id(file_id.replace("sfl9_", ""))
+    msg = mess_about_file(file, True)
+    bot.send_message(chat_id, msg)
+    buttons = [
+        {
+            "text": "Скачать",
+            "callback_data": f"fop3_{file[0]}"  # TODO: дописать функцию
+        },
+        {
+            "text": "Удалить",
+            "callback_data": f"fop_2{file[0]}"  # TODO: дописать функцию
+        },
+        {
+            "text": "Назад в меню",
+            "callback_data": "main_menu"
+        }
+    ]
+    # if file[0][8]:
+    #     buttons.append({
+    #         {
+    #             "text": "Заблокировать",
+    #             "callback_data": f"fop1_{file[0]}"
+    #         }
+    #     })
+    # else:
+    #     buttons.append({
+    #         {
+    #             "text": "Одобрить",
+    #             "callback_data": f"fop0_{file[0]}"
+    #         }
+    #     })
     bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")
