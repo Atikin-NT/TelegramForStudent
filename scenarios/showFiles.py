@@ -81,18 +81,22 @@ def show_files_list(chat_id, callback_query):
     if len(data) != 2:
         bot.send_message(chat_id, "error in showFile")
         return
-
+    user_is_admin = db.get_user_by_id(chat_id)[0]
     user_id = data[0]
     course = data[1]
     subject = callback_query.replace("sfl2_", "")
     filesList = db.get_files_by_user(user_id, course, subject)
+    if len(filesList) == 0:
+        bot.send_message(chat_id, "Файлов не найдено(")
+        return
     msg = "Какой файл вы хотите посмотреть?"
     buttons = []
     for file in filesList:
-        buttons.append({
-            "text": f"{file[1]}",
-            "callback_data": f"sfl9_{file[0]}"
-        })
+        if file[8] or user_is_admin[4]:
+            buttons.append({
+                "text": f"{file[1]}",
+                "callback_data": f"sfl8_{file[0]}"
+            })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
@@ -119,51 +123,12 @@ def show_file_info(chat_id, file_id):
     if user_is_admin[4]:
         if file[0][8]:
             buttons.append({
-                {
-                    "text": "Заблокировать",
-                    "callback_data": f"fop1_{file[0]}"
-                }
+                "text": "Заблокировать",
+                "callback_data": f"fop1_{file[0][0]}"
             })
         else:
             buttons.append({
-                {
-                    "text": "Одобрить",
-                    "callback_data": f"fop0_{file[0]}"
-                }
+                "text": "Одобрить",
+                "callback_data": f"fop0_{file[0][0]}"
             })
-    bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")
-
-
-def show_file_info_for_admin(chat_id, file_id):
-    file = db.get_files_by_file_id(file_id.replace("sfl9_", ""))
-    msg = mess_about_file(file, True)
-    bot.send_message(chat_id, msg)
-    buttons = [
-        {
-            "text": "Скачать",
-            "callback_data": f"fop3_{file[0]}"  # TODO: дописать функцию
-        },
-        {
-            "text": "Удалить",
-            "callback_data": f"fop_2{file[0]}"  # TODO: дописать функцию
-        },
-        {
-            "text": "Назад в меню",
-            "callback_data": "main_menu"
-        }
-    ]
-    # if file[0][8]:
-    #     buttons.append({
-    #         {
-    #             "text": "Заблокировать",
-    #             "callback_data": f"fop1_{file[0]}"
-    #         }
-    #     })
-    # else:
-    #     buttons.append({
-    #         {
-    #             "text": "Одобрить",
-    #             "callback_data": f"fop0_{file[0]}"
-    #         }
-    #     })
     bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")

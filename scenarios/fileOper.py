@@ -23,7 +23,7 @@ def approve(chat_id, parse_callback):
 
 
 def disapprove(chat_id, parse_callback):
-    file_id = parse_callback.replace("fop0_", "")
+    file_id = parse_callback.replace("fop1_", "")
     db.change_file_admin_status(file_id, False)
     bot.send_message(chat_id, "Теперь файл закрыт от свободного доступа")
 
