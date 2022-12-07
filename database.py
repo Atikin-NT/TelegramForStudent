@@ -52,7 +52,7 @@ def get_user_by_username(username):
     conn = psycopg2.connect("dbname=mydb user=atikin")
     cur = conn.cursor()
     try:
-        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+        cur.execute("SELECT * FROM users WHERE username = %s and faculty != -1 and direction != -1 and course != -1", (username,))
     except psycopg2.IntegrityError as e:
         pass
         # if e.pgcode == "23505":

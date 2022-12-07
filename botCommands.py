@@ -75,5 +75,6 @@ def upload_to_yadisk(file_id, download_path):
 
 def download_from_yadisk(chat_id, download_path, caption):
     file_url = y.get_download_link(download_path)
+    print(file_url)
     tel_send_document(chat_id, file_url, caption)
 
