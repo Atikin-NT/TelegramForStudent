@@ -91,6 +91,7 @@ def profile_information(chat_id):
 
 
 def profile_MyFiles(chat_id):
+    msg = "Возможные действия"
     buttons = [
         {
             "text": "Добавить новый файл",
@@ -111,7 +112,7 @@ def profile_MyFiles(chat_id):
             "text": "Файлы на одобрение",
             "callback_data": "prf_fileListAdmin"
         })
-    bot.tel_send_inlinebutton(chat_id, buttons, "something")
+    bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
 def profile_newFile(chat_id):
