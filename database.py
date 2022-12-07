@@ -3,8 +3,11 @@ import psycopg2
 
 # user ---------------------------
 
+DBNAME = "mydb"
+USER = "atikin"
+
 def insert_user(user_id, username):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("INSERT INTO users (user_id, username) VALUES (%s, %s)", (user_id, username,))
@@ -20,7 +23,7 @@ def insert_user(user_id, username):
 
 
 def update_user_data(faculty, direction, course, user_id):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("UPDATE users SET faculty = %s, direction = %s, course = %s WHERE user_id = %s", (faculty, direction, course, user_id,))
@@ -32,7 +35,7 @@ def update_user_data(faculty, direction, course, user_id):
 
 
 def get_user_by_id(user_id):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
@@ -49,7 +52,7 @@ def get_user_by_id(user_id):
 
 
 def get_user_by_username(username):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM users WHERE username = %s and faculty != -1 and direction != -1 and course != -1", (username,))
@@ -68,7 +71,7 @@ def get_user_by_username(username):
 # files -----------------------------
 
 def insert_file(filename, user_id, course, subject):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("INSERT INTO files (filename, owner, course, subject) VALUES (%s, %s, %s, %s)", (filename, user_id, course, subject,))
@@ -80,7 +83,7 @@ def insert_file(filename, user_id, course, subject):
 
 
 def get_files_by_user(user_id, course, subject):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM files WHERE owner = %s and course = %s and subject = %s", (user_id, course, subject))
@@ -93,7 +96,7 @@ def get_files_by_user(user_id, course, subject):
 
 
 def get_files_by_file_id(file_id):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM files WHERE file_id = %s", (file_id,))
@@ -106,7 +109,7 @@ def get_files_by_file_id(file_id):
 
 
 def get_files_waiting_for_admin():
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM files WHERE admin_check = false")
@@ -119,7 +122,7 @@ def get_files_waiting_for_admin():
 
 
 def change_file_admin_status(file_id, status):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("UPDATE files SET admin_check = %s WHERE file_id = %s", (status, file_id,))
@@ -133,7 +136,7 @@ def change_file_admin_status(file_id, status):
 # subjects -----------------------------
 
 def get_subjects():
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM subjects")
@@ -146,7 +149,7 @@ def get_subjects():
 
 
 def get_files_in_profile_page(user_id):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM files WHERE owner = %s and admin_check = true", (user_id,))
@@ -160,7 +163,7 @@ def get_files_in_profile_page(user_id):
 # session -------------------------
 
 def create_new_session(user_id, command):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("INSERT INTO session (user_id, command) VALUES (%s, %s)", (user_id, command,))
@@ -172,7 +175,7 @@ def create_new_session(user_id, command):
 
 
 def update_session(user_id, command):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("UPDATE session set command = command || %s where user_id = %s", (command, user_id,))
@@ -184,7 +187,7 @@ def update_session(user_id, command):
 
 
 def get_session(user_id):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("SELECT * FROM session WHERE user_id = %s", (user_id,))
@@ -198,7 +201,7 @@ def get_session(user_id):
 
 
 def delete_session(user_id):
-    conn = psycopg2.connect("dbname=mydb user=atikin")
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
     cur = conn.cursor()
     try:
         cur.execute("DELETE FROM session WHERE user_id = %s", (user_id,))
