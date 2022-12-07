@@ -1,7 +1,7 @@
 from flask import Flask, request
 import routes
 
-# https://api.telegram.org/bot5546823281:AAEPLYc-UWSiffsjfBONg8J5bc6bDMumFK0/setWebhook?url=https://2843-89-109-48-183.eu.ngrok.io
+# https://api.telegram.org/bot5546823281:AAEPLYc-UWSiffsjfBONg8J5bc6bDMumFK0/setWebhook?url=https://19d1-89-109-48-183.eu.ngrok.io
 # Ni5Wmvll
 app = Flask(__name__)
 
@@ -25,3 +25,9 @@ def receive_update():
 
 if __name__ == '__main__':
     app.run(host="localhost", port=5000, debug=True)
+
+
+#  обработчик неизвестных команд типа /<command>  сделал!
+#  в середине регистрации ее можно прервать пользователь запишится, а данные нет
+#  обработчик редактированных сообщений edited_message done!
+#  переименование файла при скачивании

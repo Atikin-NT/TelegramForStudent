@@ -25,6 +25,9 @@ def callback_query(msg):
 
 
 def commands(msg):
+    if not("message" in msg) or not("text" in msg["message"]):
+        bot.send_message(msg["message"]["chat"]["id"], "Неизвестная команда")
+        return
     if msg["message"]["text"] == "/start":
         hello_text = "Welcome to this bot\n Type /login to login"
         bot.send_message(msg["message"]["chat"]["id"], hello_text)
@@ -35,15 +38,23 @@ def commands(msg):
     elif msg["message"]["text"] == "/menu":
         profileMenu.show_menu(msg["message"]["chat"]["id"])
     else:
-        bot.send_message(msg["callback_query"]["message"]["chat"]["id"], "Неизвестная команда")
+        bot.send_message(msg["message"]["chat"]["id"], "Неизвестная команда")
 
 
 def input_text(msg):
+    if not("message" in msg):
+        if "edited_message" in msg:
+            bot.send_message(msg["edited_message"]["chat"]["id"], "недопустимое сообщение")
+        return
     if "text" in msg["message"]:
         if msg["message"]["text"][0] == "@":
             findUser.find_by_username(msg["message"]["chat"]["id"], msg["message"]["text"])
+        else:
+            bot.send_message(msg["message"]["chat"]["id"], "недопустимое сообщение")
     elif "document" in msg["message"]:
         uploadFile.upload_document(msg["message"]["document"], msg["message"]["chat"]["id"])
     else:
-        bot.send_message(msg["message"]["chat"]["id"], "недопустимое сообщение")
-
+        try:
+            bot.send_message(msg["message"]["chat"]["id"], "недопустимое сообщение")
+        except Exception as ex:
+            print(ex)
