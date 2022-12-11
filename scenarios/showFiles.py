@@ -2,7 +2,7 @@ import database as db
 import botCommands as bot
 
 
-def mess_about_file(fileData, admin = False):
+def mess_about_file(fileData, admin=False):
     filename = fileData[0][1]
     course = fileData[0][6]
     subject = fileData[0][7]
@@ -28,71 +28,98 @@ def switchFun(callback_query, chat_id):
         ask_subject(chat_id, str_callback)
     elif str_callback[3] == "2":  # узнали предмет
         show_files_list(chat_id, str_callback)
+    elif str_callback[3] == "3":  # узнали факультет
+        ask_direction(chat_id, str_callback)
+    elif str_callback[3] == "4":  # узнаем курс
+        ask_course(chat_id, str_callback, True)
+    elif str_callback[3] == "5":  # узнали предмет
+        ask_subject(chat_id, str_callback, True)
+    elif str_callback[3] == "6":  # узнали предмет
+        show_files_list(chat_id, str_callback, True)
     elif str_callback[3] == "8":  # информация о файле
         show_file_info(chat_id, str_callback)
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
 
-def ask_course(chat_id, owner_file_id):
-    db.create_new_session(chat_id, owner_file_id.replace("sfl0_", ""))
+def ask_course(chat_id, owner_file_id, findFile=False):
+    sflId = 1
+    if not findFile:
+        db.create_new_session(chat_id, owner_file_id.replace("sfl0_", ""))
+    else:
+        db.update_session(chat_id, owner_file_id.replace("sfl4", ""))
+        sflId = 5
     msg = "Файлы какого курса обучения?"
     buttons = [
         {
             "text": "1",
-            "callback_data": "sfl1_1"
+            "callback_data": f"sfl{sflId}_1"
         },
         {
             "text": "2",
-            "callback_data": "sfl1_2"
+            "callback_data": f"sfl{sflId}_2"
         },
         {
             "text": "3",
-            "callback_data": "sfl1_3"
+            "callback_data": f"sfl{sflId}_3"
         },
         {
             "text": "4",
-            "callback_data": "sfl1_4"
+            "callback_data": f"sfl{sflId}_4"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
-def ask_subject(chat_id, course):
-    db.update_session(chat_id, course.replace("sfl1", ""))
+def ask_subject(chat_id, course, findFile=False):
+    sflId = 2
+    if not findFile:
+        db.update_session(chat_id, course.replace("sfl1", ""))
+    else:
+        db.update_session(chat_id, course.replace("sfl5", ""))
+        sflId = 6
     subjects = db.get_subjects()
     msg = "Какой предмет?"
     buttons = []
     for sub in subjects:
         buttons.append({
             "text": f"{sub[1]}",
-            "callback_data": f"sfl2_{sub[0]}"
+            "callback_data": f"sfl{sflId}_{sub[0]}"
         })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
-def show_files_list(chat_id, callback_query):
+def show_files_list(chat_id, callback_query, findFile=False):
     session = db.get_session(chat_id)
     if len(session) == 0:
         bot.send_message(chat_id, "len(session) == 0")
         return
     db.delete_session(chat_id)
     data = session[0][1].split("_")
-    if len(data) != 2:
+    print(data, findFile, len(data))
+    if (not findFile and len(data) != 2) or (findFile and len(data) != 4):
         bot.send_message(chat_id, "error in showFile")
         return
-    user_is_admin = db.get_user_by_id(chat_id)[0]
-    user_id = data[0]
-    course = data[1]
-    subject = callback_query.replace("sfl2_", "")
-    filesList = db.get_files_by_user(user_id, course, subject)
+    filesList = []
+    if not findFile:
+        user_is_admin = db.get_user_by_id(chat_id)[0]
+        user_id = data[0]
+        course = data[1]
+        subject = callback_query.replace("sfl2_", "")
+        filesList = db.get_files_by_user(user_id, course, subject)
+    else:
+        fac = data[1]
+        direction = data[2]
+        course = data[3]
+        subject = callback_query.replace("sfl6_", "")
+        filesList = db.get_files_by_faculty(0, 0, course, subject)
     if len(filesList) == 0:
         bot.send_message(chat_id, "Файлов не найдено(")
         return
     msg = "Какой файл вы хотите посмотреть?"
     buttons = []
     for file in filesList:
-        if file[8] or user_is_admin[4]:
+        if file[8] or (user_is_admin[4] and (not findFile)):
             buttons.append({
                 "text": f"{file[1]}",
                 "callback_data": f"sfl8_{file[0]}"
@@ -115,11 +142,6 @@ def show_file_info(chat_id, file_id):
             "callback_data": "main_menu"
         }
     ]
-    # if chat_id == file[0][2] or user_is_admin[4]:
-    #     buttons.append({
-    #         "text": "Удалить",
-    #         "callback_data": f"fop_2{file[0][0]}"
-    #     })
     if user_is_admin[4]:
         if file[0][8]:
             buttons.append({
@@ -132,3 +154,50 @@ def show_file_info(chat_id, file_id):
                 "callback_data": f"fop0_{file[0][0]}"
             })
     bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")
+
+
+def ask_faculty(chat_id):
+    msg = "В каком факультете вы обучаетесь?"
+    buttons = [
+        {
+            "text": "IITMM",
+            "callback_data": "sfl3_IITMM"
+        }
+    ]
+    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+
+
+def ask_direction(chat_id, faculty):
+    db.update_session(chat_id, faculty.replace("sfl3_", ""))
+    msg = "На каком направлении вы обучаетесь?"
+    buttons = [
+        {
+            "text": "FIIT",
+            "callback_data": "sfl4_FIIT"
+        }
+    ]
+    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+
+
+def list_files_by_name(chat_id, name):
+    session = db.get_session(chat_id)
+    if len(session) == 0:
+        bot.send_message(chat_id, "Недопустимое сообщение")
+        return
+    db.delete_session(chat_id)
+    data = session[0][1].split("_")
+    if len(data) != 1:
+        bot.send_message(chat_id, "error in showFileByName")
+        return
+    filesList = db.get_files_by_name(name)
+    if len(filesList) == 0:
+        bot.send_message(chat_id, "Файлов не найдено(")
+        return
+    msg = "Какой файл вы хотите посмотреть?"
+    buttons = []
+    for file in filesList:
+        buttons.append({
+            "text": f"{file[1]}",
+            "callback_data": f"sfl8_{file[0]}"
+        })
+    bot.tel_send_inlinebutton(chat_id, buttons, msg)

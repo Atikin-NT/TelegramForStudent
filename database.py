@@ -133,6 +133,33 @@ def change_file_admin_status(file_id, status):
     conn.close()
 
 
+def get_files_by_faculty(faculty, direction, course, subject):
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s AND direction=%s) AND course=%s AND subject=%s", (faculty, direction, course, subject,))
+    except psycopg2.IntegrityError as e:
+        pass
+    records = cur.fetchall()
+    cur.close()
+    conn.close()
+    return records
+
+
+def get_files_by_name(name):
+    conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
+    cur = conn.cursor()
+    try:
+        cur.execute(f"SELECT * FROM files WHERE filename LIKE '%{name}%'")
+    except psycopg2.IntegrityError as e:
+        pass
+    records = cur.fetchall()
+    cur.close()
+    conn.close()
+    return records
+
+
+
 # subjects -----------------------------
 
 def get_subjects():

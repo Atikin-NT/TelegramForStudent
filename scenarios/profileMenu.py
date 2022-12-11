@@ -2,6 +2,7 @@ import database as db
 import botCommands as bot
 import scenarios.findUser as findUser
 import scenarios.uploadFile as uploadFile
+import scenarios.showFiles as showFiles
 
 facultyList = ["IITMM"]
 directionList = ["FIIT"]
@@ -42,6 +43,12 @@ def switchFun(callback_query, chat_id):
         profile_findUser(chat_id)
     elif str(callback_query) == "prf_fileListAdmin":
         profile_fileListAdmin(chat_id)
+    elif str(callback_query) == "prf_findFile":
+        profile_findFile(chat_id)
+    elif str(callback_query) == "prf_findFile_by_Name":
+        profile_findFile_by_Name(chat_id)
+    elif str(callback_query) == "prf_findFile_by_Fac":
+        profile_findFile_by_Fac(chat_id)
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
@@ -64,6 +71,10 @@ def show_menu(chat_id):
         {
             "text": "Найти пользователя",
             "callback_data": "prf_findUser"
+        },
+        {
+            "text": "Найти файл",
+            "callback_data": "prf_findFile"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
@@ -151,3 +162,28 @@ def profile_fileListAdmin(chat_id):
             "callback_data": f"sfl8_{file[0]}"
         })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
+
+
+def profile_findFile(chat_id):
+    msg = "Выполнить поиск по"
+    buttons = [
+        {
+            "text": "Названию",
+            "callback_data": "prf_findFile_by_Name"
+        },
+        {
+            "text": "Факультету",
+            "callback_data": "prf_findFile_by_Fac"
+        }
+    ]
+    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+
+
+def profile_findFile_by_Name(chat_id):
+    db.create_new_session(chat_id, "findFileByName")
+    bot.send_message(chat_id, "Введите имя файла или ключевое слово")
+
+
+def profile_findFile_by_Fac(chat_id):
+    db.create_new_session(chat_id, "findFileByFac_")
+    showFiles.ask_faculty(chat_id)

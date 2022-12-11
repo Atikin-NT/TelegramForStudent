@@ -32,8 +32,10 @@ def commands(msg):
     if msg["message"]["text"] == "/start":
         hello_text = "Welcome to this bot\n Type /login to login"
         bot.send_message(msg["message"]["chat"]["id"], hello_text)
+        return
     elif msg["message"]["text"] == "/login":
         reg.start(msg["message"]["chat"]["id"], msg["message"]["chat"]["username"])
+        return
     user = db.get_user_by_username(msg["message"]["chat"]["username"])
     if len(user) == 0:
         bot.send_message(msg["message"]["chat"]["username"], "Вас нет в системе!\nСначала зарегистрируйтесь с помощью "
@@ -56,7 +58,7 @@ def input_text(msg):
         if msg["message"]["text"][0] == "@":
             findUser.find_by_username(msg["message"]["chat"]["id"], msg["message"]["text"])
         else:
-            bot.send_message(msg["message"]["chat"]["id"], "недопустимое сообщение")
+            showFl.list_files_by_name(msg["message"]["chat"]["id"], msg["message"]["text"])
     elif "document" in msg["message"]:
         uploadFile.upload_document(msg["message"]["document"], msg["message"]["chat"]["id"])
     else:
