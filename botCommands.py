@@ -7,8 +7,8 @@ TOKEN_YA = "y0_AgAAAABmapUwAAizegAAAADU3hxhdlyBRNdUQ6KD1CMUNSmhh1Ft7yE"
 ClientID = "daec211d1a30442387e86642832efd60"
 ClientSecret = "970e8b1633cc499e8f3898c50ae3b006"
 y = yadisk.YaDisk(token=TOKEN_YA)
-print(y.check_token())
-print(y.get_disk_info())
+# print(y.check_token())
+# print(y.get_disk_info())
 # Redirect url https://oauth.yandex.ru/verification_code
 
 
