@@ -1,7 +1,7 @@
 import requests
 import yadisk
 
-TOKEN = "5546823281:AAEPLYc-UWSiffsjfBONg8J5bc6bDMumFK0"
+TOKEN = "5973115902:AAHpxHxLnab2KLaE852dltRxnAbrZGy1eHs"
 # TODO: обновление токена при истечении
 TOKEN_YA = "y0_AgAAAABmapUwAAizegAAAADU3hxhdlyBRNdUQ6KD1CMUNSmhh1Ft7yE"
 ClientID = "daec211d1a30442387e86642832efd60"
@@ -26,18 +26,18 @@ def tel_send_inlinebutton(chat_id, buttons, text):
         'chat_id': chat_id,
         'text': text,
         'reply_markup': {
-            "inline_keyboard": [[
+            "inline_keyboard": [
 
-            ]]
+            ]
         }
     }
 
     for button in buttons:
-        new_button = {
+        new_button = [{
             "text": button["text"],
             "callback_data": button["callback_data"]
-        }
-        payload["reply_markup"]["inline_keyboard"][0].append(new_button)
+        }]
+        payload["reply_markup"]["inline_keyboard"].append(new_button)
 
     requests.post(url, json=payload)
 

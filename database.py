@@ -1,7 +1,8 @@
 import psycopg2
-
+from dotenv import dotenv_values
 
 # user ---------------------------
+config = dotenv_values(".env")
 
 DBNAME = "mydb"
 USER = "atikin"

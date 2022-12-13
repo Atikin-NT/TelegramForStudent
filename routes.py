@@ -26,9 +26,6 @@ def callback_query(msg):
 
 
 def commands(msg):
-    if not("message" in msg) or not("text" in msg["message"]):
-        bot.send_message(msg["message"]["chat"]["id"], "Неизвестная команда")
-        return
     if msg["message"]["text"] == "/start":
         hello_text = "Welcome to this bot\n Type /login to login"
         bot.send_message(msg["message"]["chat"]["id"], hello_text)
@@ -36,9 +33,12 @@ def commands(msg):
     elif msg["message"]["text"] == "/login":
         reg.start(msg["message"]["chat"]["id"], msg["message"]["chat"]["username"])
         return
-    user = db.get_user_by_username(msg["message"]["chat"]["username"])
+    username = msg["message"]["chat"]["first_name"]
+    if "username" in msg["message"]["chat"]:
+        username = msg["message"]["chat"]["username"]
+    user = db.get_user_by_username(username)
     if len(user) == 0:
-        bot.send_message(msg["message"]["chat"]["username"], "Вас нет в системе!\nСначала зарегистрируйтесь с помощью "
+        bot.send_message(username, "Вас нет в системе!\nСначала зарегистрируйтесь с помощью "
                                                              "команды /login")
         return
     if msg["message"]["text"] == "/find":
@@ -50,10 +50,6 @@ def commands(msg):
 
 
 def input_text(msg):
-    if not("message" in msg):
-        if "edited_message" in msg:
-            bot.send_message(msg["edited_message"]["chat"]["id"], "недопустимое сообщение")
-        return
     if "text" in msg["message"]:
         if msg["message"]["text"][0] == "@":
             findUser.find_by_username(msg["message"]["chat"]["id"], msg["message"]["text"])
