@@ -12,16 +12,12 @@ def mess_about_user(userData):
     username = userData[0][1]
     data = userData[0][2]
 
-    rating = sum(userData[0][5]) / 5
-    fileCount = userData[0][6]
     faculty = facultyList[userData[0][7]]
     direction = directionList[userData[0][8]]
     course = userData[0][9]
 
     msg = f"""Имя пользователя: *{username}*
 Дата регистрации: *{data}*
-Рейтинг: *{rating}*
-Количество загруженных файлов: *{fileCount}*
 Факультет: *{faculty}*
 Направление: *{direction}*
 Курс: *{course}*"""
@@ -104,7 +100,7 @@ def profile_information(chat_id):
 Сейчас происходит бетта-тестирование бота, поэтому возможны ошибки и баги.
 Все кто хочет помочь в разработке или сообщить об ошибке, прошу написать мне: @AtikinNT
 """
-    bot.send_message(chat_id, "Что-то о боте")
+    bot.send_message(chat_id, msg)
 
 
 def profile_MyFiles(chat_id):
@@ -148,6 +144,10 @@ def profile_fileList(chat_id):
             "text": f"{file[1]}",
             "callback_data": f"sfl8_{file[0]}"
         })
+    buttons.append({
+        "text": "Назад в меню",
+        "callback_data": "main_menu"
+    })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
@@ -167,6 +167,10 @@ def profile_fileListAdmin(chat_id):
             "text": f"{file[1]}",
             "callback_data": f"sfl8_{file[0]}"
         })
+    buttons.append({
+            "text": "Назад в меню",
+            "callback_data": "main_menu"
+        })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
@@ -180,6 +184,10 @@ def profile_findFile(chat_id):
         {
             "text": "Факультету",
             "callback_data": "prf_findFile_by_Fac"
+        },
+        {
+            "text": "Назад в меню",
+            "callback_data": "main_menu"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)

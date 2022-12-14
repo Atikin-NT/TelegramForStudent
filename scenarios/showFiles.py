@@ -108,8 +108,6 @@ def show_files_list(chat_id, callback_query, findFile=False):
         subject = callback_query.replace("sfl2_", "")
         filesList = db.get_files_by_user(user_id, course, subject)
     else:
-        fac = data[1]
-        direction = data[2]
         course = data[3]
         subject = callback_query.replace("sfl6_", "")
         filesList = db.get_files_by_faculty(0, 0, course, subject)
@@ -124,6 +122,10 @@ def show_files_list(chat_id, callback_query, findFile=False):
                 "text": f"{file[1]}",
                 "callback_data": f"sfl8_{file[0]}"
             })
+    buttons.append({
+            "text": "Назад в меню",
+            "callback_data": "main_menu"
+        })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
@@ -199,5 +201,9 @@ def list_files_by_name(chat_id, name):
         buttons.append({
             "text": f"{file[1]}",
             "callback_data": f"sfl8_{file[0]}"
+        })
+    buttons.append({
+            "text": "Назад в меню",
+            "callback_data": "main_menu"
         })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)

@@ -3,14 +3,15 @@ import time
 import logging
 import routes
 import requests
+from dotenv import dotenv_values
 
-# https://api.telegram.org/bot5546823281:AAEPLYc-UWSiffsjfBONg8J5bc6bDMumFK0/setWebhook?url=https://5007-188-225-72-176.eu.ngrok.io
-# Ni5Wmvll
+config = dotenv_values(".env")
+
+TOKEN = config["BOT_TOKEN"]
 
 
 def main():
     last_update_id = None
-    TOKEN = "5973115902:AAHpxHxLnab2KLaE852dltRxnAbrZGy1eHs"
     url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 
     headers = {
@@ -50,7 +51,3 @@ if __name__ == '__main__':
                         format="%(asctime)s %(message)s",
                         filemode="w")
     main()
-
-
-#  в середине регистрации ее можно прервать пользователь запишится, а данные нет
-#  переименование файла при скачивании

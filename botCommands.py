@@ -1,15 +1,13 @@
 import requests
 import yadisk
+from dotenv import dotenv_values
 
-TOKEN = "5973115902:AAHpxHxLnab2KLaE852dltRxnAbrZGy1eHs"
+config = dotenv_values(".env")
+
+TOKEN = config["BOT_TOKEN"]
 # TODO: обновление токена при истечении
-TOKEN_YA = "y0_AgAAAABmapUwAAizegAAAADU3hxhdlyBRNdUQ6KD1CMUNSmhh1Ft7yE"
-ClientID = "daec211d1a30442387e86642832efd60"
-ClientSecret = "970e8b1633cc499e8f3898c50ae3b006"
-y = yadisk.YaDisk(token=TOKEN_YA)
-# print(y.check_token())
-# print(y.get_disk_info())
-# Redirect url https://oauth.yandex.ru/verification_code
+YA_TOKEN = config["YA_TOKEN"]
+y = yadisk.YaDisk(token=YA_TOKEN)
 
 
 def send_message(chat_id, text):

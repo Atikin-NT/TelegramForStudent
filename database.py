@@ -1,11 +1,11 @@
 import psycopg2
 from dotenv import dotenv_values
 
-# user ---------------------------
 config = dotenv_values(".env")
+DBNAME = config["DBNAME"]
+USER = config["USER"]
 
-DBNAME = "mydb"
-USER = "atikin"
+# user ---------------------------
 
 def insert_user(user_id, username):
     conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")

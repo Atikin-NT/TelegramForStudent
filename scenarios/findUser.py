@@ -8,17 +8,12 @@ directionList = ["FIIT"]
 def mess_about_user(userData):
     username = userData[0][1]
     data = userData[0][2]
-
-    rating = sum(userData[0][5]) / 5
-    fileCount = userData[0][6]
     faculty = facultyList[userData[0][7]]
     direction = directionList[userData[0][8]]
     course = userData[0][9]
 
     msg = f"""Имя пользователя: *{username}*
 Дата регистрации: *{data}*
-Рейтинг: *{rating}*
-Количество загруженных файлов: *{fileCount}*
 Факультет: *{faculty}*
 Направление: *{direction}*
 Курс: *{course}*"""
@@ -41,7 +36,7 @@ def start(chat_id):
 def find_by_username(chat_id, username):
     clear_username_string = str(username).split()
     if len(clear_username_string) != 1:
-        bot.send_message(chat_id, "Вы неправильно ввели username")
+        bot.send_message(chat_id, "Вы неправильно ввели **username**")
         return
     user = db.get_user_by_username(clear_username_string[0][1:])
     msg = "Пользователь не найден, срочно пригласите его сюда!"
