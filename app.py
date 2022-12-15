@@ -3,9 +3,9 @@ import time
 import logging
 import routes
 import requests
-from dotenv import dotenv_values
 
-config = dotenv_values(".env")
+f = open('env.json')
+config = json.load(f)
 
 TOKEN = config["BOT_TOKEN"]
 

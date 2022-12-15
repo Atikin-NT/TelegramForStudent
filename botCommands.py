@@ -1,8 +1,9 @@
 import requests
 import yadisk
-from dotenv import dotenv_values
+import json
 
-config = dotenv_values(".env")
+f = open('env.json')
+config = json.load(f)
 
 TOKEN = config["BOT_TOKEN"]
 # TODO: обновление токена при истечении

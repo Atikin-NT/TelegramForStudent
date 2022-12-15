@@ -1,7 +1,8 @@
 import psycopg2
-from dotenv import dotenv_values
+import json
 
-config = dotenv_values(".env")
+f = open('env.json')
+config = json.load(f)
 DBNAME = config["DBNAME"]
 USER = config["USER"]
 
