@@ -29,16 +29,13 @@ def start(chat_id, username, message_id):
     buttons = [
         {
             "text": "IITMM",
-            "callback_data": f"reg0_IITMM_{message_id}"
+            "callback_data": f"reg0_IITMM_{message_id+1}"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
 def ask_direction(chat_id, faculty):
-    print(faculty)
-    print(faculty.replace("reg0_", ""))
-    print(faculty.replace("reg0_", "").split("_"))
     faculty = faculty.replace("reg0_", "").split("_")
 
     message_id = faculty[1]
@@ -47,37 +44,41 @@ def ask_direction(chat_id, faculty):
     buttons = [
         {
             "text": "FIIT",
-            "callback_data": "reg1_FIIT"
+            "callback_data": f"reg1_FIIT_{message_id}"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def ask_course(chat_id, direction):
-    db.update_session(chat_id, direction.replace("reg1", ""))
+    direction = direction.replace("reg1_", "").split("_")
+    message_id = direction[1]
+    db.update_session(chat_id, "_" + direction[0])
     msg = "На каком курсе вы обучаетесь?"
     buttons = [
         {
             "text": "1",
-            "callback_data": "reg2_1"
+            "callback_data": f"reg2_1_{message_id}"
         },
         {
             "text": "2",
-            "callback_data": "reg2_2"
+            "callback_data": f"reg2_2_{message_id}"
         },
         {
             "text": "3",
-            "callback_data": "reg2_3"
+            "callback_data": f"reg2_3_{message_id}"
         },
         {
             "text": "4",
-            "callback_data": "reg2_4"
+            "callback_data": f"reg2_4_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def finish(chat_id, course):
+    course = course.replace("reg2_", "").split("_")
+    message_id = course[1]
     session = db.get_session(chat_id)
     db.delete_session(chat_id)
     if len(session) == 0 or len(session[0]) == 0:
@@ -89,6 +90,6 @@ def finish(chat_id, course):
         return
     facultyList = ["IITMM"]
     directionList = ["FIIT"]
-    db.update_user_data(facultyList.index(data[0]), directionList.index(data[1]), course.replace("reg2_", ""), chat_id)
+    db.update_user_data(facultyList.index(data[0]), directionList.index(data[1]), course[0], chat_id)
     msg = "Данные сохранены!\nНажмите /menu для просмотра менюшки"
-    bot.send_message(chat_id, msg)
+    bot.tel_send_inlinebutton(chat_id, [], msg, message_id)

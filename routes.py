@@ -36,7 +36,7 @@ def commands(msg):
         bot.send_message(msg["message"]["chat"]["id"], hello_text)
         return
     elif msg["message"]["text"] == "/login":
-        reg.start(msg["message"]["chat"]["id"], username)
+        reg.start(msg["message"]["chat"]["id"], username, msg["message"]["message_id"])
         return
     user = db.get_user_by_username(username)
     if len(user) == 0:

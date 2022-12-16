@@ -24,15 +24,14 @@ def tel_send_inlinebutton(chat_id, buttons, text, message_id=0):
         'chat_id': chat_id,
         'text': text,
         'reply_markup': {
-            "remove_keyboard": True,
             "inline_keyboard": [
 
             ]
         }
     }
-    # if message_id:
-    #     url = f'https://api.telegram.org/bot{TOKEN}/deleteMessage'
-    #     print(requests.post(url, {'chat_id': chat_id, 'message_id': message_id}).json())
+    if message_id:
+        method = "editMessageText"
+        payload["message_id"] = message_id
     url = f'https://api.telegram.org/bot{TOKEN}/{method}'
 
     for button in buttons:
@@ -42,7 +41,7 @@ def tel_send_inlinebutton(chat_id, buttons, text, message_id=0):
         }]
         payload["reply_markup"]["inline_keyboard"].append(new_button)
 
-    requests.post(url, json=payload)
+    requests.post(url, json=payload).json()
 
 
 def tel_send_document(chat_id, file_url, caption):
