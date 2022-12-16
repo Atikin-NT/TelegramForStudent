@@ -2,7 +2,7 @@ import requests
 import yadisk
 import json
 
-f = open('env.json')
+f = open('env.json', 'r')
 config = json.load(f)
 
 TOKEN = config["BOT_TOKEN"]
