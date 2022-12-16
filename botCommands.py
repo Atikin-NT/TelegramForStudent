@@ -18,18 +18,22 @@ def send_message(chat_id, text):
     requests.post(url, data=data)
 
 
-def tel_send_inlinebutton(chat_id, buttons, text):
+def tel_send_inlinebutton(chat_id, buttons, text, message_id=0):
     method = "sendMessage"
-    url = f'https://api.telegram.org/bot{TOKEN}/{method}'
     payload = {
         'chat_id': chat_id,
         'text': text,
         'reply_markup': {
+            "remove_keyboard": True,
             "inline_keyboard": [
 
             ]
         }
     }
+    # if message_id:
+    #     url = f'https://api.telegram.org/bot{TOKEN}/deleteMessage'
+    #     print(requests.post(url, {'chat_id': chat_id, 'message_id': message_id}).json())
+    url = f'https://api.telegram.org/bot{TOKEN}/{method}'
 
     for button in buttons:
         new_button = [{

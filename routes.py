@@ -9,6 +9,7 @@ import scenarios.fileOper as fileOper
 
 
 def callback_query(msg):
+    print(msg)
     if "reg" in msg["callback_query"]["data"]:
         reg.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
     elif "sfl" in msg["callback_query"]["data"]:

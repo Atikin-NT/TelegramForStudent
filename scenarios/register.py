@@ -17,7 +17,7 @@ def switchFun(callback_query, chat_id):
         bot.send_message(chat_id, "неизвестная команда")
 
 
-def start(chat_id, username):
+def start(chat_id, username, message_id):
     if username is not None:
         user = db.get_user_by_username(username)
         if len(user) != 0:
@@ -29,14 +29,20 @@ def start(chat_id, username):
     buttons = [
         {
             "text": "IITMM",
-            "callback_data": "reg0_IITMM"
+            "callback_data": f"reg0_IITMM_{message_id}"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
 def ask_direction(chat_id, faculty):
-    db.create_new_session(chat_id, faculty.replace("reg0_", ""))
+    print(faculty)
+    print(faculty.replace("reg0_", ""))
+    print(faculty.replace("reg0_", "").split("_"))
+    faculty = faculty.replace("reg0_", "").split("_")
+
+    message_id = faculty[1]
+    db.create_new_session(chat_id, faculty[0])
     msg = "На каком направлении вы обучаетесь?"
     buttons = [
         {
@@ -44,7 +50,7 @@ def ask_direction(chat_id, faculty):
             "callback_data": "reg1_FIIT"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def ask_course(chat_id, direction):
