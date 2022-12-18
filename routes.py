@@ -54,7 +54,8 @@ def commands(msg):
 def input_text(msg):
     if "text" in msg["message"]:
         if msg["message"]["text"][0] == "@":
-            findUser.find_by_username(msg["message"]["chat"]["id"], msg["message"]["text"])
+            findUser.find_by_username(msg["message"]["chat"]["id"], msg["message"]["text"],
+                                      msg["message"]["message_id"] + 1)
         elif "Мр" in msg["message"]["text"]:
             bot.send_message(msg["message"]["chat"]["id"], "Приветики, мое солнышко 😘")
         else:

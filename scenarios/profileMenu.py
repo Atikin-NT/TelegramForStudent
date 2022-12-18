@@ -37,8 +37,8 @@ def switchFun(callback_query, chat_id):
         profile_fileListAdmin(chat_id, str(callback_query))
     elif "prf_fileList" in str(callback_query):
         profile_fileList(chat_id, str(callback_query))
-    elif str(callback_query) == "prf_findUser":
-        profile_findUser(chat_id)
+    elif "prf_findUser" in str(callback_query):
+        profile_findUser(chat_id, str(callback_query))
     elif str(callback_query) == "prf_findFile":
         profile_findFile(chat_id)
     elif str(callback_query) == "prf_findFile_by_Name":
@@ -69,7 +69,7 @@ def show_menu(chat_id, message_id=None):
         },
         {
             "text": "Найти пользователя",
-            "callback_data": "prf_findUser"
+            "callback_data": f"prf_findUser_{message_id}"
         },
         {
             "text": "Найти файл",
@@ -160,8 +160,9 @@ def profile_fileList(chat_id, message_id):
     bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
-def profile_findUser(chat_id):
-    findUser.start(chat_id)
+def profile_findUser(chat_id, message_id):
+    message_id = message_id.replace("prf_findUser_", "")
+    findUser.start(chat_id, message_id)
 
 
 def profile_fileListAdmin(chat_id, message_id):

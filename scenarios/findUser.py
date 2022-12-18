@@ -28,12 +28,12 @@ def switch_fun(findString, chat_id):
     find_by_username(chat_id, clear_find_string[1][1:])
 
 
-def start(chat_id):
+def start(chat_id, message_id):
     msg = "Напишите @user, чтобы найти человека в системе"
-    bot.send_message(chat_id, msg)
+    bot.tel_send_inlinebutton(chat_id, [], msg, message_id)
 
 
-def find_by_username(chat_id, username):
+def find_by_username(chat_id, username, message_id):
     clear_username_string = str(username).split()
     if len(clear_username_string) != 1:
         bot.send_message(chat_id, "Вы неправильно ввели **username**")
@@ -42,21 +42,21 @@ def find_by_username(chat_id, username):
     msg = "Пользователь не найден, срочно пригласите его сюда!"
     if len(user) != 0:
         msg = mess_about_user(user)
-    bot.send_message(chat_id, msg)
+    bot.tel_send_inlinebutton(chat_id, [], msg)
     if len(user) != 0:
-        menu_in_the_end(chat_id, user[0][0])
+        menu_in_the_end(chat_id, user[0][0], int(message_id)+1)
 
 
-def menu_in_the_end(chat_id, owner_id):
+def menu_in_the_end(chat_id, owner_id, message_id):
     msg = "Возможные действия:"
     buttons = [
         {
             "text": "Посмотреть его файлы",
-            "callback_data": f"sfl0_{owner_id}"
+            "callback_data": f"sfl0_{owner_id}_{message_id}"
         },
         {
             "text": "Вернуться назад",
-            "callback_data": "main_menu"
+            "callback_data": f"main_menu_{message_id}"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
