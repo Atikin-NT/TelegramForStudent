@@ -130,10 +130,11 @@ def show_files_list(chat_id, callback_query, findFile=False):
 
 
 def show_file_info(chat_id, file_id):
+    file_id = file_id.replace("sfl8_", "").split("_")
+    message_id = file_id[1]
     user_is_admin = db.get_user_by_id(chat_id)[0]
-    file = db.get_files_by_file_id(file_id.replace("sfl8_", ""))
+    file = db.get_files_by_file_id(file_id[0])
     msg = mess_about_file(file)
-    bot.send_message(chat_id, msg)
     buttons = [
         {
             "text": "Скачать",
@@ -141,7 +142,7 @@ def show_file_info(chat_id, file_id):
         },
         {
             "text": "Назад в меню",
-            "callback_data": "main_menu"
+            "callback_data": f"main_menu_{message_id}"
         }
     ]
     if user_is_admin[4]:
@@ -155,7 +156,7 @@ def show_file_info(chat_id, file_id):
                 "text": "Одобрить",
                 "callback_data": f"fop0_{file[0][0]}"
             })
-    bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def ask_faculty(chat_id):

@@ -18,11 +18,13 @@ def send_message(chat_id, text):
     requests.post(url, data=data)
 
 
-def tel_send_inlinebutton(chat_id, buttons, text, message_id=0):
+def tel_send_inlinebutton(chat_id, buttons, text, message_id=None):
+    print(message_id)
     method = "sendMessage"
     payload = {
         'chat_id': chat_id,
         'text': text,
+        'parse_mode': 'markdown',
         'reply_markup': {
             "inline_keyboard": [
 

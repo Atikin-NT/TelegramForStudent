@@ -3,7 +3,7 @@ import botCommands as bot
 import scenarios.profileMenu as profileMenu
 import scenarios.findUser as findUser
 
-def switchFun(callback_query, chat_id):
+def switchFun(callback_query, chat_id, message_id):
     str_callback = str(callback_query)
     if str_callback[3] == "0":  # узнали факультет
         ask_direction(chat_id, str_callback)
@@ -12,7 +12,7 @@ def switchFun(callback_query, chat_id):
     elif str_callback[3] == "2":  # узнали курс
         finish(chat_id, str_callback)
     elif str_callback[3] == "9":  # узнали курс
-        start(chat_id, None)
+        start(chat_id, None, message_id)
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
@@ -29,7 +29,7 @@ def start(chat_id, username, message_id):
     buttons = [
         {
             "text": "IITMM",
-            "callback_data": f"reg0_IITMM_{message_id+1}"
+            "callback_data": f"reg0_IITMM_{message_id}"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
