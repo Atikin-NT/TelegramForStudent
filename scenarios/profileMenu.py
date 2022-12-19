@@ -82,7 +82,7 @@ def show_menu(chat_id, message_id=None):
 
 
 def profile_settings(chat_id, callback_query):
-    message_id = int(callback_query.replace("prf_setting_", ""))
+    message_id = callback_query.replace("prf_setting_", "")
     user = db.get_user_by_id(chat_id)
     msg = mess_about_user(user)
     buttons = [
