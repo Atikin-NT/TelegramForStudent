@@ -14,7 +14,8 @@ def insert_user(user_id, username):
     try:
         cur.execute("INSERT INTO users (user_id, username) VALUES (%s, %s)", (user_id, username,))
     except psycopg2.IntegrityError as e:
-        pass
+        print(e)
+        return
         # if e.pgcode == "23505":
         #     send_start_menu(user_id)
         # else:
