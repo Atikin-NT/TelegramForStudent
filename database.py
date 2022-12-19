@@ -30,7 +30,7 @@ def update_user_data(faculty, direction, course, user_id):
     try:
         cur.execute("UPDATE users SET faculty = %s, direction = %s, course = %s WHERE user_id = %s", (faculty, direction, course, user_id,))
     except psycopg2.IntegrityError as e:
-        print(e)
+        pass
     conn.commit()
     cur.close()
     conn.close()
@@ -225,7 +225,6 @@ def get_session(user_id):
     records = cur.fetchall()
     cur.close()
     conn.close()
-    print(records)
     return records
 
 

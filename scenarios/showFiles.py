@@ -43,7 +43,6 @@ def switchFun(callback_query, chat_id):
 
 
 def ask_course(chat_id, owner_file_id, findFile=False):
-    print(owner_file_id)
     sflId = 1
     if not findFile:
         owner_file_id = owner_file_id.replace("sfl0_", "").split("_")
@@ -76,7 +75,6 @@ def ask_course(chat_id, owner_file_id, findFile=False):
 
 
 def ask_subject(chat_id, course, findFile=False):
-    print(course)
     sflId = 2
     if not findFile:
         course = course.replace("sfl1_", "").split("_")
@@ -104,7 +102,6 @@ def show_files_list(chat_id, callback_query, findFile=False):
         return
     db.delete_session(chat_id)
     data = session[0][1].split("_")
-    print(data, findFile, len(data))
     if (not findFile and len(data) != 2) or (findFile and len(data) != 4):
         bot.send_message(chat_id, "Error in showFile")
         return
@@ -195,7 +192,6 @@ def ask_direction(chat_id, faculty):
 
 def list_files_by_name(chat_id, name, message_id):
     session = db.get_session(chat_id)
-    print("by name ", session, message_id)
     if len(session) == 0:
         bot.send_message(chat_id, "Недопустимое сообщение")
         return

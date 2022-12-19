@@ -50,7 +50,6 @@ def switchFun(callback_query, chat_id):
 
 
 def show_menu(chat_id, message_id=None):
-    print(message_id)
     if message_id and isinstance(message_id, str):
         message_id = message_id.split("_")[-1]
     msg = "Меню:"
@@ -166,7 +165,6 @@ def profile_findUser(chat_id, message_id):
 
 
 def profile_fileListAdmin(chat_id, message_id):
-    print("Admin--" + message_id)
     message_id = message_id.replace("prf_fileListAdmin_", "")
     filesList = db.get_files_waiting_for_admin()
     if len(filesList) == 0:
