@@ -39,12 +39,12 @@ def switchFun(callback_query, chat_id):
         profile_fileList(chat_id, str(callback_query))
     elif "prf_findUser" in str(callback_query):
         profile_findUser(chat_id, str(callback_query))
-    elif str(callback_query) == "prf_findFile":
-        profile_findFile(chat_id)
-    elif str(callback_query) == "prf_findFile_by_Name":
-        profile_findFile_by_Name(chat_id)
-    elif str(callback_query) == "prf_findFile_by_Fac":
-        profile_findFile_by_Fac(chat_id)
+    elif "prf_findFile_by_Name" in str(callback_query) :
+        profile_findFile_by_Name(chat_id, str(callback_query) )
+    elif "prf_findFile_by_Fac" in str(callback_query):
+        profile_findFile_by_Fac(chat_id, str(callback_query))
+    elif "prf_findFile" in str(callback_query):
+        profile_findFile(chat_id, str(callback_query))
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
@@ -73,7 +73,7 @@ def show_menu(chat_id, message_id=None):
         },
         {
             "text": "Найти файл",
-            "callback_data": "prf_findFile"
+            "callback_data": f"prf_findFile_{message_id}"
         }
     ]
     if message_id and isinstance(message_id, str):
@@ -186,30 +186,33 @@ def profile_fileListAdmin(chat_id, message_id):
     bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
-def profile_findFile(chat_id):
+def profile_findFile(chat_id, message_id):
+    message_id = message_id.replace("prf_findFile_", "")
     msg = "Выполнить поиск по"
     buttons = [
         {
             "text": "Названию",
-            "callback_data": "prf_findFile_by_Name"
+            "callback_data": f"prf_findFile_by_Name_{message_id}"
         },
         {
             "text": "Факультету",
-            "callback_data": "prf_findFile_by_Fac"
+            "callback_data": f"prf_findFile_by_Fac_{message_id}"
         },
         {
             "text": "Назад в меню",
-            "callback_data": "main_menu"
+            "callback_data": f"main_menu_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
-def profile_findFile_by_Name(chat_id):
+def profile_findFile_by_Name(chat_id, message_id):
+    message_id = message_id.replace("prf_findFile_by_Name_", "")
     db.create_new_session(chat_id, "findFileByName")
-    bot.send_message(chat_id, "Введите имя файла или ключевое слово")
+    bot.tel_send_inlinebutton(chat_id, [], "Введите имя файла или ключевое слово", message_id)
 
 
-def profile_findFile_by_Fac(chat_id):
+def profile_findFile_by_Fac(chat_id, message_id):
+    message_id = message_id.replace("prf_findFile_by_Fac_", "")
     db.create_new_session(chat_id, "findFileByFac_")
-    showFiles.ask_faculty(chat_id)
+    showFiles.ask_faculty(chat_id, message_id)

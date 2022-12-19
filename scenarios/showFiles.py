@@ -43,13 +43,14 @@ def switchFun(callback_query, chat_id):
 
 
 def ask_course(chat_id, owner_file_id, findFile=False):
+    print(owner_file_id)
     sflId = 1
     if not findFile:
         owner_file_id = owner_file_id.replace("sfl0_", "").split("_")
         db.create_new_session(chat_id, owner_file_id[0])
     else:
-        owner_file_id = owner_file_id.replace("sfl4", "").split("_")
-        db.update_session(chat_id, owner_file_id[0])
+        owner_file_id = owner_file_id.replace("sfl4_", "").split("_")
+        db.update_session(chat_id, "_" + owner_file_id[0])
         sflId = 5
     message_id = owner_file_id[1]
     msg = "Файлы какого курса обучения?"
@@ -75,13 +76,14 @@ def ask_course(chat_id, owner_file_id, findFile=False):
 
 
 def ask_subject(chat_id, course, findFile=False):
+    print(course)
     sflId = 2
     if not findFile:
         course = course.replace("sfl1_", "").split("_")
         db.update_session(chat_id, "_" + course[0])
     else:
-        course = course.replace("sfl5", "").split("_")
-        db.update_session(chat_id, course[0])
+        course = course.replace("sfl5_", "").split("_")
+        db.update_session(chat_id, "_" + course[0])
         sflId = 6
     message_id = course[1]
     subjects = db.get_subjects()
@@ -166,38 +168,41 @@ def show_file_info(chat_id, file_id):
     bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
-def ask_faculty(chat_id):
+def ask_faculty(chat_id, message_id):
     msg = "В каком факультете вы обучаетесь?"
     buttons = [
         {
             "text": "IITMM",
-            "callback_data": "sfl3_IITMM"
+            "callback_data": f"sfl3_IITMM_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def ask_direction(chat_id, faculty):
-    db.update_session(chat_id, faculty.replace("sfl3_", ""))
+    faculty = faculty.replace("sfl3_", "").split("_")
+    db.update_session(chat_id, faculty[0])
+    message_id = faculty[1]
     msg = "На каком направлении вы обучаетесь?"
     buttons = [
         {
             "text": "FIIT",
-            "callback_data": "sfl4_FIIT"
+            "callback_data": f"sfl4_FIIT_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
-def list_files_by_name(chat_id, name):
+def list_files_by_name(chat_id, name, message_id):
     session = db.get_session(chat_id)
+    print("by name ", session, message_id)
     if len(session) == 0:
         bot.send_message(chat_id, "Недопустимое сообщение")
         return
     db.delete_session(chat_id)
     data = session[0][1].split("_")
     if len(data) != 1:
-        bot.send_message(chat_id, "error in showFileByName")
+        bot.send_message(chat_id, "Error in showFileByName")
         return
     filesList = db.get_files_by_name(name)
     if len(filesList) == 0:
@@ -208,10 +213,10 @@ def list_files_by_name(chat_id, name):
     for file in filesList:
         buttons.append({
             "text": f"{file[1]}",
-            "callback_data": f"sfl8_{file[0]}"
+            "callback_data": f"sfl8_{file[0]}_{message_id}"
         })
     buttons.append({
             "text": "Назад в меню",
-            "callback_data": "main_menu"
+            "callback_data": f"main_menu_{message_id}"
         })
     bot.tel_send_inlinebutton(chat_id, buttons, msg)

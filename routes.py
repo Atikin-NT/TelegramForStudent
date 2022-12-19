@@ -59,7 +59,8 @@ def input_text(msg):
         elif "Мр" in msg["message"]["text"]:
             bot.send_message(msg["message"]["chat"]["id"], "Приветики, мое солнышко 😘")
         else:
-            showFl.list_files_by_name(msg["message"]["chat"]["id"], msg["message"]["text"])
+            showFl.list_files_by_name(msg["message"]["chat"]["id"], msg["message"]["text"],
+                                      msg["message"]["message_id"] + 1)
     elif "document" in msg["message"]:
         uploadFile.upload_document(msg["message"]["document"], msg["message"]["chat"]["id"])
     else:
