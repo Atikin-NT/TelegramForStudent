@@ -36,5 +36,8 @@ def download_file(chat_id, parse_callback):
     file = db.get_files_by_file_id(parse_callback.replace("fop3_", ""))[0]
     file_owner = db.get_user_by_id(file[2])[0]
     download_path = f"/faculty_{file_owner[7]}/direction_{file_owner[8]}/course_{file[6]}/sub_{file[7]}/{file[1]}"
-    bot.download_from_yadisk(chat_id, download_path, file[1])
+    try:
+        bot.download_from_yadisk(chat_id, download_path, file[1])
+    except Exception as ex:
+        print(ex)
     print("everything is ok")

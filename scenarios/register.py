@@ -3,7 +3,7 @@ import botCommands as bot
 import scenarios.profileMenu as profileMenu
 import scenarios.findUser as findUser
 
-def switchFun(callback_query, chat_id):
+def switchFun(callback_query, chat_id, message_id):
     str_callback = str(callback_query)
     if str_callback[3] == "0":  # узнали факультет
         ask_direction(chat_id, str_callback)
@@ -12,12 +12,12 @@ def switchFun(callback_query, chat_id):
     elif str_callback[3] == "2":  # узнали курс
         finish(chat_id, str_callback)
     elif str_callback[3] == "9":  # узнали курс
-        start(chat_id, None)
+        start(chat_id, None, message_id)
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
 
-def start(chat_id, username):
+def start(chat_id, username, message_id):
     if username is not None:
         user = db.get_user_by_username(username)
         if len(user) != 0:
@@ -29,49 +29,56 @@ def start(chat_id, username):
     buttons = [
         {
             "text": "IITMM",
-            "callback_data": "reg0_IITMM"
+            "callback_data": f"reg0_IITMM_{message_id}"
         }
     ]
     bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
 def ask_direction(chat_id, faculty):
-    db.create_new_session(chat_id, faculty.replace("reg0_", ""))
+    faculty = faculty.replace("reg0_", "").split("_")
+
+    message_id = faculty[1]
+    db.create_new_session(chat_id, faculty[0])
     msg = "На каком направлении вы обучаетесь?"
     buttons = [
         {
             "text": "FIIT",
-            "callback_data": "reg1_FIIT"
+            "callback_data": f"reg1_FIIT_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def ask_course(chat_id, direction):
-    db.update_session(chat_id, direction.replace("reg1", ""))
+    direction = direction.replace("reg1_", "").split("_")
+    message_id = direction[1]
+    db.update_session(chat_id, "_" + direction[0])
     msg = "На каком курсе вы обучаетесь?"
     buttons = [
         {
             "text": "1",
-            "callback_data": "reg2_1"
+            "callback_data": f"reg2_1_{message_id}"
         },
         {
             "text": "2",
-            "callback_data": "reg2_2"
+            "callback_data": f"reg2_2_{message_id}"
         },
         {
             "text": "3",
-            "callback_data": "reg2_3"
+            "callback_data": f"reg2_3_{message_id}"
         },
         {
             "text": "4",
-            "callback_data": "reg2_4"
+            "callback_data": f"reg2_4_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def finish(chat_id, course):
+    course = course.replace("reg2_", "").split("_")
+    message_id = course[1]
     session = db.get_session(chat_id)
     db.delete_session(chat_id)
     if len(session) == 0 or len(session[0]) == 0:
@@ -83,6 +90,6 @@ def finish(chat_id, course):
         return
     facultyList = ["IITMM"]
     directionList = ["FIIT"]
-    db.update_user_data(facultyList.index(data[0]), directionList.index(data[1]), course.replace("reg2_", ""), chat_id)
+    db.update_user_data(facultyList.index(data[0]), directionList.index(data[1]), course[0], chat_id)
     msg = "Данные сохранены!\nНажмите /menu для просмотра менюшки"
-    bot.send_message(chat_id, msg)
+    bot.tel_send_inlinebutton(chat_id, [], msg, message_id)

@@ -12,45 +12,48 @@ def switchFun(callback_query, chat_id):
         bot.send_message(chat_id, "Что-то пошло не так с загрузкой файла:(")
 
 
-def ask_course(chat_id):
+def ask_course(chat_id, message_id):
     msg = "Файл какого курса обучения?"
     buttons = [
         {
             "text": "1",
-            "callback_data": "upld0_1"
+            "callback_data": f"upld0_1_{message_id}"
         },
         {
             "text": "2",
-            "callback_data": "upld0_2"
+            "callback_data": f"upld0_2_{message_id}"
         },
         {
             "text": "3",
-            "callback_data": "upld0_3"
+            "callback_data": f"upld0_3_{message_id}"
         },
         {
             "text": "4",
-            "callback_data": "upld0_4"
+            "callback_data": f"upld0_4_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def ask_subject(chat_id, course):
-    db.create_new_session(chat_id, course.replace("upld0_", ""))
+    course = course.replace("upld0_", "").split("_")
+    message_id = course[1]
+    db.create_new_session(chat_id, course[0])
     subjects = db.get_subjects()
     msg = "Какой предмет?"
     buttons = []
     for sub in subjects:
         buttons.append({
             "text": f"{sub[1]}",
-            "callback_data": f"upld1_{sub[0]}"
+            "callback_data": f"upld1_{sub[0]}_{message_id}"
         })
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def upload_msg(chat_id, subject):
-    db.update_session(chat_id, subject.replace("upld1", ""))
-    bot.send_message(chat_id, "send file")
+    subject = subject.replace("upld1_", "").split("_")
+    db.update_session(chat_id, "_" + subject[0])
+    bot.tel_send_inlinebutton(chat_id, [], "Отправьте файл", subject[1])
 
 
 # Факультет/напрвление/курс/предмет

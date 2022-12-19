@@ -1,15 +1,14 @@
 import requests
 import yadisk
+import json
 
-TOKEN = "5546823281:AAEPLYc-UWSiffsjfBONg8J5bc6bDMumFK0"
+f = open('env.json', 'r')
+config = json.load(f)
+
+TOKEN = config["BOT_TOKEN"]
 # TODO: обновление токена при истечении
-TOKEN_YA = "y0_AgAAAABmapUwAAizegAAAADU3hxhdlyBRNdUQ6KD1CMUNSmhh1Ft7yE"
-ClientID = "daec211d1a30442387e86642832efd60"
-ClientSecret = "970e8b1633cc499e8f3898c50ae3b006"
-y = yadisk.YaDisk(token=TOKEN_YA)
-print(y.check_token())
-print(y.get_disk_info())
-# Redirect url https://oauth.yandex.ru/verification_code
+YA_TOKEN = config["YA_TOKEN"]
+y = yadisk.YaDisk(token=YA_TOKEN)
 
 
 def send_message(chat_id, text):
@@ -19,27 +18,31 @@ def send_message(chat_id, text):
     requests.post(url, data=data)
 
 
-def tel_send_inlinebutton(chat_id, buttons, text):
+def tel_send_inlinebutton(chat_id, buttons, text, message_id=None):
     method = "sendMessage"
-    url = f'https://api.telegram.org/bot{TOKEN}/{method}'
     payload = {
         'chat_id': chat_id,
         'text': text,
+        'parse_mode': 'markdown',
         'reply_markup': {
-            "inline_keyboard": [[
+            "inline_keyboard": [
 
-            ]]
+            ]
         }
     }
+    if message_id:
+        method = "editMessageText"
+        payload["message_id"] = message_id
+    url = f'https://api.telegram.org/bot{TOKEN}/{method}'
 
     for button in buttons:
-        new_button = {
+        new_button = [{
             "text": button["text"],
             "callback_data": button["callback_data"]
-        }
-        payload["reply_markup"]["inline_keyboard"][0].append(new_button)
+        }]
+        payload["reply_markup"]["inline_keyboard"].append(new_button)
 
-    requests.post(url, json=payload)
+    requests.post(url, json=payload).json()
 
 
 def tel_send_document(chat_id, file_url, caption):
@@ -75,5 +78,6 @@ def upload_to_yadisk(file_id, download_path):
 
 def download_from_yadisk(chat_id, download_path, caption):
     file_url = y.get_download_link(download_path)
+    print(file_url)
     tel_send_document(chat_id, file_url, caption)
 

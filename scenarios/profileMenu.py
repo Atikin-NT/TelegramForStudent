@@ -2,6 +2,7 @@ import database as db
 import botCommands as bot
 import scenarios.findUser as findUser
 import scenarios.uploadFile as uploadFile
+import scenarios.showFiles as showFiles
 
 facultyList = ["IITMM"]
 directionList = ["FIIT"]
@@ -11,16 +12,12 @@ def mess_about_user(userData):
     username = userData[0][1]
     data = userData[0][2]
 
-    rating = sum(userData[0][5]) / 5
-    fileCount = userData[0][6]
     faculty = facultyList[userData[0][7]]
     direction = directionList[userData[0][8]]
     course = userData[0][9]
 
     msg = f"""Имя пользователя: *{username}*
 Дата регистрации: *{data}*
-Рейтинг: *{rating}*
-Количество загруженных файлов: *{fileCount}*
 Факультет: *{faculty}*
 Направление: *{direction}*
 Курс: *{course}*"""
@@ -28,30 +25,38 @@ def mess_about_user(userData):
 
 
 def switchFun(callback_query, chat_id):
-    if str(callback_query) == "prf_setting":
-        profile_settings(chat_id)
+    if "prf_setting" in str(callback_query):
+        profile_settings(chat_id, str(callback_query))
     elif str(callback_query) == "prf_info":
         profile_information(chat_id)
-    elif str(callback_query) == "prf_myFiles":
-        profile_MyFiles(chat_id)
-    elif str(callback_query) == "prf_newFile":
-        profile_newFile(chat_id)
-    elif str(callback_query) == "prf_fileList":
-        profile_fileList(chat_id)
-    elif str(callback_query) == "prf_findUser":
-        profile_findUser(chat_id)
-    elif str(callback_query) == "prf_fileListAdmin":
-        profile_fileListAdmin(chat_id)
+    elif "prf_myFiles" in str(callback_query):
+        profile_MyFiles(chat_id, str(callback_query))
+    elif "prf_newFile" in str(callback_query):
+        profile_newFile(chat_id, str(callback_query))
+    elif "prf_fileListAdmin" in str(callback_query):
+        profile_fileListAdmin(chat_id, str(callback_query))
+    elif "prf_fileList" in str(callback_query):
+        profile_fileList(chat_id, str(callback_query))
+    elif "prf_findUser" in str(callback_query):
+        profile_findUser(chat_id, str(callback_query))
+    elif "prf_findFile_by_Name" in str(callback_query) :
+        profile_findFile_by_Name(chat_id, str(callback_query) )
+    elif "prf_findFile_by_Fac" in str(callback_query):
+        profile_findFile_by_Fac(chat_id, str(callback_query))
+    elif "prf_findFile" in str(callback_query):
+        profile_findFile(chat_id, str(callback_query))
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
 
-def show_menu(chat_id):
+def show_menu(chat_id, message_id=None):
+    if message_id and isinstance(message_id, str):
+        message_id = message_id.split("_")[-1]
     msg = "Меню:"
     buttons = [
         {
             "text": "Настройки",
-            "callback_data": "prf_setting"
+            "callback_data": f"prf_setting_{message_id}"
         },
         {
             "text": "Информация о приложении",
@@ -59,20 +64,27 @@ def show_menu(chat_id):
         },
         {
             "text": "Мои файлы",
-            "callback_data": "prf_myFiles"
+            "callback_data": f"prf_myFiles_{message_id}"
         },
         {
             "text": "Найти пользователя",
-            "callback_data": "prf_findUser"
+            "callback_data": f"prf_findUser_{message_id}"
+        },
+        {
+            "text": "Найти файл",
+            "callback_data": f"prf_findFile_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    if message_id and isinstance(message_id, str):
+        bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    else:
+        bot.tel_send_inlinebutton(chat_id, buttons, msg)
 
 
-def profile_settings(chat_id):
+def profile_settings(chat_id, callback_query):
+    message_id = callback_query.replace("prf_setting_", "")
     user = db.get_user_by_id(chat_id)
     msg = mess_about_user(user)
-    bot.send_message(chat_id, msg)
     buttons = [
         {
             "text": "Изменить",
@@ -80,73 +92,125 @@ def profile_settings(chat_id):
         },
         {
             "text": "Вернуться назад",
-            "callback_data": "main_menu"
+            "callback_data": f"main_menu_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, "Возможные действия")
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def profile_information(chat_id):
-    bot.send_message(chat_id, "Что-то о боте")
+    msg = """
+С помощью этого бота вы можете найти любые файлы при подготовке к контрольным, зачетам и экзаменам.
+Бот предоставляет возможность загружать файлы(в данный момент только форматы pdf), искать файлы по названию или своему факультету/направлению/курсу/предмету
+Сейчас происходит бетта-тестирование бота, поэтому возможны ошибки и баги.
+Все кто хочет помочь в разработке или сообщить об ошибке, прошу написать мне: @AtikinNT
+"""
+    bot.send_message(chat_id, msg)
 
 
-def profile_MyFiles(chat_id):
+def profile_MyFiles(chat_id, message_id):
+    message_id = message_id.replace("prf_myFiles_", "")
+    msg = "Возможные действия"
     buttons = [
         {
             "text": "Добавить новый файл",
-            "callback_data": "prf_newFile"
+            "callback_data": f"prf_newFile_{message_id}"
         },
         {
             "text": "Посмотреть список моих файлов",
-            "callback_data": "prf_fileList"
+            "callback_data": f"prf_fileList_{message_id}"
         },
         {
             "text": "Вернуться назад",
-            "callback_data": "main_menu"
+            "callback_data": f"main_menu_{message_id}"
         }
     ]
     user_info = db.get_user_by_id(chat_id)[0]
     if user_info[4]:
         buttons.append({
             "text": "Файлы на одобрение",
-            "callback_data": "prf_fileListAdmin"
+            "callback_data": f"prf_fileListAdmin_{message_id}"
         })
-    bot.tel_send_inlinebutton(chat_id, buttons, "something")
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
-def profile_newFile(chat_id):
-    uploadFile.ask_course(chat_id)
+def profile_newFile(chat_id, message_id):
+    message_id = message_id.replace("prf_newFile_", "")
+    uploadFile.ask_course(chat_id, message_id)
 
 
-def profile_fileList(chat_id):
+def profile_fileList(chat_id, message_id):
+    message_id = message_id.replace("prf_fileList_", "")
     filesList = db.get_files_in_profile_page(chat_id)
     if len(filesList) == 0:
-        bot.send_message(chat_id, "у вас нет файлов(")
+        bot.tel_send_inlinebutton(chat_id, [], "у вас нет файлов(", message_id)
         return
     msg = "Список ваших файлов:"
     buttons = []
     for file in filesList:
         buttons.append({
             "text": f"{file[1]}",
-            "callback_data": f"sfl8_{file[0]}"
+            "callback_data": f"sfl8_{file[0]}_{message_id}"
         })
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    buttons.append({
+        "text": "Назад в меню",
+        "callback_data": f"main_menu_{message_id}"
+    })
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
-def profile_findUser(chat_id):
-    findUser.start(chat_id)
+def profile_findUser(chat_id, message_id):
+    message_id = message_id.replace("prf_findUser_", "")
+    findUser.start(chat_id, message_id)
 
 
-def profile_fileListAdmin(chat_id):
+def profile_fileListAdmin(chat_id, message_id):
+    message_id = message_id.replace("prf_fileListAdmin_", "")
     filesList = db.get_files_waiting_for_admin()
     if len(filesList) == 0:
-        bot.send_message(chat_id, "Файлов на одобрение нет)")
+        bot.tel_send_inlinebutton(chat_id, [], "Файлов на одобрение нет)", message_id)
         return
     msg = "Список файлов на одобрение:"
     buttons = []
     for file in filesList:
         buttons.append({
             "text": f"{file[1]}",
-            "callback_data": f"sfl8_{file[0]}"
+            "callback_data": f"sfl8_{file[0]}_{message_id}"
         })
-    bot.tel_send_inlinebutton(chat_id, buttons, msg)
+    buttons.append({
+            "text": "Назад в меню",
+            "callback_data": f"main_menu_{message_id}"
+        })
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+
+
+def profile_findFile(chat_id, message_id):
+    message_id = message_id.replace("prf_findFile_", "")
+    msg = "Выполнить поиск по"
+    buttons = [
+        {
+            "text": "Названию",
+            "callback_data": f"prf_findFile_by_Name_{message_id}"
+        },
+        {
+            "text": "Факультету",
+            "callback_data": f"prf_findFile_by_Fac_{message_id}"
+        },
+        {
+            "text": "Назад в меню",
+            "callback_data": f"main_menu_{message_id}"
+        }
+    ]
+    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+
+
+def profile_findFile_by_Name(chat_id, message_id):
+    message_id = message_id.replace("prf_findFile_by_Name_", "")
+    db.create_new_session(chat_id, "findFileByName")
+    bot.tel_send_inlinebutton(chat_id, [], "Введите имя файла или ключевое слово", message_id)
+
+
+def profile_findFile_by_Fac(chat_id, message_id):
+    message_id = message_id.replace("prf_findFile_by_Fac_", "")
+    db.create_new_session(chat_id, "findFileByFac_")
+    showFiles.ask_faculty(chat_id, message_id)
