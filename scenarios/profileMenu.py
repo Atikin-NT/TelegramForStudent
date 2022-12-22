@@ -125,7 +125,10 @@ def profile_MyFiles(chat_id, message_id):
             "callback_data": f"main_menu_{message_id}"
         }
     ]
-    user_info = db.get_user_by_id(chat_id)[0]
+    user_info = db.get_user_by_id(chat_id)
+    if len(user_info) == 0:
+        return
+    user_info = user_info[0]
     if user_info[4]:
         buttons.append({
             "text": "Файлы на одобрение",
