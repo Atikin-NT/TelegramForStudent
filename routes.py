@@ -63,7 +63,7 @@ def input_text(msg):
         elif "Мр" in msg["message"]["text"]:
             bot.send_message(msg["message"]["chat"]["id"], "Приветики, мое солнышко 😘")
         elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
-            bot.send_massive_message(msg["message"]["chat"]["id"],msg["message"]["text"])
+            bot.send_massive_message(msg["message"]["chat"]["id"], msg["message"]["text"])
         else:
             showFl.list_files_by_name(msg["message"]["chat"]["id"], msg["message"]["text"],
                                       msg["message"]["message_id"] + 1)

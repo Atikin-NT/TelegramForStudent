@@ -12,10 +12,12 @@ YA_TOKEN = config["YA_TOKEN"]
 y = yadisk.YaDisk(token=YA_TOKEN)
 
 
-def send_message(chat_id, text):
+def send_message(chat_id, text, markdown=True):
     method = "sendMessage"
     url = f"https://api.telegram.org/bot{TOKEN}/{method}"
-    data = {"chat_id": chat_id, "text": text, "parse_mode": "markdown"}
+    data = {"chat_id": chat_id, "text": text}
+    if markdown:
+        data["parse_mode"] = "markdown"
     requests.post(url, data=data)
 
 
@@ -87,5 +89,5 @@ def send_massive_message(user_id, message):
     db.delete_session(user_id)
     users = db.get_all_users()
     for user in users:
-        send_message(user[0], message)
+        send_message(user[0], message, False)
     send_message(user_id, f"Сообщение отправлено {len(users)} пользователям")
