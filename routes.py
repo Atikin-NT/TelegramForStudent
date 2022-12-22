@@ -6,6 +6,7 @@ import scenarios.showFiles as showFl
 import scenarios.profileMenu as profileMenu
 import scenarios.uploadFile as uploadFile
 import scenarios.fileOper as fileOper
+import scenarios.admin as admin
 
 
 def callback_query(msg):
@@ -20,6 +21,8 @@ def callback_query(msg):
         profileMenu.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
     elif "fop" in msg["callback_query"]["data"]:
         fileOper.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
+    elif "adm" in msg["callback_query"]["data"]:
+        admin.switchFun(msg["callback_query"]["data"], msg["callback_query"]["message"]["chat"]["id"])
     elif "main_menu" in msg["callback_query"]["data"]:
         profileMenu.show_menu(msg["callback_query"]["message"]["chat"]["id"], msg["callback_query"]["data"])
     else:
@@ -53,11 +56,14 @@ def commands(msg):
 
 def input_text(msg):
     if "text" in msg["message"]:
+        session = db.get_session(msg["message"]["chat"]["id"])
         if msg["message"]["text"][0] == "@":
             findUser.find_by_username(msg["message"]["chat"]["id"], msg["message"]["text"],
                                       msg["message"]["message_id"] + 1)
         elif "Мр" in msg["message"]["text"]:
             bot.send_message(msg["message"]["chat"]["id"], "Приветики, мое солнышко 😘")
+        elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
+            bot.send_massive_message(msg["message"]["chat"]["id"],msg["message"]["text"])
         else:
             showFl.list_files_by_name(msg["message"]["chat"]["id"], msg["message"]["text"],
                                       msg["message"]["message_id"] + 1)

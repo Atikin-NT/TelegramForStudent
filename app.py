@@ -3,7 +3,6 @@ import time
 import logging
 import routes
 import requests
-import database as db
 
 f = open('env.json')
 config = json.load(f)
@@ -48,7 +47,7 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filensame="log.txt",
+    logging.basicConfig(filename="log.txt",
                         level=logging.INFO,
                         format="%(asctime)s %(message)s",
                         filemode="w")

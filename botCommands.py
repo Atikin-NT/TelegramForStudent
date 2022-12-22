@@ -1,6 +1,7 @@
 import requests
 import yadisk
 import json
+import database as db
 
 f = open('env.json', 'r')
 config = json.load(f)
@@ -81,3 +82,10 @@ def download_from_yadisk(chat_id, download_path, caption):
     print(file_url)
     tel_send_document(chat_id, file_url, caption)
 
+
+def send_massive_message(user_id, message):
+    db.delete_session(user_id)
+    users = db.get_all_users()
+    for user in users:
+        send_message(user[0], message)
+    send_message(user_id, f"Сообщение отправлено {len(users)} пользователям")

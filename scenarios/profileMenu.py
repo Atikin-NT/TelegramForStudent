@@ -25,26 +25,27 @@ def mess_about_user(userData):
 
 
 def switchFun(callback_query, chat_id):
-    if "prf_setting" in str(callback_query):
-        profile_settings(chat_id, str(callback_query))
-    elif str(callback_query) == "prf_info":
+    callback_query = str(callback_query)
+    if "prf_setting" in callback_query:
+        profile_settings(chat_id, callback_query)
+    elif callback_query == "prf_info":
         profile_information(chat_id)
-    elif "prf_myFiles" in str(callback_query):
-        profile_MyFiles(chat_id, str(callback_query))
-    elif "prf_newFile" in str(callback_query):
-        profile_newFile(chat_id, str(callback_query))
-    elif "prf_fileListAdmin" in str(callback_query):
-        profile_fileListAdmin(chat_id, str(callback_query))
-    elif "prf_fileList" in str(callback_query):
-        profile_fileList(chat_id, str(callback_query))
-    elif "prf_findUser" in str(callback_query):
-        profile_findUser(chat_id, str(callback_query))
-    elif "prf_findFile_by_Name" in str(callback_query) :
-        profile_findFile_by_Name(chat_id, str(callback_query) )
-    elif "prf_findFile_by_Fac" in str(callback_query):
-        profile_findFile_by_Fac(chat_id, str(callback_query))
-    elif "prf_findFile" in str(callback_query):
-        profile_findFile(chat_id, str(callback_query))
+    elif "prf_myFiles" in callback_query:
+        profile_MyFiles(chat_id, callback_query)
+    elif "prf_newFile" in callback_query:
+        profile_newFile(chat_id, callback_query)
+    elif "prf_fileListAdmin" in callback_query:
+        profile_fileListAdmin(chat_id, callback_query)
+    elif "prf_fileList" in callback_query:
+        profile_fileList(chat_id, callback_query)
+    elif "prf_findUser" in callback_query:
+        profile_findUser(chat_id, callback_query)
+    elif "prf_findFile_by_Name" in callback_query :
+        profile_findFile_by_Name(chat_id, callback_query )
+    elif "prf_findFile_by_Fac" in callback_query:
+        profile_findFile_by_Fac(chat_id, callback_query)
+    elif "prf_findFile" in callback_query:
+        profile_findFile(chat_id, callback_query)
     else:
         bot.send_message(chat_id, "неизвестная команда")
 
@@ -75,6 +76,17 @@ def show_menu(chat_id, message_id=None):
             "callback_data": f"prf_findFile_{message_id}"
         }
     ]
+
+    user_info = db.get_user_by_id(chat_id)
+    if len(user_info) == 0:
+        return
+    user_info = user_info[0]
+    if user_info[0] == 708133213:
+        buttons.append({
+            "text": "Админка",
+            "callback_data": f"adm0_{message_id}"
+        })
+
     if message_id and isinstance(message_id, str):
         bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
     else:

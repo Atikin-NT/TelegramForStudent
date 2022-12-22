@@ -50,6 +50,15 @@ def get_user_by_username(username):
     return records
 
 
+def get_all_users():
+    try:
+        cur.execute("SELECT user_id FROM users")
+    except psycopg2.Error as e:
+        print("Error", e)
+    records = cur.fetchall()
+    return records
+
+
 # files -----------------------------
 
 def insert_file(filename, user_id, course, subject):
