@@ -48,9 +48,8 @@ def main():
 
 
 if __name__ == '__main__':
-    db.insert_user(11111111111111111, "adknfjkasdfnkj")
-    # logging.basicConfig(filensame="log.txt",
-    #                     level=logging.INFO,
-    #                     format="%(asctime)s %(message)s",
-    #                     filemode="w")
-    # main()
+    logging.basicConfig(filensame="log.txt",
+                        level=logging.INFO,
+                        format="%(asctime)s %(message)s",
+                        filemode="w")
+    main()
