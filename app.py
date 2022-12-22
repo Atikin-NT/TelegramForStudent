@@ -6,6 +6,7 @@ import requests
 
 f = open('env.json')
 config = json.load(f)
+f.close()
 
 TOKEN = config["BOT_TOKEN"]
 
