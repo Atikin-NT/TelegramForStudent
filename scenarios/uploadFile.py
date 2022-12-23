@@ -76,7 +76,7 @@ def upload_document(document, chat_id):
 
     print(document)
     if document["mime_type"] != "application/pdf":
-        bot.send_message("Недопустимый формат (пока только pdf)", chat_id)
+        bot.send_message(chat_id, "Недопустимый формат (пока только pdf)")
         return
     fileID = document["file_id"]
     db.insert_file(document["file_name"], chat_id, data[0], data[1])

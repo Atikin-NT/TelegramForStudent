@@ -189,3 +189,25 @@ def delete_session(user_id):
         print(e)
         pass
     conn.commit()
+
+# direction ----------------
+
+
+def get_all_directions():
+    try:
+        cur.execute("SELECT * FROM direction")
+    except psycopg2.Error as e:
+        print(e)
+        pass
+    records = cur.fetchall()
+    return records
+
+
+def get_direction_by_id(id):
+    try:
+        cur.execute("SELECT * FROM directions WHERE direction_id = %s", (id,))
+    except psycopg2.Error as e:
+        print(e)
+        pass
+    records = cur.fetchall()
+    return records

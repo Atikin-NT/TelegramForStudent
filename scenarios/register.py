@@ -41,12 +41,13 @@ def ask_direction(chat_id, faculty):
     message_id = faculty[1]
     db.create_new_session(chat_id, faculty[0])
     msg = "На каком направлении вы обучаетесь?"
-    buttons = [
-        {
-            "text": "FIIT",
-            "callback_data": f"reg1_FIIT_{message_id}"
-        }
-    ]
+    direction_list = db.get_all_directions()
+    buttons = []
+    for direction in direction_list:
+        buttons.append({
+            "text": f"{direction[1]}",
+            "callback_data": f"reg1_{direction[0]}_{message_id}"
+        })
     bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
@@ -88,8 +89,7 @@ def finish(chat_id, course):
     if len(data) != 2:
         bot.send_message(chat_id, "error in registration")
         return
-    facultyList = ["IITMM"]
-    directionList = ["FIIT"]
-    db.update_user_data(facultyList.index(data[0]), directionList.index(data[1]), course[0], chat_id)
+    facultyList = 0
+    db.update_user_data(facultyList, data[1], course[0], chat_id)
     msg = "Данные сохранены!\nНажмите /menu для просмотра менюшки"
     bot.tel_send_inlinebutton(chat_id, [], msg, message_id)

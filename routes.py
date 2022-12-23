@@ -41,9 +41,9 @@ def commands(msg):
     elif msg["message"]["text"] == "/login":
         reg.start(msg["message"]["chat"]["id"], username, msg["message"]["message_id"] + 1)
         return
-    user = db.get_user_by_username(username)
+    user = db.get_user_by_id(msg["message"]["chat"]["id"])
     if len(user) == 0:
-        bot.send_message(username, "Вас нет в системе!\nСначала зарегистрируйтесь с помощью "
+        bot.send_message(msg["message"]["chat"]["id"], "Вас нет в системе!\nСначала зарегистрируйтесь с помощью "
                                                              "команды /login")
         return
     if msg["message"]["text"] == "/find":
