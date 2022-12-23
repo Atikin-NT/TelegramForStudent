@@ -113,9 +113,10 @@ def show_files_list(chat_id, callback_query, findFile=False):
         subject = callback_query.replace("sfl2_", "").split("_")
         filesList = db.get_files_by_user(user_id, course, subject[0])
     else:
+        direction = data[2]
         course = data[3]
         subject = callback_query.replace("sfl6_", "").split("_")
-        filesList = db.get_files_by_faculty(0, 0, course, subject[0])
+        filesList = db.get_files_by_faculty(0, direction, course, subject[0])
     message_id = subject[1]
     if len(filesList) == 0:
         bot.tel_send_inlinebutton(chat_id, [], "Файлов не найдено(", message_id)
@@ -181,12 +182,13 @@ def ask_direction(chat_id, faculty):
     db.update_session(chat_id, faculty[0])
     message_id = faculty[1]
     msg = "На каком направлении вы обучаетесь?"
-    buttons = [
-        {
-            "text": "FIIT",
-            "callback_data": f"sfl4_FIIT_{message_id}"
-        }
-    ]
+    direction_list = db.get_all_directions()
+    buttons = []
+    for direction in direction_list:
+        buttons.append({
+            "text": f"{direction[1]}",
+            "callback_data": f"sfl4_{direction[0]}_{message_id}"
+        })
     bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
