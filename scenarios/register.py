@@ -1,7 +1,7 @@
 import database as db
 import botCommands as bot
 import scenarios.profileMenu as profileMenu
-import scenarios.findUser as findUser
+
 
 def switchFun(callback_query, chat_id, message_id):
     str_callback = str(callback_query)
@@ -19,7 +19,7 @@ def switchFun(callback_query, chat_id, message_id):
 
 def start(chat_id, username, message_id):
     if username is not None:
-        user = db.get_user_by_username(username)
+        user = db.get_user_by_id(chat_id)
         if len(user) != 0:
             bot.send_message(chat_id, "вы успешно авторизированны!")
             profileMenu.show_menu(chat_id)
