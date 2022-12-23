@@ -193,12 +193,16 @@ def ask_direction(chat_id, faculty):
 def list_files_by_name(chat_id, name, message_id):
     session = db.get_session(chat_id)
     if len(session) == 0:
-        bot.send_message(chat_id, "Недопустимое сообщение")
+        bot.send_message(chat_id, "Я не понимаю, чего вы хотите 😞")
         return
     db.delete_session(chat_id)
     data = session[0][1].split("_")
     if len(data) != 1:
-        bot.send_message(chat_id, "Error in showFileByName")
+        bot.send_message(chat_id, "Произошла ошибка. Попробуйте заново")
+        return
+    name = "".join(c for c in name if c.isalnum())
+    if len(name) < 2:
+        bot.send_message(chat_id, "Недопустимое сообщние для поиска. Сообщение не может быть слишком коротким или не включать буквы с цифрами")
         return
     filesList = db.get_files_by_name(name)
     if len(filesList) == 0:

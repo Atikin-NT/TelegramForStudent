@@ -55,6 +55,7 @@ def commands(msg):
 
 
 def input_text(msg):
+    print(msg)
     if "text" in msg["message"]:
         session = db.get_session(msg["message"]["chat"]["id"])
         if msg["message"]["text"][0] == "@":

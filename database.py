@@ -119,7 +119,8 @@ def get_files_by_faculty(faculty, direction, course, subject):
     return records
 
 
-def get_files_by_name(name):
+def get_files_by_name(name: str):
+    name = "".join(c for c in name if c.isalnum())
     try:
         cur.execute(f"SELECT * FROM files WHERE filename LIKE '%{name}%'")
     except psycopg2.Error as e:
