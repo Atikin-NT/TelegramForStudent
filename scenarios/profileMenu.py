@@ -5,7 +5,7 @@ import scenarios.uploadFile as uploadFile
 import scenarios.showFiles as showFiles
 
 facultyList = ["IITMM"]
-directionList = ["FIIT"]
+directionList = ["ФИИТ", "ПМИ"]
 
 
 def mess_about_user(userData):
