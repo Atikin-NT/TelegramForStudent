@@ -124,7 +124,7 @@ def show_files_list(chat_id, callback_query, findFile=False):
     msg = "Какой файл вы хотите посмотреть?"
     buttons = []
     for file in filesList:
-        if file[8] or (user_is_admin[4] and (not findFile)):
+        if file[8] or ((not findFile) and user_is_admin[4]):
             buttons.append({
                 "text": f"{file[1]}",
                 "callback_data": f"sfl8_{file[0]}_{message_id}"

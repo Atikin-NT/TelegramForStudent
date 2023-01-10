@@ -204,10 +204,6 @@ def profile_findFile(chat_id, message_id):
     msg = "Выполнить поиск по"
     buttons = [
         {
-            "text": "Названию",
-            "callback_data": f"prf_findFile_by_Name_{message_id}"
-        },
-        {
             "text": "Факультету",
             "callback_data": f"prf_findFile_by_Fac_{message_id}"
         },

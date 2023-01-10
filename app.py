@@ -43,7 +43,7 @@ def main():
         if len(command_list) != 0:
             last_update_id = command_list[-1]["update_id"] + 1
         print(last_update_id)
-        time.sleep(0.2)
+        time.sleep(0.4)
 
 
 if __name__ == '__main__':
