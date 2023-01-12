@@ -1,8 +1,10 @@
 import database as db
-import botCommands as bot
+# import botCommands as bot
 import scenarios.findUser as findUser
 import scenarios.uploadFile as uploadFile
 import scenarios.showFiles as showFiles
+from app import bot
+from aiogram import types
 
 facultyList = ["IITMM"]
 directionList = ["ФИИТ", "ПМИ"]
@@ -47,50 +49,34 @@ def switchFun(callback_query, chat_id):
     elif "prf_findFile" in callback_query:
         profile_findFile(chat_id, callback_query)
     else:
-        bot.send_message(chat_id, "неизвестная команда")
+        pass
+        # bot.send_message(chat_id, "неизвестная команда")
 
 
-def show_menu(chat_id, message_id=None):
+async def show_menu(chat_id, message_id=None):
     if message_id and isinstance(message_id, str):
         message_id = message_id.split("_")[-1]
     msg = "Меню:"
     buttons = [
-        {
-            "text": "Настройки",
-            "callback_data": f"prf_setting_{message_id}"
-        },
-        {
-            "text": "Информация о приложении",
-            "callback_data": "prf_info"
-        },
-        {
-            "text": "Мои файлы",
-            "callback_data": f"prf_myFiles_{message_id}"
-        },
-        {
-            "text": "Найти пользователя",
-            "callback_data": f"prf_findUser_{message_id}"
-        },
-        {
-            "text": "Найти файл",
-            "callback_data": f"prf_findFile_{message_id}"
-        }
+        [types.InlineKeyboardButton(text="Настройки", callback_data=f"prf_setting_{message_id}")],
+        [types.InlineKeyboardButton(text="Информация о приложении", callback_data="prf_info")],
+        [types.InlineKeyboardButton(text="Мои файлы", callback_data=f"prf_myFiles_{message_id}")],
+        [types.InlineKeyboardButton(text="Найти пользователя", callback_data=f"prf_findUser_{message_id}")],
+        [types.InlineKeyboardButton(text="Найти файл", callback_data=f"prf_findFile_{message_id}")]
     ]
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
 
     user_info = db.get_user_by_id(chat_id)
     if len(user_info) == 0:
         return
     user_info = user_info[0]
     if user_info[0] == 708133213:
-        buttons.append({
-            "text": "Админка",
-            "callback_data": f"adm0_{message_id}"
-        })
+        buttons.append([types.InlineKeyboardButton(text="Админка", callback_data=f"adm0_{message_id}")])
 
     if message_id and isinstance(message_id, str):
-        bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+        await bot.edit_message_text(text=msg, message_id=message_id, chat_id=chat_id, reply_markup=keyboard)
     else:
-        bot.tel_send_inlinebutton(chat_id, buttons, msg)
+        await bot.send_message(text=msg, chat_id=chat_id, reply_markup=keyboard)
 
 
 def profile_settings(chat_id, callback_query):
@@ -107,7 +93,7 @@ def profile_settings(chat_id, callback_query):
             "callback_data": f"main_menu_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    # bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def profile_information(chat_id):
@@ -117,7 +103,7 @@ def profile_information(chat_id):
 Сейчас происходит бетта-тестирование бота, поэтому возможны ошибки и баги.
 Все кто хочет помочь в разработке или сообщить об ошибке, прошу написать мне: @AtikinNT
 """
-    bot.send_message(chat_id, msg)
+    # bot.send_message(chat_id, msg)
 
 
 def profile_MyFiles(chat_id, message_id):
@@ -146,7 +132,7 @@ def profile_MyFiles(chat_id, message_id):
             "text": "Файлы на одобрение",
             "callback_data": f"prf_fileListAdmin_{message_id}"
         })
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    # bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def profile_newFile(chat_id, message_id):
@@ -158,7 +144,7 @@ def profile_fileList(chat_id, message_id):
     message_id = message_id.replace("prf_fileList_", "")
     filesList = db.get_files_in_profile_page(chat_id)
     if len(filesList) == 0:
-        bot.tel_send_inlinebutton(chat_id, [], "у вас нет файлов(", message_id)
+        # bot.tel_send_inlinebutton(chat_id, [], "у вас нет файлов(", message_id)
         return
     msg = "Список ваших файлов:"
     buttons = []
@@ -171,7 +157,7 @@ def profile_fileList(chat_id, message_id):
         "text": "Назад в меню",
         "callback_data": f"main_menu_{message_id}"
     })
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    # bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def profile_findUser(chat_id, message_id):
@@ -183,7 +169,7 @@ def profile_fileListAdmin(chat_id, message_id):
     message_id = message_id.replace("prf_fileListAdmin_", "")
     filesList = db.get_files_waiting_for_admin()
     if len(filesList) == 0:
-        bot.tel_send_inlinebutton(chat_id, [], "Файлов на одобрение нет)", message_id)
+        # bot.tel_send_inlinebutton(chat_id, [], "Файлов на одобрение нет)", message_id)
         return
     msg = "Список файлов на одобрение:"
     buttons = []
@@ -196,7 +182,7 @@ def profile_fileListAdmin(chat_id, message_id):
             "text": "Назад в меню",
             "callback_data": f"main_menu_{message_id}"
         })
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    # bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def profile_findFile(chat_id, message_id):
@@ -212,13 +198,13 @@ def profile_findFile(chat_id, message_id):
             "callback_data": f"main_menu_{message_id}"
         }
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    # bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
 
 
 def profile_findFile_by_Name(chat_id, message_id):
     message_id = message_id.replace("prf_findFile_by_Name_", "")
     db.create_new_session(chat_id, "findFileByName")
-    bot.tel_send_inlinebutton(chat_id, [], "Введите имя файла или ключевое слово", message_id)
+    # bot.tel_send_inlinebutton(chat_id, [], "Введите имя файла или ключевое слово", message_id)
 
 
 def profile_findFile_by_Fac(chat_id, message_id):
