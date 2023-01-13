@@ -4,10 +4,17 @@ import logging
 # import routes
 # import requests
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.dispatcher.filters import Text
+from aiogram.utils.callback_data import CallbackData
 # import routes
 import database as db
-# import scenarios.findUser as findUser
+import scenarios.findUser as findUser
 import scenarios.profileMenu as profileMenu
+import scenarios.register as reg
+import scenarios.showFiles as showFl
+import scenarios.uploadFile as uploadFile
+import scenarios.fileOper as fileOper
+import scenarios.admin as admin
 
 f = open('env.json')
 config = json.load(f)
@@ -18,6 +25,27 @@ TOKEN = config["BOT_TOKEN"]
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
+
+@dp.callback_query_handler()
+async def prfMenu(callback: types.CallbackQuery):
+    callback_data = callback.data
+    if "reg" in callback_data:
+        reg.switchFun(callback_data, callback.from_user.id, callback.message.message_id + 1)
+    elif "sfl" in callback_data:
+        showFl.switchFun(callback_data, callback.from_user.id)
+    elif "upld" in callback_data:
+        uploadFile.switchFun(callback_data, callback.from_user.id)
+    elif "prf" in callback_data:
+        await profileMenu.switchFun(callback_data, callback.from_user.id)
+    elif "fop" in callback_data:
+        fileOper.switchFun(callback_data, callback.from_user.id)
+    elif "adm" in callback_data:
+        admin.switchFun(callback_data, callback.from_user.id)
+    elif "main_menu" in callback_data:
+        await profileMenu.show_menu(callback.from_user.id, callback_data)
+    else:
+        await callback.answer("Неизвестная команда")
+    await callback.answer()
 
 @dp.message_handler(commands=['start'])
 async def start(msg: types.Message):
