@@ -1,32 +1,31 @@
 import database as db
-import botCommands as bot
+from aiogram import types
 
 
-def switchFun(callback_query, chat_id):
+async def switchFun(callback_query, chat_id, bot):
     callback_query = str(callback_query)
     if callback_query[3] == "0":
-        main_menu(chat_id, callback_query)
+        await main_menu(chat_id, callback_query, bot)
     elif callback_query[3] == "1":
-        send_message_for_all_users(chat_id, callback_query)
+        await send_message_for_all_users(chat_id, callback_query, bot)
     else:
-        bot.send_message(chat_id, "неизвестная команда")
+        pass
 
 
-def main_menu(chat_id, callback_query):
+async def main_menu(chat_id, callback_query, bot):
     message_id = callback_query.replace("adm0_", "")
     msg = "Меню:"
     buttons = [
-        {
-            "text": "Рассылка сообщения",
-            "callback_data": f"adm1_{message_id}"
-        }
+        [types.InlineKeyboardButton(text="Рассылка сообщения", callback_data=f"adm1_{message_id}")],
+        [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"main_menu_{message_id}")]
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-def send_message_for_all_users(chat_id, callback_query):
+async def send_message_for_all_users(chat_id, callback_query, bot):
     db.create_new_session(chat_id, "massive_message")
     message_id = callback_query.replace("adm1_", "")
     msg = "Введите текст сообщения:"
-    bot.tel_send_inlinebutton(chat_id, [], msg, message_id)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=[], text=msg, message_id=message_id)
 

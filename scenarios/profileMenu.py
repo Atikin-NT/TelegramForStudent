@@ -49,7 +49,6 @@ async def switchFun(callback_query, chat_id):
         await profile_findFile(chat_id, callback_query)
     else:
         pass
-        # bot.send_message(chat_id, "неизвестная команда")
 
 
 async def show_menu(chat_id, message_id=None):
@@ -63,7 +62,6 @@ async def show_menu(chat_id, message_id=None):
         [types.InlineKeyboardButton(text="Найти пользователя", callback_data=f"prf_findUser_{message_id}")],
         [types.InlineKeyboardButton(text="Найти файл", callback_data=f"prf_findFile_{message_id}")]
     ]
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
 
     user_info = db.get_user_by_id(chat_id)
     if len(user_info) == 0:
@@ -72,6 +70,7 @@ async def show_menu(chat_id, message_id=None):
     if user_info[0] == 708133213:
         buttons.append([types.InlineKeyboardButton(text="Админка", callback_data=f"adm0_{message_id}")])
 
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     if message_id and isinstance(message_id, str):
         await bot.edit_message_text(text=msg, message_id=message_id, chat_id=chat_id, reply_markup=keyboard)
     else:

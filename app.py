@@ -1,14 +1,7 @@
 import json
-# import time
 import logging
-# import routes
-# import requests
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.dispatcher.filters import Text
-from aiogram.utils.callback_data import CallbackData
-# import routes
 import database as db
-import scenarios.findUser as findUser
 import scenarios.profileMenu as profileMenu
 import scenarios.register as reg
 import scenarios.showFiles as showFl
@@ -40,7 +33,7 @@ async def prfMenu(callback: types.CallbackQuery):
     elif "fop" in callback_data:
         fileOper.switchFun(callback_data, callback.from_user.id)
     elif "adm" in callback_data:
-        admin.switchFun(callback_data, callback.from_user.id)
+        await admin.switchFun(callback_data, callback.from_user.id, bot)
     elif "main_menu" in callback_data:
         await profileMenu.show_menu(callback.from_user.id, callback_data)
     else:
