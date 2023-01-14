@@ -124,10 +124,10 @@ def profile_newFile(chat_id, message_id):
 
 
 async def profile_fileList(chat_id, message_id):
-    message_id = message_id.replace("prf_fileList_", "")
+    message_id = int(message_id.replace("prf_fileList_", ""))
     filesList = db.get_files_in_profile_page(chat_id)
     if len(filesList) == 0:
-        await bot.edit_message_text(chat_id=chat_id, reply_markup=[], text="у вас нет файлов(", message_id=message_id)
+        await bot.edit_message_text(chat_id=chat_id, text="у вас нет файлов(", message_id=message_id)
         return
     msg = "Список ваших файлов:"
     buttons = []
@@ -148,7 +148,7 @@ async def profile_fileListAdmin(chat_id, message_id):
     message_id = message_id.replace("prf_fileListAdmin_", "")
     filesList = db.get_files_waiting_for_admin()
     if len(filesList) == 0:
-        await bot.edit_message_text(chat_id=chat_id, reply_markup=[], text="Файлов на одобрение нет)", message_id=message_id)
+        await bot.edit_message_text(chat_id=chat_id, text="Файлов на одобрение нет)", message_id=message_id)
         return
     msg = "Список файлов на одобрение:"
     buttons = []
@@ -173,7 +173,7 @@ async def profile_findFile(chat_id, message_id):
 async def profile_findFile_by_Name(chat_id, message_id):
     message_id = message_id.replace("prf_findFile_by_Name_", "")
     db.create_new_session(chat_id, "findFileByName")
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=[], text="Введите имя файла или ключевое слово", message_id=message_id)
+    await bot.edit_message_text(chat_id=chat_id, text="Введите имя файла или ключевое слово", message_id=message_id)
 
 
 def profile_findFile_by_Fac(chat_id, message_id):

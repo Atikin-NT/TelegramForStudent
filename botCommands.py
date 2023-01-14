@@ -1,7 +1,9 @@
+import aiogram
 import requests
 import yadisk
 import json
 import database as db
+from aiogram.types import InputFile
 
 f = open('env.json', 'r')
 config = json.load(f)
@@ -79,10 +81,11 @@ def upload_to_yadisk(file_id, download_path):
     y.upload_url(download_url, path + download_path[-1])
 
 
-def download_from_yadisk(chat_id, download_path, caption):
+async def download_from_yadisk(chat_id, download_path, caption, bot: aiogram.Bot):
     file_url = y.get_download_link(download_path)
     print(file_url)
-    tel_send_document(chat_id, file_url, caption)
+    file = InputFile.from_url(url=file_url, filename=caption)
+    await bot.send_document(chat_id=chat_id, document=file)
 
 
 def send_massive_message(user_id, message):
