@@ -32,13 +32,13 @@ async def switchFun(callback_query, chat_id, bot):
     elif str_callback[3] == "3":  # узнали факультет
         await ask_direction(chat_id, str_callback, bot)
     elif str_callback[3] == "4":  # узнаем курс
-        await ask_course(chat_id, str_callback, True, bot)
+        await ask_course(chat_id, str_callback, bot, True)
     elif str_callback[3] == "5":  # узнали предмет
-        await ask_subject(chat_id, str_callback, True, bot)
+        await ask_subject(chat_id, str_callback, bot, True)
     elif str_callback[3] == "6":  # узнали предмет
-        await show_files_list(chat_id, str_callback, True, bot)
+        await show_files_list(chat_id, str_callback, bot, True)
     elif str_callback[3] == "8":  # информация о файле
-        await show_file_info(chat_id, str_callback)
+        await show_file_info(chat_id, str_callback, bot)
     else:
         pass
 
