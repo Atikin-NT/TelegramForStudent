@@ -24,7 +24,7 @@ dp = Dispatcher(bot)
 async def prfMenu(callback: types.CallbackQuery):
     callback_data = callback.data
     if "reg" in callback_data:
-        reg.switchFun(callback_data, callback.from_user.id, callback.message.message_id + 1)
+        await reg.switchFun(callback_data, callback.from_user.id, callback.message.message_id + 1, bot)
     elif "sfl" in callback_data:
         showFl.switchFun(callback_data, callback.from_user.id)
     elif "upld" in callback_data:
