@@ -139,9 +139,9 @@ async def profile_fileList(chat_id, message_id):
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-def profile_findUser(chat_id, message_id):
+async def profile_findUser(chat_id, message_id):
     message_id = message_id.replace("prf_findUser_", "")
-    findUser.start(chat_id, message_id)
+    await findUser.start(chat_id, message_id, bot)
 
 
 async def profile_fileListAdmin(chat_id, message_id):

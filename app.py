@@ -7,6 +7,7 @@ import scenarios.register as reg
 import scenarios.showFiles as showFl
 import scenarios.uploadFile as uploadFile
 import scenarios.fileOper as fileOper
+import scenarios.findUser as findUser
 import scenarios.admin as admin
 
 f = open('env.json')
@@ -70,8 +71,7 @@ async def input_text(msg: types.Message):
             mention_user = item.extract(msg.text)
     print(mention_user)
     if message[0] == "@":
-        print("findUser")
-        # findUser.find_by_username(msg.chat.id, msg.text, msg.message_id)
+        await findUser.find_by_username(msg.chat.id, msg.text, msg.message_id, bot)
     elif "Мр" in message:
         await bot.send_message(msg.chat.id, "Приветики, мое солнышко 😘")
     elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
