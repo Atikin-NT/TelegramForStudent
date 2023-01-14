@@ -26,7 +26,7 @@ async def prfMenu(callback: types.CallbackQuery):
     if "reg" in callback_data:
         await reg.switchFun(callback_data, callback.from_user.id, callback.message.message_id + 1, bot)
     elif "sfl" in callback_data:
-        showFl.switchFun(callback_data, callback.from_user.id)
+        await showFl.switchFun(callback_data, callback.from_user.id, bot)
     elif "upld" in callback_data:
         uploadFile.switchFun(callback_data, callback.from_user.id)
     elif "prf" in callback_data:
