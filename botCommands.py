@@ -64,13 +64,9 @@ def tel_send_document(chat_id, file_url, caption):
     return requests.post(url, json=payload)
 
 
-def upload_to_yadisk(file_id, download_path):
-    method = "getFile"
-    url = f"https://api.telegram.org/bot{TOKEN}/{method}"
-    data = {"file_id": file_id}
-    filePath = requests.post(url, data=data).json()
-    print(filePath)
-    filePath = filePath["result"]["file_path"]
+async def upload_to_yadisk(file_id, download_path, bot: aiogram.Bot):
+    file = await bot.get_file(file_id=file_id)
+    filePath = file.file_path
 
     download_url = f"https://api.telegram.org/file/bot{TOKEN}/{filePath}"
     path = ""

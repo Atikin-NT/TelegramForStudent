@@ -1,41 +1,32 @@
 import database as db
-import botCommands as bot
+import aiogram
+from aiogram import types
+import botCommands as ya
 
 
-def switchFun(callback_query, chat_id):
+async def switchFun(callback_query, chat_id, bot):
     parse_callback = str(callback_query)
     if parse_callback[4] == "0":  # узнали курс
-        ask_subject(chat_id, parse_callback)
+        await ask_subject(chat_id, parse_callback, bot)
     elif parse_callback[4] == "1":  # узнали предмет
-        upload_msg(chat_id, parse_callback)
+        await upload_msg(chat_id, parse_callback, bot)
     else:
-        bot.send_message(chat_id, "Что-то пошло не так с загрузкой файла:(")
+        pass
 
 
-def ask_course(chat_id, message_id):
+async def ask_course(chat_id, message_id, bot: aiogram.Bot):
     msg = "Файл какого курса обучения?"
     buttons = [
-        {
-            "text": "1",
-            "callback_data": f"upld0_1_{message_id}"
-        },
-        {
-            "text": "2",
-            "callback_data": f"upld0_2_{message_id}"
-        },
-        {
-            "text": "3",
-            "callback_data": f"upld0_3_{message_id}"
-        },
-        {
-            "text": "4",
-            "callback_data": f"upld0_4_{message_id}"
-        }
+        [types.InlineKeyboardButton(text="1", callback_data=f"upld0_1_{message_id}")],
+        [types.InlineKeyboardButton(text="2", callback_data=f"upld0_2_{message_id}")],
+        [types.InlineKeyboardButton(text="3", callback_data=f"upld0_3_{message_id}")],
+        [types.InlineKeyboardButton(text="4", callback_data=f"upld0_4_{message_id}")],
     ]
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-def ask_subject(chat_id, course):
+async def ask_subject(chat_id, course, bot: aiogram.Bot):
     course = course.replace("upld0_", "").split("_")
     message_id = course[1]
     db.create_new_session(chat_id, course[0])
@@ -43,25 +34,23 @@ def ask_subject(chat_id, course):
     msg = "Какой предмет?"
     buttons = []
     for sub in subjects:
-        buttons.append({
-            "text": f"{sub[1]}",
-            "callback_data": f"upld1_{sub[0]}_{message_id}"
-        })
-    bot.tel_send_inlinebutton(chat_id, buttons, msg, message_id)
+        buttons.append([types.InlineKeyboardButton(text=f"{sub[1]}", callback_data=f"upld1_{sub[0]}_{message_id}")])
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-def upload_msg(chat_id, subject):
+async def upload_msg(chat_id, subject, bot: aiogram.Bot):
     subject = subject.replace("upld1_", "").split("_")
     db.update_session(chat_id, "_" + subject[0])
-    bot.tel_send_inlinebutton(chat_id, [], "Отправьте файл", subject[1])
+    await bot.edit_message_text(chat_id=chat_id, text="Отправьте файл", message_id=subject[1])
 
 
 # Факультет/напрвление/курс/предмет
-def upload_document(document, chat_id):
+async def upload_document(document, chat_id, bot: aiogram.Bot):
     session = db.get_session(chat_id)  # [(708133213, '2_1')]
     db.delete_session(chat_id)
     if len(session) == 0 or len(session[0]) == 0:
-        bot.send_message(chat_id, "error in upload")
+        await bot.send_message(chat_id, "error in upload")
         return
 
     user_info = db.get_user_by_id(chat_id)[0]  # [(708133213, 'AtikinNT', datetime.date(2022, 11, 21), 0, False, [0, 0, 0, 0, 0], 0, 0, 0, 2)]
@@ -76,10 +65,10 @@ def upload_document(document, chat_id):
 
     print(document)
     if document["mime_type"] != "application/pdf":
-        bot.send_message(chat_id, "Недопустимый формат (пока только pdf)")
+        await bot.send_message(chat_id, "Недопустимый формат (пока только pdf)")
         return
     fileID = document["file_id"]
     db.insert_file(document["file_name"], chat_id, data[0], data[1])
-    bot.upload_to_yadisk(fileID, download_path)
-    bot.send_message(chat_id, "Файл загружен")
+    await ya.upload_to_yadisk(fileID, download_path, bot)
+    await bot.send_message(chat_id, "Файл загружен")
 
