@@ -34,17 +34,17 @@ async def switchFun(callback_query, chat_id):
     elif "prf_myFiles" in callback_query:
         await profile_MyFiles(chat_id, callback_query)
     elif "prf_newFile" in callback_query:
-        profile_newFile(chat_id, callback_query)
+        await profile_newFile(chat_id, callback_query)
     elif "prf_fileListAdmin" in callback_query:
         await profile_fileListAdmin(chat_id, callback_query)
     elif "prf_fileList" in callback_query:
         await profile_fileList(chat_id, callback_query)
     elif "prf_findUser" in callback_query:
-        profile_findUser(chat_id, callback_query)
+        await profile_findUser(chat_id, callback_query)
     elif "prf_findFile_by_Name" in callback_query :
         await profile_findFile_by_Name(chat_id, callback_query )
     elif "prf_findFile_by_Fac" in callback_query:
-        profile_findFile_by_Fac(chat_id, callback_query)
+        await profile_findFile_by_Fac(chat_id, callback_query)
     elif "prf_findFile" in callback_query:
         await profile_findFile(chat_id, callback_query)
     else:
@@ -87,7 +87,7 @@ async def profile_settings(chat_id, callback_query):
         [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"main_menu_{message_id}")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id, parse_mode=types.ParseMode.MARKDOWN)
 
 
 async def profile_information(chat_id):
@@ -112,15 +112,16 @@ async def profile_MyFiles(chat_id, message_id):
     if len(user_info) == 0:
         return
     user_info = user_info[0]
+    print(user_info)
     if user_info[4]:
         buttons.append([types.InlineKeyboardButton(text="Файлы на одобрение", callback_data=f"prf_fileListAdmin_{message_id}")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-def profile_newFile(chat_id, message_id):
+async def profile_newFile(chat_id, message_id):
     message_id = message_id.replace("prf_newFile_", "")
-    uploadFile.ask_course(chat_id, message_id)
+    await uploadFile.ask_course(chat_id, message_id, bot)
 
 
 async def profile_fileList(chat_id, message_id):
@@ -176,7 +177,7 @@ async def profile_findFile_by_Name(chat_id, message_id):
     await bot.edit_message_text(chat_id=chat_id, text="Введите имя файла или ключевое слово", message_id=message_id)
 
 
-def profile_findFile_by_Fac(chat_id, message_id):
+async def profile_findFile_by_Fac(chat_id, message_id):
     message_id = message_id.replace("prf_findFile_by_Fac_", "")
     db.create_new_session(chat_id, "findFileByFac_")
-    showFiles.ask_faculty(chat_id, message_id)
+    await showFiles.ask_faculty(chat_id, message_id, bot)

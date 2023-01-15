@@ -44,9 +44,9 @@ async def find_by_username(chat_id, username, message_id, bot: aiogram.Bot):
     msg = "Пользователь не найден, срочно пригласите его сюда!"
     if len(user) != 0:
         msg = mess_about_user(user)
-    await bot.edit_message_text(chat_id=chat_id, text=msg, message_id=message_id)
+    await bot.send_message(chat_id=chat_id, text=msg)
     if len(user) != 0:
-        await menu_in_the_end(chat_id, user[0][0], int(message_id)+1, bot)
+        await menu_in_the_end(chat_id, user[0][0], int(message_id)+2, bot)
 
 
 async def menu_in_the_end(chat_id, owner_id, message_id, bot: aiogram.Bot):

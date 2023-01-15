@@ -28,7 +28,7 @@ async def prfMenu(callback: types.CallbackQuery):
     elif "sfl" in callback_data:
         await showFl.switchFun(callback_data, callback.from_user.id, bot)
     elif "upld" in callback_data:
-        await uploadFile.switchFun(callback_data, callback.from_user.id)
+        await uploadFile.switchFun(callback_data, callback.from_user.id, bot)
     elif "prf" in callback_data:
         await profileMenu.switchFun(callback_data, callback.from_user.id)
     elif "fop" in callback_data:
@@ -41,6 +41,7 @@ async def prfMenu(callback: types.CallbackQuery):
         await callback.answer("Неизвестная команда")
     await callback.answer()
 
+
 @dp.message_handler(commands=['start'])
 async def start(msg: types.Message):
     await bot.send_message(msg.chat.id, "Welcome to this bot\n Type /login to login")
@@ -49,7 +50,7 @@ async def start(msg: types.Message):
 @dp.message_handler(commands=['login'])
 async def start(msg: types.Message):
     print("start_reg")
-    # reg.start(msg["message"]["chat"]["id"], username, msg["message"]["message_id"] + 1)
+    await reg.start(msg.chat.id, msg.from_user.username, msg.message_id + 1, bot)
 
 
 @dp.message_handler(commands=['menu'])
@@ -58,18 +59,16 @@ async def start(msg: types.Message):
     await profileMenu.show_menu(msg.chat.id, msg.message_id + 1)
 
 
+@dp.message_handler(content_types=['document'])
+async def send_file(msg: types.Message):
+    if msg.content_type == 'document':
+        await uploadFile.upload_document(msg.document, msg.chat.id, bot)
+
+
 @dp.message_handler()
 async def input_text(msg: types.Message):
     session = db.get_session(msg.chat.id)
     message = msg.text
-    print(msg.entities)
-    mention_user = None
-    entities = msg.entities or []
-    for item in entities:
-        if item.type == "mention":
-            print(item)
-            mention_user = item.extract(msg.text)
-    print(mention_user)
     if message[0] == "@":
         await findUser.find_by_username(msg.chat.id, msg.text, msg.message_id, bot)
     elif "Мр" in message:
@@ -79,11 +78,7 @@ async def input_text(msg: types.Message):
         # bot.send_massive_message(msg["message"]["chat"]["id"], msg["message"]["text"])
     else:
         print("showFl")
-        # showFl.list_files_by_name(msg["message"]["chat"]["id"], msg["message"]["text"],
-        #                           msg["message"]["message_id"] + 1)
-    if msg.document is not None:
-        print("uploadFile")
-        # uploadFile.upload_document(msg["message"]["document"], msg["message"]["chat"]["id"])
+        await showFl.list_files_by_name(msg.chat.id, msg.text, msg.message_id + 1, bot)
     print(message)
 
 

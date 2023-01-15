@@ -28,7 +28,7 @@ async def ask_course(chat_id, message_id, bot: aiogram.Bot):
 
 async def ask_subject(chat_id, course, bot: aiogram.Bot):
     course = course.replace("upld0_", "").split("_")
-    message_id = course[1]
+    message_id = int(course[1])
     db.create_new_session(chat_id, course[0])
     subjects = db.get_subjects()
     msg = "Какой предмет?"
@@ -42,7 +42,7 @@ async def ask_subject(chat_id, course, bot: aiogram.Bot):
 async def upload_msg(chat_id, subject, bot: aiogram.Bot):
     subject = subject.replace("upld1_", "").split("_")
     db.update_session(chat_id, "_" + subject[0])
-    await bot.edit_message_text(chat_id=chat_id, text="Отправьте файл", message_id=subject[1])
+    await bot.edit_message_text(chat_id=chat_id, text="Отправьте файл", message_id=int(subject[1]))
 
 
 # Факультет/напрвление/курс/предмет

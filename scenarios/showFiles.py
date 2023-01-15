@@ -135,7 +135,7 @@ async def show_file_info(chat_id, file_id, bot: aiogram.Bot):
         else:
             buttons.append([types.InlineKeyboardButton(text="Одобрить", callback_data=f"fop0_{file[0][0]}")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id, parse_mode=types.ParseMode.MARKDOWN)
 
 
 async def ask_faculty(chat_id, message_id, bot: aiogram.Bot):
