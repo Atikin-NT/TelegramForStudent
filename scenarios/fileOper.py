@@ -1,13 +1,15 @@
+import aiogram.types
+
 import database as db
 import botCommands as ya
 
 
 async def switchFun(callback_query, chat_id, bot):
-    parse_callback = str(callback_query)
+    parse_callback = str(callback_query.data)
     if parse_callback[3] == "0":  # одобрили
-        await approve(chat_id, parse_callback, bot)
+        await approve(parse_callback, callback_query)
     elif parse_callback[3] == "1":  # заблокировали
-        await disapprove(chat_id, parse_callback, bot)
+        await disapprove(parse_callback, callback_query)
     elif parse_callback[3] == "2":  # удалить файл
         await delete_file(chat_id, parse_callback, bot)
     elif parse_callback[3] == "3":  # скачать файл
@@ -16,16 +18,16 @@ async def switchFun(callback_query, chat_id, bot):
         pass
 
 
-async def approve(chat_id, parse_callback, bot):
+async def approve(parse_callback, callback_query: aiogram.types.CallbackQuery):
     file_id = parse_callback.replace("fop0_", "")
     db.change_file_admin_status(file_id, True)
-    await bot.send_message(chat_id, "Теперь файл в свободном доступе")
+    await callback_query.answer(text="Теперь файл в свободном доступе", show_alert=True)
 
 
-async def disapprove(chat_id, parse_callback, bot):
+async def disapprove(parse_callback, callback_query: aiogram.types.CallbackQuery):
     file_id = parse_callback.replace("fop1_", "")
     db.change_file_admin_status(file_id, False)
-    await bot.send_message(chat_id, "Теперь файл закрыт от свободного доступа")
+    await callback_query.answer(text="Теперь файл закрыт от свободного доступа", show_alert=True)
 
 
 async def delete_file(chat_id, parse_callback, bot):

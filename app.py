@@ -32,7 +32,7 @@ async def prfMenu(callback: types.CallbackQuery):
     elif "prf" in callback_data:
         await profileMenu.switchFun(callback_data, callback.from_user.id)
     elif "fop" in callback_data:
-        await fileOper.switchFun(callback_data, callback.from_user.id, bot)
+        await fileOper.switchFun(callback, callback.from_user.id, bot)
     elif "adm" in callback_data:
         await admin.switchFun(callback_data, callback.from_user.id, bot)
     elif "main_menu" in callback_data:
