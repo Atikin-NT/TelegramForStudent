@@ -109,10 +109,10 @@ def change_file_admin_status(file_id, status):
     conn.commit()
 
 
-def get_files_by_faculty(faculty, direction, course, subject):
+def get_files_by_faculty(faculty, course, subject):
     try:
         # cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s AND direction=%s) AND course=%s AND subject=%s", (faculty, direction, course, subject,))
-        cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s) AND direction_id=%s AND course=%s AND subject=%s", (faculty, direction, course, subject,))
+        cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s) AND course=%s AND subject=%s", (faculty, course, subject,))
     except psycopg2.Error as e:
         print(e)
         pass
