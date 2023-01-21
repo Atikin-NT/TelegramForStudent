@@ -37,7 +37,7 @@ async def delete_file(chat_id, parse_callback, bot):
 async def download_file(chat_id, parse_callback, bot):
     file = db.get_files_by_file_id(parse_callback.replace("fop3_", ""))[0]
     file_owner = db.get_user_by_id(file[2])[0]
-    download_path = f"/faculty_{file_owner[7]}/direction_{file_owner[8]}/course_{file[6]}/sub_{file[7]}/{file[1]}"
+    download_path = f"/faculty_{file_owner[4]}/direction_{file[7]}/course_{file[3]}/sub_{file[4]}/{file[1]}"
     try:
         await ya.download_from_yadisk(chat_id, download_path, file[1], bot)
     except Exception as ex:

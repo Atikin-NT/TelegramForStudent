@@ -29,8 +29,11 @@ async def ask_course(chat_id, message_id, bot: aiogram.Bot):
 async def ask_subject(chat_id, course, bot: aiogram.Bot):
     course = course.replace("upld0_", "").split("_")
     message_id = int(course[1])
+    db.delete_session(chat_id)
     db.create_new_session(chat_id, course[0])
-    subjects = db.get_subjects()
+    user = db.get_user_by_id(chat_id)[0]
+    print(user)
+    subjects = db.get_subjects(user[6], user[5])
     msg = "Какой предмет?"
     buttons = []
     for sub in subjects:
@@ -56,8 +59,8 @@ async def upload_document(document, chat_id, bot: aiogram.Bot):
     user_info = db.get_user_by_id(chat_id)[0]  # [(708133213, 'AtikinNT', datetime.date(2022, 11, 21), 0, False, [0, 0, 0, 0, 0], 0, 0, 0, 2)]
     data = session[0][1].split("_")  # [2(course), 1(subject)]
     download_path = [
-        f"/faculty_{user_info[7]}",
-        f"/direction_{user_info[8]}",
+        f"/faculty_{user_info[4]}",
+        f"/direction_{user_info[5]}",
         f"/course_{data[0]}",
         f"/sub_{data[1]}",
         f"/{document['file_name']}",
@@ -68,7 +71,7 @@ async def upload_document(document, chat_id, bot: aiogram.Bot):
         await bot.send_message(chat_id, "Недопустимый формат (пока только pdf)")
         return
     fileID = document["file_id"]
-    db.insert_file(document["file_name"], chat_id, data[0], data[1])
+    db.insert_file(document["file_name"], chat_id, data[0], data[1], user_info[5])
     await ya.upload_to_yadisk(fileID, download_path, bot)
     await bot.send_message(chat_id, "Файл загружен")
 

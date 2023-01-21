@@ -13,9 +13,9 @@ def mess_about_user(userData):
     username = userData[0][1]
     data = userData[0][2]
 
-    faculty = facultyList[userData[0][7]]
-    direction = directionList[userData[0][8]]
-    course = userData[0][9]
+    faculty = facultyList[userData[0][4]]
+    direction = directionList[userData[0][5]]
+    course = userData[0][6]
 
     msg = f"""Имя пользователя: *{username}*
 Дата регистрации: *{data}*
@@ -113,7 +113,7 @@ async def profile_MyFiles(chat_id, message_id):
         return
     user_info = user_info[0]
     print(user_info)
-    if user_info[4]:
+    if user_info[3]:
         buttons.append([types.InlineKeyboardButton(text="Файлы на одобрение", callback_data=f"prf_fileListAdmin_{message_id}")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
@@ -179,5 +179,6 @@ async def profile_findFile_by_Name(chat_id, message_id):
 
 async def profile_findFile_by_Fac(chat_id, message_id):
     message_id = message_id.replace("prf_findFile_by_Fac_", "")
+    db.delete_session(chat_id)
     db.create_new_session(chat_id, "findFileByFac_")
     await showFiles.ask_faculty(chat_id, message_id, bot)
