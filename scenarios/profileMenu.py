@@ -1,3 +1,5 @@
+import aiogram.types
+
 import database as db
 import scenarios.findUser as findUser
 import scenarios.uploadFile as uploadFile
@@ -25,12 +27,13 @@ def mess_about_user(userData):
     return msg
 
 
-async def switchFun(callback_query, chat_id):
-    callback_query = str(callback_query)
+async def switchFun(callback: aiogram.types.CallbackQuery):
+    callback_query = str(callback.data)
+    chat_id = callback.from_user.id
     if "prf_setting" in callback_query:
         await profile_settings(chat_id, callback_query)
     elif callback_query == "prf_info":
-        await profile_information(chat_id)
+        await profile_information(chat_id, callback.message.message_id)
     elif "prf_myFiles" in callback_query:
         await profile_MyFiles(chat_id, callback_query)
     elif "prf_newFile" in callback_query:
@@ -52,8 +55,8 @@ async def switchFun(callback_query, chat_id):
 
 
 async def show_menu(chat_id, message_id=None):
-    if message_id and isinstance(message_id, str):
-        message_id = message_id.split("_")[-1]
+    if message_id:
+        message_id = message_id
     msg = "Меню:"
     buttons = [
         [types.InlineKeyboardButton(text="Настройки", callback_data=f"prf_setting_{message_id}")],
@@ -71,7 +74,7 @@ async def show_menu(chat_id, message_id=None):
         buttons.append([types.InlineKeyboardButton(text="Админка", callback_data=f"adm0_{message_id}")])
 
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    if message_id and isinstance(message_id, str):
+    if message_id:
         await bot.edit_message_text(text=msg, message_id=message_id, chat_id=chat_id, reply_markup=keyboard)
     else:
         await bot.send_message(text=msg, chat_id=chat_id, reply_markup=keyboard)
@@ -90,14 +93,18 @@ async def profile_settings(chat_id, callback_query):
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id, parse_mode=types.ParseMode.MARKDOWN)
 
 
-async def profile_information(chat_id):
+async def profile_information(chat_id, message_id):
     msg = """
 С помощью этого бота вы можете найти любые файлы при подготовке к контрольным, зачетам и экзаменам.
 Бот предоставляет возможность загружать файлы(в данный момент только форматы pdf), искать файлы по названию или своему факультету/направлению/курсу/предмету
 Сейчас происходит бетта-тестирование бота, поэтому возможны ошибки и баги.
 Все кто хочет помочь в разработке или сообщить об ошибке, прошу написать мне: @AtikinNT
 """
-    await bot.send_message(chat_id=chat_id, text=msg)
+    buttons = [
+        [types.InlineKeyboardButton(text="Вернуться назад", callback_data="main_menu")]
+    ]
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
 async def profile_MyFiles(chat_id, message_id):

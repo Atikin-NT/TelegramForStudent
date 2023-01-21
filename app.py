@@ -30,13 +30,13 @@ async def prfMenu(callback: types.CallbackQuery):
     elif "upld" in callback_data:
         await uploadFile.switchFun(callback_data, callback.from_user.id, bot)
     elif "prf" in callback_data:
-        await profileMenu.switchFun(callback_data, callback.from_user.id)
+        await profileMenu.switchFun(callback)
     elif "fop" in callback_data:
         await fileOper.switchFun(callback, callback.from_user.id, bot)
     elif "adm" in callback_data:
         await admin.switchFun(callback_data, callback.from_user.id, bot)
     elif "main_menu" in callback_data:
-        await profileMenu.show_menu(callback.from_user.id, callback_data)
+        await profileMenu.show_menu(callback.from_user.id, callback.message.message_id)
     else:
         await callback.answer("Неизвестная команда")
     await callback.answer()
