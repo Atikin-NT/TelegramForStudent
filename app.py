@@ -1,8 +1,14 @@
 import json
-import time
 import logging
-import routes
-import requests
+from aiogram import Bot, Dispatcher, executor, types
+import database as db
+import scenarios.profileMenu as profileMenu
+import scenarios.register as reg
+import scenarios.showFiles as showFl
+import scenarios.uploadFile as uploadFile
+import scenarios.fileOper as fileOper
+import scenarios.findUser as findUser
+import scenarios.admin as admin
 
 f = open('env.json')
 config = json.load(f)
@@ -10,40 +16,70 @@ f.close()
 
 TOKEN = config["BOT_TOKEN"]
 
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot)
 
-def main():
-    last_update_id = None
-    url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
 
-    headers = {
-        "accept": "application/json",
-        "content-type": "application/json"
-    }
-    while True:
-        payload = {
-            "offset": last_update_id,
-            "limit": None,
-            "timeout": None
-        }
-        r = requests.post(url, json=payload, headers=headers)
-        command_list = r.json()["result"]
-        for command in command_list:
-            if "callback_query" in command:
-                logging.info(json.dumps(command["callback_query"]["message"]))
-                routes.callback_query(command)
-            elif "message" in command:
-                if "entities" in command["message"] and (command["message"]["entities"][0]["type"] == 'bot_command'):
-                    logging.info(json.dumps(command["message"]))
-                    routes.commands(command)
-                else:
-                    logging.info(json.dumps(command["message"]))
-                    routes.input_text(command)
-            else:
-                logging.critical("Unknown command: ")
-        if len(command_list) != 0:
-            last_update_id = command_list[-1]["update_id"] + 1
-        print(last_update_id)
-        time.sleep(0.4)
+@dp.callback_query_handler()
+async def prfMenu(callback: types.CallbackQuery):
+    callback_data = callback.data
+    if "reg" in callback_data:
+        await reg.switchFun(callback_data, callback.from_user.id, callback.message.message_id + 1, bot)
+    elif "sfl" in callback_data:
+        await showFl.switchFun(callback_data, callback.from_user.id, bot)
+    elif "upld" in callback_data:
+        await uploadFile.switchFun(callback_data, callback.from_user.id, bot)
+    elif "prf" in callback_data:
+        await profileMenu.switchFun(callback_data, callback.from_user.id)
+    elif "fop" in callback_data:
+        await fileOper.switchFun(callback, callback.from_user.id, bot)
+    elif "adm" in callback_data:
+        await admin.switchFun(callback_data, callback.from_user.id, bot)
+    elif "main_menu" in callback_data:
+        await profileMenu.show_menu(callback.from_user.id, callback_data)
+    else:
+        await callback.answer("Неизвестная команда")
+    await callback.answer()
+
+
+@dp.message_handler(commands=['start'])
+async def start(msg: types.Message):
+    await bot.send_message(msg.chat.id, "Welcome to this bot\n Type /login to login")
+
+
+@dp.message_handler(commands=['login'])
+async def start(msg: types.Message):
+    print("start_reg")
+    await reg.start(msg.chat.id, msg.from_user.username, msg.message_id + 1, bot)
+
+
+@dp.message_handler(commands=['menu'])
+async def start(msg: types.Message):
+    print("profileMenu")
+    await profileMenu.show_menu(msg.chat.id, msg.message_id + 1)
+
+
+@dp.message_handler(content_types=['document'])
+async def send_file(msg: types.Message):
+    if msg.content_type == 'document':
+        await uploadFile.upload_document(msg.document, msg.chat.id, bot)
+
+
+@dp.message_handler()
+async def input_text(msg: types.Message):
+    session = db.get_session(msg.chat.id)
+    message = msg.text
+    if message[0] == "@":
+        await findUser.find_by_username(msg.chat.id, msg.text, msg.message_id, bot)
+    elif "Мр" in message:
+        await bot.send_message(msg.chat.id, "Приветики, мое солнышко 😘")
+    elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
+        print("send_massive_mess")
+        # bot.send_massive_message(msg["message"]["chat"]["id"], msg["message"]["text"])
+    else:
+        print("showFl")
+        await showFl.list_files_by_name(msg.chat.id, msg.text, msg.message_id + 1, bot)
+    print(message)
 
 
 if __name__ == '__main__':
@@ -51,4 +87,4 @@ if __name__ == '__main__':
                         level=logging.INFO,
                         format="%(asctime)s %(message)s",
                         filemode="w")
-    main()
+    executor.start_polling(dp, skip_updates=True)

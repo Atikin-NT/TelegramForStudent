@@ -7,6 +7,8 @@ import scenarios.profileMenu as profileMenu
 import scenarios.uploadFile as uploadFile
 import scenarios.fileOper as fileOper
 import scenarios.admin as admin
+from app import dp
+from aiogram import Bot, Dispatcher, executor, types
 
 
 def callback_query(msg):
@@ -54,7 +56,7 @@ def commands(msg):
         bot.send_message(msg["message"]["chat"]["id"], "Неизвестная команда")
 
 
-def input_text(msg):
+def input_text(msg: types.Message):
     print(msg)
     if "text" in msg["message"]:
         session = db.get_session(msg["message"]["chat"]["id"])
