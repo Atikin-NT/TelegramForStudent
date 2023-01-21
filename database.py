@@ -61,9 +61,9 @@ def get_all_users():
 
 # files -----------------------------
 
-def insert_file(filename, user_id, course, subject):
+def insert_file(filename, user_id, course, subject, direction):
     try:
-        cur.execute("INSERT INTO files (filename, owner, course, subject) VALUES (%s, %s, %s, %s)", (filename, user_id, course, subject,))
+        cur.execute("INSERT INTO files (filename, owner, course, subject, direction_id) VALUES (%s, %s, %s, %s, %s)", (filename, user_id, course, subject, direction,))
     except psycopg2.Error as e:
         print(e)
         pass
@@ -111,7 +111,8 @@ def change_file_admin_status(file_id, status):
 
 def get_files_by_faculty(faculty, direction, course, subject):
     try:
-        cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s AND direction=%s) AND course=%s AND subject=%s", (faculty, direction, course, subject,))
+        # cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s AND direction=%s) AND course=%s AND subject=%s", (faculty, direction, course, subject,))
+        cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s) AND direction_id=%s AND course=%s AND subject=%s", (faculty, direction, course, subject,))
     except psycopg2.Error as e:
         print(e)
         pass
@@ -130,19 +131,6 @@ def get_files_by_name(name: str):
     return records
 
 
-
-# subjects -----------------------------
-
-def get_subjects():
-    try:
-        cur.execute("SELECT * FROM subjects")
-    except psycopg2.Error as e:
-        print(e)
-        pass
-    records = cur.fetchall()
-    return records
-
-
 def get_files_in_profile_page(user_id):
     try:
         cur.execute("SELECT * FROM files WHERE owner = %s and admin_check = true", (user_id,))
@@ -151,6 +139,20 @@ def get_files_in_profile_page(user_id):
         pass
     records = cur.fetchall()
     return records
+
+
+# subjects -----------------------------
+
+def get_subjects(course, direction):
+    try:
+        cur.execute("SELECT * FROM subjects WHERE sub_id = ANY (SELECT unnest(sublist) FROM subconnection WHERE course = %s AND direction_id = %s)", (course, direction,))
+    except psycopg2.Error as e:
+        print(e)
+        pass
+    records = cur.fetchall()
+    print(records)
+    return records
+
 
 # session -------------------------
 
