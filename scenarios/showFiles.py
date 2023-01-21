@@ -112,7 +112,7 @@ async def show_files_list(chat_id, callback_query, bot: aiogram.Bot, findFile=Fa
         direction = data[2]
         course = data[3]
         subject = callback_query.replace("sfl6_", "").split("_")
-        filesList = db.get_files_by_faculty(0, direction, course, subject[0])
+        filesList = db.get_files_by_faculty(0, course, subject[0])
     message_id = int(subject[1])
     if len(filesList) == 0:
         await bot.edit_message_text(chat_id=chat_id, text="Файлов не найдено(", message_id=message_id)
