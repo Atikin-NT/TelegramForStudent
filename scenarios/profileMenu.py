@@ -44,8 +44,8 @@ async def switchFun(callback: aiogram.types.CallbackQuery):
         await profile_fileList(chat_id, callback_query)
     elif "prf_findUser" in callback_query:
         await profile_findUser(chat_id, callback_query)
-    elif "prf_findFile_by_Name" in callback_query :
-        await profile_findFile_by_Name(chat_id, callback_query )
+    elif "prf_findFile_by_Name" in callback_query:
+        await profile_findFile_by_Name(chat_id, callback_query)
     elif "prf_findFile_by_Fac" in callback_query:
         await profile_findFile_by_Fac(chat_id, callback_query)
     elif "prf_findFile" in callback_query:
@@ -54,9 +54,7 @@ async def switchFun(callback: aiogram.types.CallbackQuery):
         pass
 
 
-async def show_menu(chat_id, message_id=None):
-    if message_id:
-        message_id = message_id
+async def show_menu(chat_id, message_id, edit_message):
     msg = "Меню:"
     buttons = [
         [types.InlineKeyboardButton(text="Настройки", callback_data=f"prf_setting_{message_id}")],
@@ -74,7 +72,7 @@ async def show_menu(chat_id, message_id=None):
         buttons.append([types.InlineKeyboardButton(text="Админка", callback_data=f"adm0_{message_id}")])
 
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    if message_id:
+    if edit_message:
         await bot.edit_message_text(text=msg, message_id=message_id, chat_id=chat_id, reply_markup=keyboard)
     else:
         await bot.send_message(text=msg, chat_id=chat_id, reply_markup=keyboard)
