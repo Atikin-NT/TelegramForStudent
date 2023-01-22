@@ -50,7 +50,7 @@ async def start(msg: types.Message):
 @dp.message_handler(commands=['login'])
 async def start(msg: types.Message):
     print("start_reg")
-    await reg.start(msg.chat.id, msg.from_user.username, msg.message_id + 1, bot)
+    await reg.start(msg.chat.id, msg.from_user.username, msg.message_id, bot)
 
 
 @dp.message_handler(commands=['menu'])
