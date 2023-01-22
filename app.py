@@ -32,7 +32,7 @@ async def prfMenu(callback: types.CallbackQuery):
     elif "prf" in callback_data:
         await profileMenu.switchFun(callback)
     elif "fop" in callback_data:
-        await fileOper.switchFun(callback, callback.from_user.id, bot)
+        await fileOper.switchFun(callback, bot)
     elif "adm" in callback_data:
         await admin.switchFun(callback_data, callback.from_user.id, bot)
     elif "main_menu" in callback_data:
@@ -62,7 +62,7 @@ async def start(msg: types.Message):
 @dp.message_handler(content_types=['document'])
 async def send_file(msg: types.Message):
     if msg.content_type == 'document':
-        await uploadFile.upload_document(msg.document, msg.chat.id, bot)
+        await uploadFile.upload_document(msg.document, msg.chat.id, msg.message_id, bot)
 
 
 @dp.message_handler()
