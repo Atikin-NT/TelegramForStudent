@@ -21,29 +21,31 @@ admin_check: *{fileData[0][8]}*"""
     return msg
 
 
-async def switchFun(callback_query, chat_id, bot):
-    str_callback = str(callback_query)
+async def switchFun(callback: aiogram.types.CallbackQuery, bot):
+    str_callback = str(callback.data)
+    chat_id = callback.from_user.id
+    message_id = callback.message.message_id
     if str_callback[3] == "0":  # узнали user_id
-        await ask_course(chat_id, str_callback, bot)
+        await ask_course(chat_id, str_callback, message_id, bot)
     elif str_callback[3] == "1":  # узнали какого курса файлы нам нужны
         await ask_subject(chat_id, str_callback, bot)
     elif str_callback[3] == "2":  # узнали предмет
-        await show_files_list(chat_id, str_callback, bot)
+        await show_files_list(chat_id, callback, bot)
     elif str_callback[3] == "3":  # узнали факультет
         await ask_direction(chat_id, str_callback, bot)
     elif str_callback[3] == "4":  # узнаем курс
-        await ask_course(chat_id, str_callback, bot, True)
+        await ask_course(chat_id, str_callback, message_id, bot, True)
     elif str_callback[3] == "5":  # узнали предмет
         await ask_subject(chat_id, str_callback, bot, True)
     elif str_callback[3] == "6":  # узнали предмет
-        await show_files_list(chat_id, str_callback, bot, True)
+        await show_files_list(chat_id, callback, bot, True)
     elif str_callback[3] == "8":  # информация о файле
         await show_file_info(chat_id, str_callback, bot)
     else:
         pass
 
 
-async def ask_course(chat_id, owner_file_id, bot: aiogram.Bot, findFile=False):
+async def ask_course(chat_id, owner_file_id, message_id, bot: aiogram.Bot, findFile=False):
     sflId = 1
     if not findFile:
         owner_file_id = owner_file_id.replace("sfl0_", "").split("_")
@@ -53,7 +55,6 @@ async def ask_course(chat_id, owner_file_id, bot: aiogram.Bot, findFile=False):
         owner_file_id = owner_file_id.replace("sfl4_", "").split("_")
         db.update_session(chat_id, "_" + owner_file_id[0])
         sflId = 5
-    message_id = int(owner_file_id[1])
     msg = "Файлы какого курса обучения?"
     buttons = [
         [types.InlineKeyboardButton(text="1", callback_data=f"sfl{sflId}_1_{message_id}")],
@@ -91,7 +92,8 @@ async def ask_subject(chat_id, course, bot: aiogram.Bot, findFile=False):
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-async def show_files_list(chat_id, callback_query, bot: aiogram.Bot, findFile=False):
+async def show_files_list(chat_id, callback, bot: aiogram.Bot, findFile=False):
+    callback_query = str(callback.data)
     session = db.get_session(chat_id)
     if len(session) == 0:
         await bot.send_message(chat_id, "Error: len(session) == 0")
@@ -115,7 +117,11 @@ async def show_files_list(chat_id, callback_query, bot: aiogram.Bot, findFile=Fa
         filesList = db.get_files_by_faculty(0, course, subject[0])
     message_id = int(subject[1])
     if len(filesList) == 0:
-        await bot.edit_message_text(chat_id=chat_id, text="Файлов не найдено(", message_id=message_id)
+        buttons = [
+            [types.InlineKeyboardButton(text="Главное меню", callback_data="main_menu")]
+        ]
+        keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+        await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text="Файлов не найдено(", message_id=message_id)
         return
     msg = "Какой файл вы хотите посмотреть?"
     buttons = []

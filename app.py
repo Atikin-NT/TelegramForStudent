@@ -24,19 +24,19 @@ dp = Dispatcher(bot)
 async def prfMenu(callback: types.CallbackQuery):
     callback_data = callback.data
     if "reg" in callback_data:
-        await reg.switchFun(callback_data, callback.from_user.id, callback.message.message_id + 1, bot)
+        await reg.switchFun(callback, bot)
     elif "sfl" in callback_data:
-        await showFl.switchFun(callback_data, callback.from_user.id, bot)
+        await showFl.switchFun(callback, bot)
     elif "upld" in callback_data:
         await uploadFile.switchFun(callback_data, callback.from_user.id, bot)
     elif "prf" in callback_data:
-        await profileMenu.switchFun(callback_data, callback.from_user.id)
+        await profileMenu.switchFun(callback)
     elif "fop" in callback_data:
-        await fileOper.switchFun(callback, callback.from_user.id, bot)
+        await fileOper.switchFun(callback, bot)
     elif "adm" in callback_data:
         await admin.switchFun(callback_data, callback.from_user.id, bot)
     elif "main_menu" in callback_data:
-        await profileMenu.show_menu(callback.from_user.id, callback_data)
+        await profileMenu.show_menu(callback.from_user.id, callback.message.message_id, True)
     else:
         await callback.answer("Неизвестная команда")
     await callback.answer()
@@ -50,19 +50,19 @@ async def start(msg: types.Message):
 @dp.message_handler(commands=['login'])
 async def start(msg: types.Message):
     print("start_reg")
-    await reg.start(msg.chat.id, msg.from_user.username, msg.message_id + 1, bot)
+    await reg.start(msg.chat.id, msg.from_user.username, msg.message_id, bot)
 
 
 @dp.message_handler(commands=['menu'])
 async def start(msg: types.Message):
     print("profileMenu")
-    await profileMenu.show_menu(msg.chat.id, msg.message_id + 1)
+    await profileMenu.show_menu(msg.chat.id, msg.message_id + 1, False)
 
 
 @dp.message_handler(content_types=['document'])
 async def send_file(msg: types.Message):
     if msg.content_type == 'document':
-        await uploadFile.upload_document(msg.document, msg.chat.id, bot)
+        await uploadFile.upload_document(msg.document, msg.chat.id, msg.message_id, bot)
 
 
 @dp.message_handler()

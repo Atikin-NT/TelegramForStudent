@@ -49,11 +49,12 @@ async def upload_msg(chat_id, subject, bot: aiogram.Bot):
 
 
 # Факультет/напрвление/курс/предмет
-async def upload_document(document, chat_id, bot: aiogram.Bot):
+async def upload_document(document, chat_id, message_id, bot: aiogram.Bot):
     session = db.get_session(chat_id)  # [(708133213, '2_1')]
     db.delete_session(chat_id)
+    await bot.delete_message(chat_id, message_id-1)
     if len(session) == 0 or len(session[0]) == 0:
-        await bot.send_message(chat_id, "error in upload")
+        await bot.send_message(chat_id, "Ошибка в загрузке файла")
         return
 
     user_info = db.get_user_by_id(chat_id)[0]  # [(708133213, 'AtikinNT', datetime.date(2022, 11, 21), 0, False, [0, 0, 0, 0, 0], 0, 0, 0, 2)]
@@ -73,5 +74,11 @@ async def upload_document(document, chat_id, bot: aiogram.Bot):
     fileID = document["file_id"]
     db.insert_file(document["file_name"], chat_id, data[0], data[1], user_info[5])
     await ya.upload_to_yadisk(fileID, download_path, bot)
-    await bot.send_message(chat_id, "Файл загружен")
 
+    await bot.delete_message(chat_id, message_id)
+    msg = "Файл загружен. Как только пройдет проверку, он появится в сободном доступе"
+    buttons = [
+        [types.InlineKeyboardButton(text="Главное меню", callback_data="main_menu")]
+    ]
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await bot.send_message(chat_id=chat_id, reply_markup=keyboard, text=msg)
