@@ -34,13 +34,13 @@ async def switchFun(callback: aiogram.types.CallbackQuery):
     if "prf_setting" in callback_query:
         await profile_settings(chat_id, callback_query)
     elif callback_query == "prf_info":
-        await profile_information(chat_id, callback.message.message_id)
+        await profile_information(chat_id, message_id)
     elif "prf_myFiles" in callback_query:
         await profile_MyFiles(chat_id, callback_query)
     elif "prf_newFile" in callback_query:
         await profile_newFile(chat_id, callback_query)
     elif "prf_fileListAdmin" in callback_query:
-        await profile_fileListAdmin(chat_id, callback_query)
+        await profile_fileListAdmin(chat_id, callback_query, callback)
     elif "prf_fileList" in callback_query:
         await profile_fileList(chat_id, callback_query)
     elif "prf_findFile_by_Name" in callback_query:
@@ -143,11 +143,11 @@ async def profile_fileList(chat_id, message_id):
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-async def profile_fileListAdmin(chat_id, message_id):
+async def profile_fileListAdmin(chat_id, message_id, callback):
     message_id = message_id.replace("prf_fileListAdmin_", "")
     filesList = db.get_files_waiting_for_admin()
     if len(filesList) == 0:
-        await bot.edit_message_text(chat_id=chat_id, text="Файлов на одобрение нет)", message_id=message_id)
+        await callback.answer(text="Файлов на одобрение нет)", show_alert=True)
         return
     msg = "Список файлов на одобрение:"
     buttons = []
