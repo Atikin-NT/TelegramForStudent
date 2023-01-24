@@ -70,9 +70,9 @@ def insert_file(filename, user_id, course, subject, direction):
     conn.commit()
 
 
-def get_files_by_user(user_id, course, subject):
+def get_files_by_user(user_id, course, subject, direction):
     try:
-        cur.execute("SELECT * FROM files WHERE owner = %s and course = %s and subject = %s", (user_id, course, subject))
+        cur.execute("SELECT * FROM files WHERE owner = %s and course = %s and subject = %s and direction_id = %s", (user_id, course, subject))
     except psycopg2.Error as e:
         print(e)
         pass
@@ -109,10 +109,10 @@ def change_file_admin_status(file_id, status):
     conn.commit()
 
 
-def get_files_by_faculty(faculty, course, subject):
+def get_files_by_faculty(faculty, course, subject, direction):
     try:
         # cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s AND direction=%s) AND course=%s AND subject=%s", (faculty, direction, course, subject,))
-        cur.execute("SELECT * FROM files WHERE owner IN (SELECT user_id FROM users WHERE faculty=%s) AND course=%s AND subject=%s", (faculty, course, subject,))
+        cur.execute("SELECT * FROM files WHERE course=%s AND subject=%s AND direction_id=%s", (course, subject, direction))
     except psycopg2.Error as e:
         print(e)
         pass

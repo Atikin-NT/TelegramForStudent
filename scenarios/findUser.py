@@ -58,7 +58,7 @@ async def find_by_username(chat_id, username, message_id, bot: aiogram.Bot):
 async def menu_in_the_end(chat_id, owner_id, message_id, bot: aiogram.Bot):
     msg = "Возможные действия:"
     buttons = [
-        [types.InlineKeyboardButton(text="Посмотреть его файлы", callback_data=f"sfl0_{owner_id}_{message_id}")],
+        [types.InlineKeyboardButton(text="Посмотреть его файлы", callback_data=f"sfl5_{owner_id}")],
         [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"main_menu_{message_id}")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)

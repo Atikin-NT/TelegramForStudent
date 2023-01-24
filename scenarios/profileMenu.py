@@ -30,6 +30,7 @@ def mess_about_user(userData):
 async def switchFun(callback: aiogram.types.CallbackQuery):
     callback_query = str(callback.data)
     chat_id = callback.from_user.id
+    message_id = callback.message.message_id
     if "prf_setting" in callback_query:
         await profile_settings(chat_id, callback_query)
     elif callback_query == "prf_info":
@@ -42,12 +43,10 @@ async def switchFun(callback: aiogram.types.CallbackQuery):
         await profile_fileListAdmin(chat_id, callback_query)
     elif "prf_fileList" in callback_query:
         await profile_fileList(chat_id, callback_query)
-    elif "prf_findUser" in callback_query:
-        await profile_findUser(chat_id, callback_query)
     elif "prf_findFile_by_Name" in callback_query:
         await profile_findFile_by_Name(chat_id, callback_query)
-    elif "prf_findFile_by_Fac" in callback_query:
-        await profile_findFile_by_Fac(chat_id, callback_query)
+    elif "prf_findFile_by_Sub" in callback_query:
+        await profile_findFile_by_Sub(chat_id, message_id)
     elif "prf_findFile" in callback_query:
         await profile_findFile(chat_id, callback_query)
     else:
@@ -60,7 +59,6 @@ async def show_menu(chat_id, message_id, edit_message):
         [types.InlineKeyboardButton(text="Настройки", callback_data=f"prf_setting_{message_id}")],
         [types.InlineKeyboardButton(text="Информация о приложении", callback_data="prf_info")],
         [types.InlineKeyboardButton(text="Мои файлы", callback_data=f"prf_myFiles_{message_id}")],
-        [types.InlineKeyboardButton(text="Найти пользователя", callback_data=f"prf_findUser_{message_id}")],
         [types.InlineKeyboardButton(text="Найти файл", callback_data=f"prf_findFile_{message_id}")]
     ]
 
@@ -145,11 +143,6 @@ async def profile_fileList(chat_id, message_id):
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-async def profile_findUser(chat_id, message_id):
-    message_id = message_id.replace("prf_findUser_", "")
-    await findUser.start(chat_id, message_id, bot)
-
-
 async def profile_fileListAdmin(chat_id, message_id):
     message_id = message_id.replace("prf_fileListAdmin_", "")
     filesList = db.get_files_waiting_for_admin()
@@ -169,7 +162,7 @@ async def profile_findFile(chat_id, message_id):
     message_id = message_id.replace("prf_findFile_", "")
     msg = "Выполнить поиск по"
     buttons = [
-        [types.InlineKeyboardButton(text="Факультету", callback_data=f"prf_findFile_by_Fac_{message_id}")],
+        [types.InlineKeyboardButton(text="Факультету", callback_data=f"prf_findFile_by_Sub_{message_id}")],
         [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"main_menu_{message_id}")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
@@ -182,8 +175,6 @@ async def profile_findFile_by_Name(chat_id, message_id):
     await bot.edit_message_text(chat_id=chat_id, text="Введите имя файла или ключевое слово", message_id=message_id)
 
 
-async def profile_findFile_by_Fac(chat_id, message_id):
-    message_id = message_id.replace("prf_findFile_by_Fac_", "")
-    db.delete_session(chat_id)
-    db.create_new_session(chat_id, "findFileByFac_")
-    await showFiles.ask_faculty(chat_id, message_id, bot)
+async def profile_findFile_by_Sub(chat_id, message_id):
+    await showFiles.ask_subject(chat_id, bot, message_id)
+    # await showFiles.ask_faculty(chat_id, message_id, bot)
