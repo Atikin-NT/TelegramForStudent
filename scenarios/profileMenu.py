@@ -152,7 +152,7 @@ async def profile_fileListAdmin(chat_id, message_id, callback):
     msg = "Список файлов на одобрение:"
     buttons = []
     for file in filesList:
-        buttons.append([types.InlineKeyboardButton(text=f"{file[1]}", callback_data=f"sfl8_{file[0]}_{message_id}")])
+        buttons.append([types.InlineKeyboardButton(text=f"{file[1]}", callback_data=f"sfl8_{file[0]}")])
     buttons.append([types.InlineKeyboardButton(text="Назад в меню", callback_data=f"main_menu_{message_id}")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
@@ -177,4 +177,3 @@ async def profile_findFile_by_Name(chat_id, message_id):
 
 async def profile_findFile_by_Sub(chat_id, message_id):
     await showFiles.ask_subject(chat_id, bot, message_id)
-    # await showFiles.ask_faculty(chat_id, message_id, bot)

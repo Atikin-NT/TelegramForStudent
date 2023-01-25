@@ -13,7 +13,7 @@ async def switchFun(callback_query: aiogram.types.CallbackQuery, bot: aiogram.Bo
     elif parse_callback[3] == "1":  # заблокировали
         await disapprove(parse_callback, callback_query)
     elif parse_callback[3] == "2":  # удалить файл
-        await delete_file(chat_id, parse_callback, bot)
+        await delete_file(chat_id, callback_query)
     elif parse_callback[3] == "3":  # скачать файл
         await download_file(chat_id, parse_callback, bot, message_id)
     else:
@@ -32,8 +32,9 @@ async def disapprove(parse_callback, callback_query: aiogram.types.CallbackQuery
     await callback_query.answer(text="Теперь файл закрыт от свободного доступа", show_alert=True)
 
 
-async def delete_file(chat_id, parse_callback, bot):
-    pass
+async def delete_file(chat_id, callback_query):
+    file_path = f"/faculty_{file_owner[4]}/direction_{file[7]}/course_{file[3]}/sub_{file[4]}/{file[1]}"
+    callback_query.answer(text="Файл удален", show_alert=True)
 
 
 async def download_file(chat_id, parse_callback, bot, message_id):

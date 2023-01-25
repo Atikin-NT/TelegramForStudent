@@ -105,6 +105,8 @@ async def show_file_info(chat_id, file_id, bot: aiogram.Bot, message_id):
         [types.InlineKeyboardButton(text="Скачать", callback_data=f"fop3_{file[0][0]}")],
         [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"sfl2_{file[0][4]}")]
     ]
+    # if user[0] == file[0][2] or user[3]:
+    #     buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data=f"fop2_{file[0][0]}")])
     if user[3]:
         if file[0][5]:
             buttons.append([types.InlineKeyboardButton(text="Заблокировать", callback_data=f"fop1_{file[0][0]}")])
