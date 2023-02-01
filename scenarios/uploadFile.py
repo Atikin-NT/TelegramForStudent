@@ -138,6 +138,7 @@ async def rename_file_new_name(chat_id, message_id, new_filename, bot):
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.send_message(chat_id=chat_id, reply_markup=keyboard, text=msg)
+    db.delete_session(chat_id)
 
 
 async def update_file(chat_id, message_id, bot: aiogram.Bot):

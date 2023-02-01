@@ -97,7 +97,7 @@ async def show_files_list(chat_id, callback_query, message_id, bot: aiogram.Bot)
 
 
 async def show_file_info(chat_id, file_id, bot: aiogram.Bot, message_id):
-    file_id = file_id.split("_")[-1]
+    file_id = file_id.split("_")[-2]
     user = db.get_user_by_id(chat_id)[0]
     file = db.get_files_by_file_id(file_id)
     msg = mess_about_file(file)
@@ -105,8 +105,8 @@ async def show_file_info(chat_id, file_id, bot: aiogram.Bot, message_id):
         [types.InlineKeyboardButton(text="Скачать", callback_data=f"fop3_{file[0][0]}")],
         [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"sfl2_{file[0][4]}")]
     ]
-    # if user[0] == file[0][2] or user[3]:
-    #     buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data=f"fop2_{file[0][0]}")])
+    if user[0] == file[0][2] or user[3]:
+        buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data=f"fop2_{file[0][0]}")])
     if user[3]:
         if file[0][5]:
             buttons.append([types.InlineKeyboardButton(text="Заблокировать", callback_data=f"fop1_{file[0][0]}")])

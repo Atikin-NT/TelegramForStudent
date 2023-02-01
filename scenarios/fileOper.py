@@ -13,9 +13,11 @@ async def switchFun(callback_query: aiogram.types.CallbackQuery, bot: aiogram.Bo
     elif parse_callback[3] == "1":  # заблокировали
         await disapprove(parse_callback, callback_query)
     elif parse_callback[3] == "2":  # удалить файл
-        await delete_file(chat_id, callback_query)
+        await delete_file(chat_id, parse_callback, bot, message_id)
     elif parse_callback[3] == "3":  # скачать файл
         await download_file(chat_id, parse_callback, bot, message_id)
+    elif parse_callback[3] == "4":  # скачать файл
+        await delete_file_approve(chat_id, parse_callback, bot, message_id)
     else:
         pass
 
@@ -32,9 +34,31 @@ async def disapprove(parse_callback, callback_query: aiogram.types.CallbackQuery
     await callback_query.answer(text="Теперь файл закрыт от свободного доступа", show_alert=True)
 
 
-async def delete_file(chat_id, callback_query):
-    file_path = f"/faculty_{file_owner[4]}/direction_{file[7]}/course_{file[3]}/sub_{file[4]}/{file[1]}"
-    callback_query.answer(text="Файл удален", show_alert=True)
+async def delete_file(chat_id, parse_callback, bot, message_id):
+    callback = parse_callback.replace("fop2", "fop4")
+    msg = "Вы уверены, что хотите удалить?"
+    buttons = [
+        [types.InlineKeyboardButton(text="Да", callback_data=callback)],
+        [types.InlineKeyboardButton(text="Главное меню", callback_data="main_menu")]
+    ]
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+
+
+async def delete_file_approve(chat_id, parse_callback, bot, message_id):
+    file_id_in_db = parse_callback.split("_")[-1]
+    file = db.get_files_by_file_id(file_id_in_db)[0]
+    user = db.get_user_by_id(chat_id)[0]
+    file_path = f"/faculty_{user[4]}/direction_{file[7]}/course_{file[3]}/sub_{file[4]}/{file[1]}"
+    ya.delete_file_from_yadisk(file_path)
+    db.delete_file_by_file_id(file_id_in_db)
+
+    msg = "Файл удален"
+    buttons = [
+        [types.InlineKeyboardButton(text="Главное меню", callback_data="main_menu")]
+    ]
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
 async def download_file(chat_id, parse_callback, bot, message_id):

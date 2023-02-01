@@ -151,6 +151,15 @@ def get_files_in_profile_page(user_id):
     return records
 
 
+def delete_file_by_file_id(file_id):
+    try:
+        cur.execute("DELETE FROM files WHERE file_id = %s", (file_id,))
+    except psycopg2.Error as e:
+        print(e)
+        pass
+    conn.commit()
+
+
 # subjects -----------------------------
 
 def get_subjects(course, direction):

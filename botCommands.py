@@ -25,6 +25,10 @@ async def upload_to_yadisk(file_id, download_path, bot: aiogram.Bot):
     y.upload_url(download_url, path + download_path[-1])
 
 
+def delete_file_from_yadisk(filePath):
+    y.remove(filePath, permanently=True)
+
+
 async def download_from_yadisk(chat_id, download_path, caption, bot: aiogram.Bot):
     file_url = y.get_download_link(download_path)
     print(file_url)
