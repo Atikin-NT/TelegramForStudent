@@ -28,7 +28,7 @@ async def prfMenu(callback: types.CallbackQuery):
     elif "sfl" in callback_data:
         await showFl.switchFun(callback, bot)
     elif "upld" in callback_data:
-        await uploadFile.switchFun(callback_data, callback.from_user.id, bot)
+        await uploadFile.switchFun(callback, bot)
     elif "prf" in callback_data:
         await profileMenu.switchFun(callback)
     elif "fop" in callback_data:
@@ -75,10 +75,14 @@ async def input_text(msg: types.Message):
         await bot.send_message(msg.chat.id, "Приветики, мое солнышко 😘")
     elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
         print("send_massive_mess")
+    elif len(session) != 0 and len(session[0]) != 0:
+        if len(session[0][1].split("|")) == 4:
+            await uploadFile.rename_file_new_name(msg.chat.id, msg.message_id, msg.text, bot)
         # bot.send_massive_message(msg["message"]["chat"]["id"], msg["message"]["text"])
     else:
-        print("showFl")
-        await showFl.list_files_by_name(msg.chat.id, msg.text, msg.message_id + 1, bot)
+        pass
+        # print("showFl")
+        # await showFl.list_files_by_name(msg.chat.id, msg.text, msg.message_id + 1, bot)
     print(message)
 
 

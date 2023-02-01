@@ -63,11 +63,21 @@ def get_all_users():
 
 def insert_file(filename, user_id, course, subject, direction):
     try:
+        cur.execute("SELECT file_id, filename FROM files WHERE owner = %s", (user_id,))
+    except psycopg2.Error as e:
+        print(e)
+    records = cur.fetchall()
+    for i in range(len(records)):
+        if filename == records[i][1]:
+            return records[i][0]
+
+    try:
         cur.execute("INSERT INTO files (filename, owner, course, subject, direction_id) VALUES (%s, %s, %s, %s, %s)", (filename, user_id, course, subject, direction,))
     except psycopg2.Error as e:
         print(e)
         pass
     conn.commit()
+    return -1
 
 
 def get_files_by_user(user_id, course, subject, direction):
