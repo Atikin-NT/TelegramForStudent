@@ -49,7 +49,7 @@ async def delete_file_approve(chat_id, parse_callback, bot, message_id):
     file_id_in_db = parse_callback.split("_")[-1]
     file = db.get_files_by_file_id(file_id_in_db)[0]
     user = db.get_user_by_id(chat_id)[0]
-    file_path = f"/faculty_{user[4]}/direction_{file[7]}/course_{file[3]}/sub_{file[4]}/{file[1]}"
+    file_path = f"/faculty_{user[4]}/direction_{file[7]}/course_{file[3]}/sub_{file[4]}/{file[1]}.pdf"
     ya.delete_file_from_yadisk(file_path)
     db.delete_file_by_file_id(file_id_in_db)
 

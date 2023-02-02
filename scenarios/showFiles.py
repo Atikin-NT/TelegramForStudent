@@ -97,7 +97,7 @@ async def show_files_list(chat_id, callback_query, message_id, bot: aiogram.Bot)
 
 
 async def show_file_info(chat_id, file_id, bot: aiogram.Bot, message_id):
-    file_id = file_id.split("_")[-2]
+    file_id = file_id.split("_")[-1]
     user = db.get_user_by_id(chat_id)[0]
     file = db.get_files_by_file_id(file_id)
     msg = mess_about_file(file)

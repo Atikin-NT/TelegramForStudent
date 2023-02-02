@@ -26,7 +26,10 @@ async def upload_to_yadisk(file_id, download_path, bot: aiogram.Bot):
 
 
 def delete_file_from_yadisk(filePath):
-    y.remove(filePath, permanently=True)
+    try:
+        y.remove(filePath, permanently=True)
+    except Exception as ex:
+        print(ex)
 
 
 async def download_from_yadisk(chat_id, download_path, caption, bot: aiogram.Bot):
