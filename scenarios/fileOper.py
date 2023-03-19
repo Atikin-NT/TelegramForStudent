@@ -1,5 +1,5 @@
 import aiogram.types
-import database as db
+from database import db
 import yaDisk as ya
 from aiogram import types
 

@@ -1,7 +1,5 @@
 import aiogram.types
-
-import database as db
-import scenarios.findUser as findUser
+from database import db
 import scenarios.uploadFile as uploadFile
 import scenarios.showFiles as showFiles
 from app import bot

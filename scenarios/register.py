@@ -1,5 +1,5 @@
 import aiogram
-import database as db
+from database import db
 import scenarios.profileMenu as profileMenu
 from aiogram import types
 

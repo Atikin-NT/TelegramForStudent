@@ -1,7 +1,7 @@
 import json
 import logging
 from aiogram import Bot, Dispatcher, executor, types
-import database as db
+from database import db
 import scenarios.profileMenu as profileMenu
 import scenarios.register as reg
 import scenarios.showFiles as showFl
@@ -93,8 +93,10 @@ async def input_text(msg: types.Message):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="log.txt",
+    logging.basicConfig(filename="app.log",
                         level=logging.INFO,
-                        format="%(asctime)s %(message)s",
+                        format="%(asctime)s %(levelname)s %(message)s",
                         filemode="w")
+    # tmp = db.DataBase()
+    # tmp.insert_user("shdbj", "sdoifhnsdfklsjdfjk")
     executor.start_polling(dp, skip_updates=True)

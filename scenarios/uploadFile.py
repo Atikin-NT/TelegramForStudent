@@ -1,4 +1,4 @@
-import database as db
+from database import db
 import aiogram
 from aiogram import types
 import yaDisk as ya
