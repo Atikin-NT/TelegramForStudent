@@ -1,13 +1,14 @@
 import psycopg2
 import json
 
-f = open('env.json')
-config = json.load(f)
-f.close()
+
+with open('env.json', 'r') as file:
+    config = json.load(file)
+
 DBNAME = config["DBNAME"]
 USER = config["USER"]
 
-conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
+conn = psycopg2.connect(f"dbname={DBNAME} user={USER} password=postgres")
 cur = conn.cursor()
 
 # cur.close()

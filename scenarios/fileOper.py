@@ -1,6 +1,6 @@
 import aiogram.types
 import database as db
-import botCommands as ya
+import yaDisk as ya
 from aiogram import types
 
 

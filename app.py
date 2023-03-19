@@ -47,6 +47,12 @@ async def start(msg: types.Message):
     await bot.send_message(msg.chat.id, "Welcome to this bot\n Type /login to login")
 
 
+@dp.message_handler(commands=['dev'])
+async def start(msg: types.Message):
+    print("start")
+    file = await bot.get_file(file_id="sdfsdf")
+    print(file)
+
 @dp.message_handler(commands=['login'])
 async def start(msg: types.Message):
     print("start_reg")
