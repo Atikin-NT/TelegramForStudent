@@ -1,7 +1,7 @@
-import database as db
+from database import db
 import aiogram
 from aiogram import types
-import botCommands as ya
+import yaDisk as ya
 
 
 async def switchFun(callback: aiogram.types.CallbackQuery, bot):

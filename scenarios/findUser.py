@@ -1,6 +1,5 @@
 import aiogram
-
-import database as db
+from database import db
 from aiogram import types
 
 facultyList = ["IITMM"]
