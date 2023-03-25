@@ -7,7 +7,8 @@ f.close()
 DBNAME = config["DBNAME"]
 USER = config["USER"]
 
-conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
+#conn = psycopg2.connect(f"dbname={DBNAME} user={USER} host=localhost")
+conn = psycopg2.connect("dbname='mydb' user='postgres' password='postgres'")
 cur = conn.cursor()
 
 # cur.close()
@@ -232,3 +233,11 @@ def get_direction_by_id(id):
         pass
     records = cur.fetchall()
     return records
+
+def update_download_counter(file_id):
+    try:
+        cur.execute("UPDATE files SET download_counter = download_counter + 1 WHERE file_id = %s", (file_id,))
+    except psycopg2.Error as e:
+        print(e)
+        pass
+    conn.commit()
