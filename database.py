@@ -19,7 +19,7 @@ cur = conn.cursor()
 
 class DataBase:
     def __init__(self):
-        self.conn = psycopg2.connect(f"dbname={DBNAME} user={USER}")
+        self.conn = psycopg2.connect(f"dbname={DBNAME} user={USER} password = 'postgres'")
         self.cur = self.conn.cursor()
 
     def __del__(self):
