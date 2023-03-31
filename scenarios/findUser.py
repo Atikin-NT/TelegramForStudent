@@ -39,7 +39,7 @@ async def find_by_username(chat_id, username, message_id, bot: aiogram.Bot):
     if len(clear_username_string) != 1:
         await bot.send_message(chat_id=chat_id, text="Вы неправильно ввели **username**")
         return
-    user = db.get_user_by_username(clear_username_string[0][1:])
+    user = db.get_user_by_username(clear_username_string[0][1:])[0]
 
     msg = "Пользователь не найден, срочно пригласите его сюда!"
     buttons = []
