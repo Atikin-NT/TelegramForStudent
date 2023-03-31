@@ -75,6 +75,7 @@ async def download_file(chat_id, parse_callback, bot, message_id):
         ]
         keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
         await bot.send_message(chat_id=chat_id, reply_markup=keyboard, text=msg)
+        db.update_download_counter(parse_callback.replace("fop3_", ""))
     except Exception as ex:
         print(ex)
     print("everything is ok")

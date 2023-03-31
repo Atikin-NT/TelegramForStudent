@@ -250,6 +250,9 @@ class DataBase:
         """
         statement = f"SELECT * FROM directions WHERE direction_id = {id}"
         return self._execute(statement)
+    def update_download_counter(self, file_id):
+        statement = f"UPDATE files SET download_counter = download_counter + 1 WHERE file_id = {file_id}"
+        self._execute(statement)
 
 
 with open('env.json', 'r') as file:
