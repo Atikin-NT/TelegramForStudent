@@ -1,6 +1,7 @@
 import json
 import logging
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from database import db
 import scenarios.profileMenu as profileMenu
 import scenarios.register as reg
@@ -16,8 +17,10 @@ f.close()
 
 TOKEN = config["BOT_TOKEN"]
 
+storage = MemoryStorage()
+
 bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=storage)
 
 
 @dp.callback_query_handler()
@@ -77,8 +80,6 @@ async def input_text(msg: types.Message):
     message = msg.text
     if message[0] == "@":
         await findUser.find_by_username(msg.chat.id, msg.text, msg.message_id, bot)
-    elif "Мр" in message:
-        await bot.send_message(msg.chat.id, "Приветики, мое солнышко 😘")
     elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
         print("send_massive_mess")
     elif len(session) != 0 and len(session[0]) != 0:
