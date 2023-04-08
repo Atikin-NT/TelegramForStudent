@@ -2,7 +2,7 @@ import aiogram.types
 from database import db
 import scenarios.uploadFile as uploadFile
 import scenarios.showFiles as showFiles
-from app import bot
+from create_bot import bot
 from aiogram import types
 
 facultyList = ["IITMM"]

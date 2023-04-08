@@ -2,6 +2,10 @@ import json
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Text
+
+import app
 from database import db
 import scenarios.profileMenu as profileMenu
 import scenarios.register as reg
@@ -10,24 +14,31 @@ import scenarios.uploadFile as uploadFile
 import scenarios.fileOper as fileOper
 import scenarios.findUser as findUser
 import scenarios.admin as admin
+from create_bot import dp, bot
 
-f = open('env.json')
-config = json.load(f)
-f.close()
+# f = open('env.json')
+# config = json.load(f)
+# f.close()
+#
+# TOKEN = config["BOT_TOKEN"]
+#
+# storage = MemoryStorage()
+#
+# bot = Bot(token=TOKEN)
+# dp = Dispatcher(bot, storage=storage)
 
-TOKEN = config["BOT_TOKEN"]
 
-storage = MemoryStorage()
-
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot, storage=storage)
+# @dp.callback_query_handler(Text(equals="register"))
+# async def register(callback: types.CallbackQuery, state: FSMContext):
+#     await reg.switchFun(callback, bot, state)
+reg.register_handle_register(dp)
 
 
 @dp.callback_query_handler()
-async def prfMenu(callback: types.CallbackQuery):
+async def prfMenu(callback: types.CallbackQuery, state: FSMContext):
     callback_data = callback.data
     if "reg" in callback_data:
-        await reg.switchFun(callback, bot)
+        await reg.switchFun(callback, bot, state)
     elif "sfl" in callback_data:
         await showFl.switchFun(callback, bot)
     elif "upld" in callback_data:
@@ -55,6 +66,7 @@ async def start(msg: types.Message):
     print("start")
     file = await bot.get_file(file_id="sdfsdf")
     print(file)
+
 
 @dp.message_handler(commands=['login'])
 async def start(msg: types.Message):
