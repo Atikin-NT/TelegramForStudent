@@ -64,14 +64,14 @@ async def start(msg: types.Message):
 @dp.message_handler(commands=['dev'])
 async def start(msg: types.Message):
     print("start")
-    file = await bot.get_file(file_id="sdfsdf")
+    file = await bot.getё_file(file_id="sdfsdf")
     print(file)
 
 
-@dp.message_handler(commands=['login'])
-async def start(msg: types.Message):
-    print("start_reg")
-    await reg.start(msg.chat.id, msg.from_user.username, msg.message_id, bot)
+# @dp.message_handler(commands=['login'])
+# async def start(msg: types.Message, state: FSMContext):
+#     print("start_reg")
+#     await reg.start(msg.chat.id, msg.from_user.username)
 
 
 @dp.message_handler(commands=['menu'])

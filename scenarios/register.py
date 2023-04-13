@@ -1,3 +1,5 @@
+import logging
+
 import aiogram
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
@@ -29,10 +31,10 @@ async def switchFun(callback: aiogram.types.CallbackQuery,
         pass
 
 
-async def start(callback: aiogram.types.CallbackQuery,
+async def start(message: aiogram.types.Message,
                 state: aiogram.dispatcher.FSMContext):
-    chat_id = callback.message.chat
-    message_id = callback.message.message_id
+    chat_id = message.chat.id
+    message_id = message.message_id
     await bot.delete_message(chat_id, message_id)
     await state.set_state(UserRegisterState.faculty)
     # if username is not None:
@@ -51,9 +53,9 @@ async def start(callback: aiogram.types.CallbackQuery,
 
 async def ask_direction(callback: aiogram.types.CallbackQuery,
                         state: aiogram.dispatcher.FSMContext):
-    chat_id = callback.message.chat
+    chat_id = callback.message.chat.id
     message_id = callback.message.message_id
-    faculty = "IITMM"  # TODO: надо бы таблицы факультетов сделать
+    faculty = 0  # TODO: надо бы таблицы факультетов сделать
     await state.update_data(faculty=faculty)
     await state.set_state(UserRegisterState.direction)
     msg = "На каком направлении вы обучаетесь?"
@@ -73,9 +75,8 @@ async def ask_course(callback: aiogram.types.CallbackQuery,
     await state.update_data(direction=direction)
     await state.set_state(UserRegisterState.course)
 
-    chat_id = callback.message.chat
+    chat_id = callback.message.chat.id
     message_id = callback.message.message_id
-    db.update_session(chat_id, "_" + direction[0])
     msg = "На каком курсе вы обучаетесь?"
     buttons = [
         [types.InlineKeyboardButton(text="1", callback_data="1")],
@@ -92,19 +93,23 @@ async def finish(callback: aiogram.types.CallbackQuery,
     course = int(callback.data)
     chat_id = callback.message.chat
     message_id = callback.message.message_id
-    user_data = state.get_data()
-    print(user_data)
+    user_data = await state.get_data()
+    logging.info(f"Add new user, chat_id = {chat_id}")
 
+    db.update_user_data(
+        user_data['faculty'],
+        user_data['direction'],
+        course,
+        chat_id)
 
-    # facultyList = 0
-    # db.update_user_data(facultyList, data[1], course[0], chat_id)
     msg = "Данные сохранены! Добро пожаловать! ヾ(⌐■_■)ノ♪"
     await callback.answer(text=msg, show_alert=True)
+    await state.finish()
     await profileMenu.show_menu(chat_id, message_id, True)
 
 
 def register_handle_register(dp: aiogram.Dispatcher):
-    dp.register_callback_query_handler(start, Text(equals="register"))
+    dp.register_message_handler(start, commands=['login'])
     dp.register_callback_query_handler(ask_direction, state=UserRegisterState.faculty)
     dp.register_callback_query_handler(ask_course, state=UserRegisterState.direction)
     dp.register_callback_query_handler(finish, state=UserRegisterState.course)
