@@ -33,6 +33,7 @@ from create_bot import dp, bot
 #     await reg.switchFun(callback, bot, state)
 reg.register_handle_register(dp)
 profileMenu.register_handle_profileMenu(dp)
+admin.register_handle_register(dp)
 
 
 # @dp.callback_query_handler()

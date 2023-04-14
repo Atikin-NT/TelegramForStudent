@@ -1,9 +1,7 @@
 import logging
-
 import aiogram.types
 from database import db
 import scenarios.uploadFile as uploadFile
-import scenarios.showFiles as showFiles
 from create_bot import bot
 from aiogram import types
 from aiogram.dispatcher.filters import Text
@@ -24,31 +22,6 @@ def mess_about_user(userData):
 Направление: *{direction}*
 Курс: *{course}*"""
     return msg
-
-# async def switchFun(callback: aiogram.types.CallbackQuery):
-#     callback_query = str(callback.data)
-#     chat_id = callback.from_user.id
-#     message_id = callback.message.message_id
-#     if "prf_setting" in callback_query:
-#         await profile_settings(chat_id, callback_query)
-#     elif callback_query == "prf_info":
-#         await profile_information(chat_id, message_id)
-#     elif "prf_myFiles" in callback_query:
-#         await profile_MyFiles(chat_id, callback_query)
-#     elif "prf_newFile" in callback_query:
-#         await profile_newFile(chat_id, callback_query)
-#     elif "prf_fileListAdmin" in callback_query:
-#         await profile_fileListAdmin(chat_id, callback_query, callback)
-#     elif "prf_fileList" in callback_query:
-#         await profile_fileList(chat_id, callback_query)
-#     elif "prf_findFile_by_Name" in callback_query:
-#         await profile_findFile_by_Name(chat_id, callback_query)
-#     elif "prf_findFile_by_Sub" in callback_query:
-#         await profile_findFile_by_Sub(chat_id, message_id)
-#     elif "prf_findFile" in callback_query:
-#         await profile_findFile(chat_id, callback_query)
-#     else:
-#         pass
 
 
 async def callback_menu(callback: aiogram.types.CallbackQuery,
