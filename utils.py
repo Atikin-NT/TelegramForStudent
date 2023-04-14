@@ -21,3 +21,7 @@ class AdminFileListForApprove(StatesGroup):
 
 class FindFile(StatesGroup):
     startFindFile = State()
+
+
+class Admin(StatesGroup):
+    sendMassiveMessage = State()
