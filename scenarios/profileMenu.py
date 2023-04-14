@@ -1,93 +1,141 @@
+import logging
+
 import aiogram.types
 from database import db
 import scenarios.uploadFile as uploadFile
 import scenarios.showFiles as showFiles
 from create_bot import bot
 from aiogram import types
-
-facultyList = ["IITMM"]
-directionList = ["ФИИТ", "ПМИ"]
+from aiogram.dispatcher.filters import Text
+from utils import *
 
 
 def mess_about_user(userData):
-    username = userData[0][1]
-    data = userData[0][2]
+    username = userData['username']
+    date = userData['login']
 
-    faculty = facultyList[userData[0][4]]
-    direction = directionList[userData[0][5]]
-    course = userData[0][6]
+    faculty = userData['faculty']
+    direction = userData['direction']
+    course = userData['course']
 
     msg = f"""Имя пользователя: *{username}*
-Дата регистрации: *{data}*
+Дата регистрации: *{date}*
 Факультет: *{faculty}*
 Направление: *{direction}*
 Курс: *{course}*"""
     return msg
 
+# async def switchFun(callback: aiogram.types.CallbackQuery):
+#     callback_query = str(callback.data)
+#     chat_id = callback.from_user.id
+#     message_id = callback.message.message_id
+#     if "prf_setting" in callback_query:
+#         await profile_settings(chat_id, callback_query)
+#     elif callback_query == "prf_info":
+#         await profile_information(chat_id, message_id)
+#     elif "prf_myFiles" in callback_query:
+#         await profile_MyFiles(chat_id, callback_query)
+#     elif "prf_newFile" in callback_query:
+#         await profile_newFile(chat_id, callback_query)
+#     elif "prf_fileListAdmin" in callback_query:
+#         await profile_fileListAdmin(chat_id, callback_query, callback)
+#     elif "prf_fileList" in callback_query:
+#         await profile_fileList(chat_id, callback_query)
+#     elif "prf_findFile_by_Name" in callback_query:
+#         await profile_findFile_by_Name(chat_id, callback_query)
+#     elif "prf_findFile_by_Sub" in callback_query:
+#         await profile_findFile_by_Sub(chat_id, message_id)
+#     elif "prf_findFile" in callback_query:
+#         await profile_findFile(chat_id, callback_query)
+#     else:
+#         pass
 
-async def switchFun(callback: aiogram.types.CallbackQuery):
-    callback_query = str(callback.data)
-    chat_id = callback.from_user.id
-    message_id = callback.message.message_id
-    if "prf_setting" in callback_query:
-        await profile_settings(chat_id, callback_query)
-    elif callback_query == "prf_info":
-        await profile_information(chat_id, message_id)
-    elif "prf_myFiles" in callback_query:
-        await profile_MyFiles(chat_id, callback_query)
-    elif "prf_newFile" in callback_query:
-        await profile_newFile(chat_id, callback_query)
-    elif "prf_fileListAdmin" in callback_query:
-        await profile_fileListAdmin(chat_id, callback_query, callback)
-    elif "prf_fileList" in callback_query:
-        await profile_fileList(chat_id, callback_query)
-    elif "prf_findFile_by_Name" in callback_query:
-        await profile_findFile_by_Name(chat_id, callback_query)
-    elif "prf_findFile_by_Sub" in callback_query:
-        await profile_findFile_by_Sub(chat_id, message_id)
-    elif "prf_findFile" in callback_query:
-        await profile_findFile(chat_id, callback_query)
-    else:
-        pass
+
+async def callback_menu(callback: aiogram.types.CallbackQuery,
+                        state: aiogram.dispatcher.FSMContext):
+    """
+    Вызов меню, только через callback
+    :param state: aiogram.dispatcher.FSMContext
+    :param callback: объект aiogram.types.CallbackQuery
+    :return: None
+    """
+    await show_menu(callback.message, state, True)
 
 
-async def show_menu(chat_id, message_id, edit_message):
+async def show_menu(message: aiogram.types.Message,
+                    state: aiogram.dispatcher.FSMContext,
+                    edit=False):
+    """
+    Показывает главное меню
+    :param state: объект aiogram.types.CallbackQuery
+    :param edit: если True, то заменит предыдущее сообщение на меню. Иначе пришлет новым сообщением
+    :param message: объект aiogram.types.Message
+    иначе пришлет меню в виде нового сообщения
+    :return: None
+    """
+    await state.finish()
+
+    chat_id = message.chat.id
+    message_id = message.message_id
     msg = "Меню:"
     buttons = [
-        [types.InlineKeyboardButton(text="Настройки", callback_data=f"prf_setting_{message_id}")],
-        [types.InlineKeyboardButton(text="Информация о приложении", callback_data="prf_info")],
-        [types.InlineKeyboardButton(text="Мои файлы", callback_data=f"prf_myFiles_{message_id}")],
-        [types.InlineKeyboardButton(text="Найти файл", callback_data=f"prf_findFile_{message_id}")]
+        [types.InlineKeyboardButton(text="Настройки", callback_data="menu_setting")],
+        [types.InlineKeyboardButton(text="Информация о приложении", callback_data="menu_info")],
+        [types.InlineKeyboardButton(text="Мои файлы", callback_data="menu_myFiles")],
+        [types.InlineKeyboardButton(text="Найти файл", callback_data="menu_findFile")]
     ]
 
     user_info = db.get_user_by_id(chat_id)
-    if len(user_info) == 0:
+    if user_info is None or len(user_info) == 0:
         return
+
     user_info = user_info[0]
     if user_info[0] == 708133213:
-        buttons.append([types.InlineKeyboardButton(text="Админка", callback_data=f"adm0_{message_id}")])
+        buttons.append([types.InlineKeyboardButton(text="Админка", callback_data="admin_menu")])
 
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    if edit_message:
-        await bot.edit_message_text(text=msg, message_id=message_id, chat_id=chat_id, reply_markup=keyboard)
+    if edit:
+        await bot.edit_message_text(text=msg, chat_id=chat_id, reply_markup=keyboard, message_id=message_id)
     else:
         await bot.send_message(text=msg, chat_id=chat_id, reply_markup=keyboard)
 
 
-async def profile_settings(chat_id, callback_query):
-    message_id = int(callback_query.replace("prf_setting_", ""))
-    print(message_id)
+async def profile_settings(callback: aiogram.types.CallbackQuery):
+    """
+    Категория Настройки. Изменяет последнее сообщение
+    :param callback: объект aiogram.types.CallbackQuery
+    :return: None
+    """
+    message_id = callback.message.message_id
+    chat_id = callback.message.chat.id
+
     user = db.get_user_by_id(chat_id)
+    if user is None or len(user) == 0:
+        logging.error(f"User not found in profile_settings, user_id = {chat_id}")
+        return
+    user = user[0]
     msg = mess_about_user(user)
     buttons = [
-        [types.InlineKeyboardButton(text="Изменить", callback_data="reg9")],
-        [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"main_menu_{message_id}")]
+        [types.InlineKeyboardButton(text="Изменить", callback_data="change_user_data")],
+        [types.InlineKeyboardButton(text="Вернуться назад", callback_data="main_menu")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id, parse_mode=types.ParseMode.MARKDOWN)
+    await bot.edit_message_text(
+        chat_id=chat_id,
+        reply_markup=keyboard,
+        text=msg,
+        message_id=message_id,
+        parse_mode=types.ParseMode.MARKDOWN)
 
 
-async def profile_information(chat_id, message_id):
+async def profile_information(callback: aiogram.types.CallbackQuery):
+    """
+    Краткая информация о нашем боте
+    :param callback: объект aiogram.types.CallbackQuery
+    :return: None
+    """
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
     msg = """
 С помощью этого бота вы можете найти любые файлы при подготовке к контрольным, зачетам и экзаменам.
 Бот предоставляет возможность загружать файлы(в данный момент только форматы pdf), искать файлы по названию или своему факультету/направлению/курсу/предмету
@@ -101,77 +149,124 @@ async def profile_information(chat_id, message_id):
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-async def profile_MyFiles(chat_id, message_id):
-    message_id = message_id.replace("prf_myFiles_", "")
+async def profile_MyFiles(callback: aiogram.types.CallbackQuery):
+    """
+    Меню связанное с файловыми операциями Добавить новый файл|Посмотреть список моих файлов|Вернуться назад
+    Если пользователь админ, то еще появляется кнопка Файлы на одобрение
+    :param callback: объект aiogram.types.CallbackQuery
+    :return: None
+    """
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
     msg = "Возможные действия"
     buttons = [
-        [types.InlineKeyboardButton(text="Добавить новый файл", callback_data=f"prf_newFile_{message_id}")],
-        [types.InlineKeyboardButton(text="Посмотреть список моих файлов", callback_data=f"prf_fileList_{message_id}")],
-        [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"main_menu_{message_id}")]
+        [types.InlineKeyboardButton(text="Добавить новый файл", callback_data="profile_newFile")],
+        [types.InlineKeyboardButton(text="Посмотреть список моих файлов", callback_data="profile_fileList")],
+        [types.InlineKeyboardButton(text="Вернуться назад", callback_data="main_menu")]
     ]
     user_info = db.get_user_by_id(chat_id)
-    if len(user_info) == 0:
+    if user_info is None or len(user_info) == 0:
+        logging.error(f"Пользователь не найден в profile_MyFiles. chat_id={chat_id}")
         return
     user_info = user_info[0]
-    print(user_info)
-    if user_info[3]:
-        buttons.append([types.InlineKeyboardButton(text="Файлы на одобрение", callback_data=f"prf_fileListAdmin_{message_id}")])
+    if user_info['is_admin']:
+        buttons.append([types.InlineKeyboardButton(text="Файлы на одобрение", callback_data="profile_fileListAdmin")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
 
-async def profile_newFile(chat_id, message_id):
-    message_id = message_id.replace("prf_newFile_", "")
-    await uploadFile.ask_course(chat_id, message_id, bot)
+async def profile_newFile(callback: aiogram.types.CallbackQuery,
+                          state: aiogram.dispatcher.FSMContext):
+    """
+    Обработка нажатия на кнопку "загрузить файл"
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return:
+    """
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
+    await state.set_state(UploadFileState.startUploadFile)
+    await uploadFile.ask_course(chat_id, message_id, bot)  #TODO: upload file form
 
 
-async def profile_fileList(chat_id, message_id):
-    message_id = int(message_id.replace("prf_fileList_", ""))
+async def profile_fileList(callback: aiogram.types.CallbackQuery,
+                           state: aiogram.dispatcher.FSMContext):
+    """
+    Выводит список файлов пользователя
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
     filesList = db.get_files_in_profile_page(chat_id)
-    if len(filesList) == 0:
+
+    if filesList is None or len(filesList) == 0:
         await bot.edit_message_text(chat_id=chat_id, text="у вас нет файлов(", message_id=message_id)
         return
+
     msg = "Список ваших файлов:"
     buttons = []
     for file in filesList:
-        buttons.append([types.InlineKeyboardButton(text=f"{file[1]}", callback_data=f"sfl8_{file[0]}_{message_id}")])
-    buttons.append([types.InlineKeyboardButton(text="Назад в меню", callback_data=f"main_menu_{message_id}")])
+        buttons.append([types.InlineKeyboardButton(text=f"{file['filename']}", callback_data=f"{file['file_id']}")])
+    buttons.append([types.InlineKeyboardButton(text="Назад в меню", callback_data=f"main_menu")])
 
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+    await state.set_state(UserFileList.showFile)
 
 
-async def profile_fileListAdmin(chat_id, message_id, callback):
-    message_id = message_id.replace("prf_fileListAdmin_", "")
+async def profile_fileListAdmin(callback: aiogram.types.CallbackQuery,
+                                state: aiogram.dispatcher.FSMContext):
+    """
+    Вывод файлов на одобрение (минимальная админка)
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
     filesList = db.get_files_waiting_for_admin()
-    if len(filesList) == 0:
+    if filesList is None or len(filesList) == 0:
         await callback.answer(text="Файлов на одобрение нет)", show_alert=True)
         return
     msg = "Список файлов на одобрение:"
     buttons = []
     for file in filesList:
-        buttons.append([types.InlineKeyboardButton(text=f"{file[1]}", callback_data=f"sfl8_{file[0]}")])
-    buttons.append([types.InlineKeyboardButton(text="Назад в меню", callback_data=f"main_menu_{message_id}")])
+        buttons.append([types.InlineKeyboardButton(text=f"{file['filename']}", callback_data=f"{file['file_id']}")])
+    buttons.append([types.InlineKeyboardButton(text="Назад в меню", callback_data="main_menu")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+    await state.set_state(AdminFileListForApprove.showFileList)
 
 
-async def profile_findFile(chat_id, message_id):
-    message_id = message_id.replace("prf_findFile_", "")
+async def profile_findFile(callback: aiogram.types.CallbackQuery,
+                           state: aiogram.dispatcher.FSMContext):
+    """
+    Подменю по поиску файлов: Предмету|
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
     msg = "Выполнить поиск по"
     buttons = [
-        [types.InlineKeyboardButton(text="Факультету", callback_data=f"prf_findFile_by_Sub_{message_id}")],
-        [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"main_menu_{message_id}")]
+        [types.InlineKeyboardButton(text="Предмету", callback_data="find_by_subject")],
+        [types.InlineKeyboardButton(text="Вернуться назад", callback_data="main_menu")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+    await state.set_state(FindFile.startFindFile)
 
 
-async def profile_findFile_by_Name(chat_id, message_id):
-    message_id = message_id.replace("prf_findFile_by_Name_", "")
-    db.create_new_session(chat_id, "findFileByName")
-    await bot.edit_message_text(chat_id=chat_id, text="Введите имя файла или ключевое слово", message_id=message_id)
-
-
-async def profile_findFile_by_Sub(chat_id, message_id):
-    await showFiles.ask_subject(chat_id, bot, message_id)
+def register_handle_profileMenu(dp: aiogram.Dispatcher):
+    dp.register_message_handler(show_menu, commands=['menu'], state="*")
+    dp.register_callback_query_handler(callback_menu, Text(equals="main_menu"), state="*")
+    dp.register_callback_query_handler(profile_settings, Text(equals="menu_setting"))
+    dp.register_callback_query_handler(profile_information, Text(equals="menu_info"))
+    dp.register_callback_query_handler(profile_MyFiles, Text(equals="menu_myFiles"))
+    dp.register_callback_query_handler(profile_newFile, Text(equals="profile_newFile"))
+    dp.register_callback_query_handler(profile_fileList, Text(equals="profile_fileList"))
+    dp.register_callback_query_handler(profile_fileListAdmin, Text(equals="profile_fileListAdmin"))
+    dp.register_callback_query_handler(profile_findFile, Text(equals="menu_findFile"))

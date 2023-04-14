@@ -32,28 +32,29 @@ from create_bot import dp, bot
 # async def register(callback: types.CallbackQuery, state: FSMContext):
 #     await reg.switchFun(callback, bot, state)
 reg.register_handle_register(dp)
+profileMenu.register_handle_profileMenu(dp)
 
 
-@dp.callback_query_handler()
-async def prfMenu(callback: types.CallbackQuery, state: FSMContext):
-    callback_data = callback.data
-    if "reg" in callback_data:
-        await reg.switchFun(callback, bot, state)
-    elif "sfl" in callback_data:
-        await showFl.switchFun(callback, bot)
-    elif "upld" in callback_data:
-        await uploadFile.switchFun(callback, bot)
-    elif "prf" in callback_data:
-        await profileMenu.switchFun(callback)
-    elif "fop" in callback_data:
-        await fileOper.switchFun(callback, bot)
-    elif "adm" in callback_data:
-        await admin.switchFun(callback_data, callback.from_user.id, bot)
-    elif "main_menu" in callback_data:
-        await profileMenu.show_menu(callback.from_user.id, callback.message.message_id, True)
-    else:
-        await callback.answer("Неизвестная команда")
-    await callback.answer()
+# @dp.callback_query_handler()
+# async def prfMenu(callback: types.CallbackQuery, state: FSMContext):
+#     callback_data = callback.data
+#     if "reg" in callback_data:
+#         await reg.switchFun(callback, bot, state)
+#     elif "sfl" in callback_data:
+#         await showFl.switchFun(callback, bot)
+#     elif "upld" in callback_data:
+#         await uploadFile.switchFun(callback, bot)
+#     elif "prf" in callback_data:
+#         await profileMenu.switchFun(callback)
+#     elif "fop" in callback_data:
+#         await fileOper.switchFun(callback, bot)
+#     elif "adm" in callback_data:
+#         await admin.switchFun(callback_data, callback.from_user.id, bot)
+#     elif "main_menu" in callback_data:
+#         await profileMenu.show_menu(callback.from_user.id, callback.message.message_id, True)
+#     else:
+#         await callback.answer("Неизвестная команда")
+#     await callback.answer()
 
 
 @dp.message_handler(commands=['start'])
@@ -74,10 +75,10 @@ async def start(msg: types.Message):
 #     await reg.start(msg.chat.id, msg.from_user.username)
 
 
-@dp.message_handler(commands=['menu'])
-async def start(msg: types.Message):
-    print("profileMenu")
-    await profileMenu.show_menu(msg.chat.id, msg.message_id + 1, False)
+# @dp.message_handler(commands=['menu'])
+# async def start(msg: types.Message):
+#     print("profileMenu")
+#     await profileMenu.show_menu(msg.chat.id, msg.message_id + 1, False)
 
 
 @dp.message_handler(content_types=['document'])
