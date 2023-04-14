@@ -10,39 +10,24 @@ from utils import *
 from create_bot import bot
 
 
-async def switchFun(callback: aiogram.types.CallbackQuery,
-                    bot: aiogram.Bot,
-                    state: aiogram.dispatcher.FSMContext):
-    str_callback = str(callback.data)
-    message_id = callback.message.message_id
-    chat_id = callback.from_user.id
-    current_state = await state.get_state()
-
-    if current_state is None:
-        await state.set_state(UserRegisterState.faculty)
-        await ask_direction(chat_id, bot, message_id, state)
-    elif str_callback[3] == "1":  # узнали направление
-        await ask_course(chat_id, str_callback, bot)
-    elif str_callback[3] == "2":  # узнали курс
-        await finish(chat_id, str_callback, callback, bot)
-    elif str_callback[3] == "9":  # узнали курс
-        await start(chat_id, None, message_id, bot)
-    else:
-        pass
+async def change_user_data(callback: aiogram.types.CallbackQuery,
+                           state: aiogram.dispatcher.FSMContext):
+    await start(callback.message, state)
 
 
 async def start(message: aiogram.types.Message,
                 state: aiogram.dispatcher.FSMContext):
     chat_id = message.chat.id
     message_id = message.message_id
+    username = message.from_user.username
+
     await bot.delete_message(chat_id, message_id)
     await state.set_state(UserRegisterState.faculty)
-    # if username is not None:
-    #     user = db.get_user_by_id(chat_id)
-    #     if len(user) != 0 and user[0][4] != -1 and user[0][5] != -1 and user[0][6] != -1:
-    #         await profileMenu.show_menu(chat_id, message_id, False)
-    #         return
-    #     db.insert_user(chat_id, username)
+
+    user = db.get_user_by_id(chat_id)
+    if user is None:
+        db.insert_user(chat_id, username)
+
     msg = "На каком факультете вы обучаетесь?"
     buttons = [
         [types.InlineKeyboardButton(text="ИИТММ", callback_data="register")]
@@ -91,7 +76,7 @@ async def ask_course(callback: aiogram.types.CallbackQuery,
 async def finish(callback: aiogram.types.CallbackQuery,
                  state: aiogram.dispatcher.FSMContext):
     course = int(callback.data)
-    chat_id = callback.message.chat
+    chat_id = callback.message.chat.id
     message_id = callback.message.message_id
     user_data = await state.get_data()
     logging.info(f"Add new user, chat_id = {chat_id}")
@@ -104,12 +89,14 @@ async def finish(callback: aiogram.types.CallbackQuery,
 
     msg = "Данные сохранены! Добро пожаловать! ヾ(⌐■_■)ノ♪"
     await callback.answer(text=msg, show_alert=True)
+    await bot.delete_message(chat_id=chat_id, message_id=message_id)
     await state.finish()
-    await profileMenu.show_menu(chat_id, message_id, True)
+    await profileMenu.show_menu(callback.message, state)
 
 
 def register_handle_register(dp: aiogram.Dispatcher):
     dp.register_message_handler(start, commands=['login'])
+    dp.register_callback_query_handler(change_user_data, Text(equals="change_user_data"))
     dp.register_callback_query_handler(ask_direction, state=UserRegisterState.faculty)
     dp.register_callback_query_handler(ask_course, state=UserRegisterState.direction)
     dp.register_callback_query_handler(finish, state=UserRegisterState.course)

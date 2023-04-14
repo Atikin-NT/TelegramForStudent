@@ -5,3 +5,19 @@ class UserRegisterState(StatesGroup):
     faculty = State()
     direction = State()
     course = State()
+
+
+class UploadFileState(StatesGroup):
+    startUploadFile = State()
+
+
+class UserFileList(StatesGroup):
+    showFile = State()
+
+
+class AdminFileListForApprove(StatesGroup):
+    showFileList = State()
+
+
+class FindFile(StatesGroup):
+    startFindFile = State()
