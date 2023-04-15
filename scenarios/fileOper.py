@@ -79,3 +79,11 @@ async def download_file(chat_id, parse_callback, bot, message_id):
     except Exception as ex:
         print(ex)
     print("everything is ok")
+
+
+def register_handle_fileOper(dp: aiogram.Dispatcher):
+    dp.register_message_handler(start, commands=['login'])
+    dp.register_callback_query_handler(change_user_data, Text(equals="change_user_data"))
+    dp.register_callback_query_handler(ask_direction, state=UserRegisterState.faculty)
+    dp.register_callback_query_handler(ask_course, state=UserRegisterState.direction)
+    dp.register_callback_query_handler(finish, state=UserRegisterState.course)

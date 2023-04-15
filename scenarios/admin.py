@@ -37,7 +37,7 @@ async def send_message_for_all_users(callback: aiogram.types.CallbackQuery,
     await state.set_state(Admin.sendMassiveMessage)
 
 
-def register_handle_register(dp: aiogram.Dispatcher):
+def register_handle_admin(dp: aiogram.Dispatcher):
     dp.register_callback_query_handler(main_menu, Text(equals="admin_menu"))
     dp.register_callback_query_handler(send_message_for_all_users, Text(equals="send_mass_message"))
 

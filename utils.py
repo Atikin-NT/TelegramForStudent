@@ -21,6 +21,9 @@ class AdminFileListForApprove(StatesGroup):
 
 class FindFile(StatesGroup):
     startFindFile = State()
+    askSubject = State()
+    showFile = State()
+    currentFile = State()
 
 
 class Admin(StatesGroup):

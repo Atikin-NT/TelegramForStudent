@@ -12,7 +12,6 @@ import scenarios.register as reg
 import scenarios.showFiles as showFl
 import scenarios.uploadFile as uploadFile
 import scenarios.fileOper as fileOper
-import scenarios.findUser as findUser
 import scenarios.admin as admin
 from create_bot import dp, bot
 
@@ -33,7 +32,8 @@ from create_bot import dp, bot
 #     await reg.switchFun(callback, bot, state)
 reg.register_handle_register(dp)
 profileMenu.register_handle_profileMenu(dp)
-admin.register_handle_register(dp)
+admin.register_handle_admin(dp)
+showFl.register_handle_showFiles(dp)
 
 
 # @dp.callback_query_handler()
@@ -88,23 +88,23 @@ async def send_file(msg: types.Message):
         await uploadFile.upload_document(msg.document, msg.chat.id, msg.message_id, bot)
 
 
-@dp.message_handler()
-async def input_text(msg: types.Message):
-    session = db.get_session(msg.chat.id)
-    message = msg.text
-    if message[0] == "@":
-        await findUser.find_by_username(msg.chat.id, msg.text, msg.message_id, bot)
-    elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
-        print("send_massive_mess")
-    elif len(session) != 0 and len(session[0]) != 0:
-        if len(session[0][1].split("|")) == 4:
-            await uploadFile.rename_file_new_name(msg.chat.id, msg.message_id, msg.text, bot)
-        # bot.send_massive_message(msg["message"]["chat"]["id"], msg["message"]["text"])
-    else:
-        pass
-        # print("showFl")
-        # await showFl.list_files_by_name(msg.chat.id, msg.text, msg.message_id + 1, bot)
-    print(message)
+# @dp.message_handler()
+# async def input_text(msg: types.Message):
+#     session = db.get_session(msg.chat.id)
+#     message = msg.text
+#     if message[0] == "@":
+#         await findUser.find_by_username(msg.chat.id, msg.text, msg.message_id, bot)
+#     elif len(session) != 0 and len(session[0]) != 0 and session[0][1] == "massive_message":
+#         print("send_massive_mess")
+#     elif len(session) != 0 and len(session[0]) != 0:
+#         if len(session[0][1].split("|")) == 4:
+#             await uploadFile.rename_file_new_name(msg.chat.id, msg.message_id, msg.text, bot)
+#         # bot.send_massive_message(msg["message"]["chat"]["id"], msg["message"]["text"])
+#     else:
+#         pass
+#         # print("showFl")
+#         # await showFl.list_files_by_name(msg.chat.id, msg.text, msg.message_id + 1, bot)
+#     print(message)
 
 
 if __name__ == '__main__':
