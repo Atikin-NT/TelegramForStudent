@@ -1,12 +1,16 @@
-from database import db
+import logging
 import aiogram
+from aiogram.dispatcher.filters import Text
+from database import db
 from aiogram import types
+from utils import FindFile
+from create_bot import bot
 
 
-def mess_about_file(fileData, admin=False):
-    filename = fileData[0][1]
-    course = fileData[0][3]
-    subject = fileData[0][4]
+def mess_about_file(fileData):
+    filename = fileData['filename']
+    course = fileData['course']
+    subject = fileData['subject']
     msg = f"""Имя файла: *{filename}*
 Курс: *{course}*
 Предмет: *{subject}*"""
@@ -14,152 +18,142 @@ def mess_about_file(fileData, admin=False):
     return msg
 
 
-async def switchFun(callback: aiogram.types.CallbackQuery, bot):
-    str_callback = str(callback.data)
-    chat_id = callback.from_user.id
+async def ask_subject(callback: aiogram.types.CallbackQuery,
+                      state: aiogram.dispatcher.FSMContext):
+    """
+    Спрашиваем предмет, по которому вывести предметы
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
+    chat_id = callback.message.chat.id
     message_id = callback.message.message_id
-    if str_callback[3] == "0":  # узнали user_id
-        await ask_course(chat_id, str_callback, message_id, bot)
-    elif str_callback[3] == "1":  # узнали какого курса файлы нам нужны
-        await ask_subject(chat_id, bot, message_id)
-    elif str_callback[3] == "2":  # узнали предмет
-        await show_files_list(chat_id, str_callback, message_id, bot)
-    elif str_callback[3] == "3":  # узнали факультет
-        await ask_direction(chat_id, str_callback, bot)
-    elif str_callback[3] == "4":  # узнаем курс
-        await ask_course(chat_id, str_callback, message_id, bot, True)
-    elif str_callback[3] == "6":  # узнали предмет
-        await show_files_list(chat_id, callback, message_id, bot, True)
-    elif str_callback[3] == "8":  # информация о файле
-        await show_file_info(chat_id, str_callback, bot, message_id)
-    else:
-        pass
 
+    user = db.get_user_by_id(chat_id)
+    if user is None or len(user) == 0:
+        logging.error(f"Пользователь не найден в функции ask_subject в showFiles, chat_id={chat_id}")
+        return
+    user = user[0]
 
-async def ask_course(chat_id, owner_file_id, message_id, bot: aiogram.Bot, findFile=False):
-    sflId = 1
-    if not findFile:
-        owner_file_id = owner_file_id.replace("sfl0_", "").split("_")
-        db.delete_session(chat_id)
-        db.create_new_session(chat_id, owner_file_id[0])
-    else:
-        owner_file_id = owner_file_id.replace("sfl4_", "").split("_")
-        db.update_session(chat_id, "_" + owner_file_id[0])
-        sflId = 5
-    msg = "Файлы какого курса обучения?"
-    buttons = [
-        [types.InlineKeyboardButton(text="1", callback_data=f"sfl{sflId}_1_{message_id}")],
-        [types.InlineKeyboardButton(text="2", callback_data=f"sfl{sflId}_2_{message_id}")],
-        [types.InlineKeyboardButton(text="3", callback_data=f"sfl{sflId}_3_{message_id}")],
-        [types.InlineKeyboardButton(text="4", callback_data=f"sfl{sflId}_4_{message_id}")],
-    ]
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
-
-
-async def ask_subject(chat_id, bot: aiogram.Bot, message_id):
-    user = db.get_user_by_id(chat_id)[0]
-    course = user[6]
-    direction = user[5]
+    course = user['course']
+    direction = user['direction']
     subjects = db.get_subjects(course, direction)
+    if subjects is None:
+        logging.error(f"Предметы не найдены в функции ask_subject в showFiles, chat_id={chat_id}")
+        return
+
     msg = "Какой предмет?"
     buttons = []
     for sub in subjects:
-        buttons.append([types.InlineKeyboardButton(text=f"{sub[1]}", callback_data=f"sfl2_{sub[0]}")])
+        buttons.append([types.InlineKeyboardButton(text=f"{sub['name']}", callback_data=f"{sub['sub_id']}")])
     buttons.append([types.InlineKeyboardButton(text="Главное меню", callback_data="main_menu")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+    await state.set_state(FindFile.askSubject)
 
 
-async def show_files_list(chat_id, callback_query, message_id, bot: aiogram.Bot):
-    data = callback_query.split("_")
-    user = db.get_user_by_id(chat_id)[0]
-    direction = user[5]
-    course = user[6]
-    subject = data[-1]
+async def show_files_list(callback: aiogram.types.CallbackQuery,
+                          state: aiogram.dispatcher.FSMContext):
+    """
+    Показываем список файлов
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
+    state_data = await state.get_data()
+
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
+
+    user = db.get_user_by_id(chat_id)
+    if user is None or len(user) == 0:
+        logging.error(f"Пользователь не найден в функции show_files_list в showFiles, chat_id={chat_id}")
+        return
+    user = user[0]
+
+    course = user['course']
+    direction = user['direction']
+    if len(state_data) == 0:
+        subject = int(callback.data)
+    else:
+        subject = state_data['']
     filesList = db.get_files_by_faculty(0, course, subject, direction)
+    if filesList is None:
+        logging.error(f"Файл не найден, ошибка в функции show_files_list, chat_id={chat_id}")
+        return
     if len(filesList) == 0:
         buttons = [
             [types.InlineKeyboardButton(text="Вернуться назад", callback_data="sfl1")]
         ]
         keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-        await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text="Файлов не найдено(", message_id=message_id)
+        await bot.edit_message_text(
+            chat_id=chat_id,
+            reply_markup=keyboard,
+            text="Файлов не найдено(",
+            message_id=message_id)
+        await state.set_state(FindFile.askSubject)
         return
 
     msg = "Какой файл вы хотите посмотреть?"
     buttons = []
     for file in filesList:
-        if file[5] or user[3]:
-            buttons.append([types.InlineKeyboardButton(text=f"{file[1]}", callback_data=f"sfl8_{file[0]}")])
-    buttons.append([types.InlineKeyboardButton(text="Вернуться назад", callback_data="sfl1")])
+        if file['admin_check'] or user['is_admin']:
+            buttons.append([types.InlineKeyboardButton(text=f"{file['filename']}", callback_data=f"{file['file_id']}")])
+
+    buttons.append([types.InlineKeyboardButton(text="Вернуться назад", callback_data="ask_subject")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+    await state.set_state(FindFile.showFile)
 
 
-async def show_file_info(chat_id, file_id, bot: aiogram.Bot, message_id):
-    file_id = file_id.split("_")[-1]
-    user = db.get_user_by_id(chat_id)[0]
+async def show_file_info(callback: aiogram.types.CallbackQuery,
+                         state: aiogram.dispatcher.FSMContext):
+    """
+    Показыываем информацию о конкретном файле
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
+    file_id = int(callback.data)
+
+    user = db.get_user_by_id(chat_id)
+    if user is None or len(user) == 0:
+        logging.error(f"Пользователь не найден в функции show_file_info в showFiles, chat_id={chat_id}")
+        return
+    user = user[0]
+
     file = db.get_files_by_file_id(file_id)
+    if file is None or len(file) == 0:
+        logging.error(f"Файл не найден в функции show_file_info в showFiles, chat_id={chat_id}")
+        return
+    file = file[0]
+
     msg = mess_about_file(file)
     buttons = [
-        [types.InlineKeyboardButton(text="Скачать", callback_data=f"fop3_{file[0][0]}")],
-        [types.InlineKeyboardButton(text="Вернуться назад", callback_data=f"sfl2_{file[0][4]}")]
+        [types.InlineKeyboardButton(text="Скачать", callback_data="download")],
+        [types.InlineKeyboardButton(text="Вернуться назад", callback_data="show_files_list")]
     ]
-    if user[0] == file[0][2] or user[3]:
-        buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data=f"fop2_{file[0][0]}")])
-    if user[3]:
-        if file[0][5]:
-            buttons.append([types.InlineKeyboardButton(text="Заблокировать", callback_data=f"fop1_{file[0][0]}")])
+    if user['user_id'] == file['owner'] or user['is_admin']:
+        buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data="delete")])
+    if user['is_admin']:
+        if file['admin_check']:
+            buttons.append([types.InlineKeyboardButton(text="Заблокировать", callback_data="ban")])
         else:
-            buttons.append([types.InlineKeyboardButton(text="Одобрить", callback_data=f"fop0_{file[0][0]}")])
+            buttons.append([types.InlineKeyboardButton(text="Одобрить", callback_data="un_bun")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id, parse_mode=types.ParseMode.MARKDOWN)
+    await state.set_state(FindFile.currentFile)
+    await state.update_data(sub_id=file['file_id'])
+    await state.update_data(file_id=file['file_id'])
 
 
-async def ask_faculty(chat_id, message_id, bot: aiogram.Bot):
-    msg = "В каком факультете вы обучаетесь?"
-    buttons = [
-        [types.InlineKeyboardButton(text="IITMM", callback_data=f"sfl3_IITMM_{message_id}")]
-    ]
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+def register_handle_showFiles(dp: aiogram.Dispatcher):
+    dp.register_callback_query_handler(ask_subject, state=FindFile.startFindFile)
+    dp.register_callback_query_handler(ask_subject, Text(equals="ask_subject"), state=FindFile.showFile)
 
+    dp.register_callback_query_handler(show_files_list, state=FindFile.askSubject)
+    dp.register_callback_query_handler(show_files_list, Text(equals="show_files_list"), state=FindFile.currentFile)
 
-async def ask_direction(chat_id, faculty, bot: aiogram.Bot):
-    faculty = faculty.replace("sfl3_", "").split("_")
-    db.update_session(chat_id, faculty[0])
-    message_id = int(faculty[1])
-    msg = "На каком направлении вы обучаетесь?"
-    direction_list = db.get_all_directions()
-    buttons = []
-    for direction in direction_list:
-        buttons.append([types.InlineKeyboardButton(text=f"{direction[1]}", callback_data=f"sfl4_{direction[0]}_{message_id}")])
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
-
-
-async def list_files_by_name(chat_id, name, message_id, bot: aiogram.Bot):
-    session = db.get_session(chat_id)
-    if len(session) == 0:
-        await bot.send_message(chat_id, "Я не понимаю, чего вы хотите 😞")
-        return
-    db.delete_session(chat_id)
-    data = session[0][1].split("_")
-    if len(data) != 1:
-        await bot.send_message(chat_id, "Произошла ошибка. Попробуйте заново")
-        return
-    name = "".join(c for c in name if c.isalnum())
-    if len(name) < 2:
-        await bot.send_message(chat_id, "Недопустимое сообщние для поиска. Сообщение не может быть слишком коротким или не включать буквы с цифрами")
-        return
-    filesList = db.get_files_by_name(name)
-    if len(filesList) == 0:
-        await bot.send_message(chat_id, "Файлов не найдено(")
-        return
-    msg = "Какой файл вы хотите посмотреть?"
-    buttons = []
-    for file in filesList:
-        buttons.append([types.InlineKeyboardButton(text=f"{file[1]}", callback_data=f"sfl8_{file[0]}_{message_id}")])
-    buttons.append([types.InlineKeyboardButton(text="Назад в меню", callback_data=f"main_menu_{message_id}")])
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.send_message(chat_id=chat_id, reply_markup=keyboard, text=msg)
+    dp.register_callback_query_handler(show_file_info, state=FindFile.showFile)

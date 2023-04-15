@@ -1,7 +1,5 @@
 import logging
-
 import aiogram
-from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from database import db
 import scenarios.profileMenu as profileMenu
@@ -12,11 +10,23 @@ from create_bot import bot
 
 async def change_user_data(callback: aiogram.types.CallbackQuery,
                            state: aiogram.dispatcher.FSMContext):
+    """
+    Изменение настроек пользователя, только через callback
+    :param state: aiogram.dispatcher.FSMContext
+    :param callback: объект aiogram.types.CallbackQuery
+    :return: None
+    """
     await start(callback.message, state)
 
 
 async def start(message: aiogram.types.Message,
                 state: aiogram.dispatcher.FSMContext):
+    """
+    Вопрос про направление
+    :param message: объект aiogram.types.Message
+    :param state: aiogram.dispatcher.FSMContext
+    :return:
+    """
     chat_id = message.chat.id
     message_id = message.message_id
     username = message.from_user.username
@@ -38,6 +48,12 @@ async def start(message: aiogram.types.Message,
 
 async def ask_direction(callback: aiogram.types.CallbackQuery,
                         state: aiogram.dispatcher.FSMContext):
+    """
+    Спрашиваем направление у пользователя
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
     chat_id = callback.message.chat.id
     message_id = callback.message.message_id
     faculty = 0  # TODO: надо бы таблицы факультетов сделать
@@ -51,11 +67,16 @@ async def ask_direction(callback: aiogram.types.CallbackQuery,
         break
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
-    print("ok")
 
 
 async def ask_course(callback: aiogram.types.CallbackQuery,
                      state: aiogram.dispatcher.FSMContext):
+    """
+    Спрашиваем курс, на котором учится наш пользователь
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
     direction = int(callback.data)
     await state.update_data(direction=direction)
     await state.set_state(UserRegisterState.course)
@@ -75,6 +96,12 @@ async def ask_course(callback: aiogram.types.CallbackQuery,
 
 async def finish(callback: aiogram.types.CallbackQuery,
                  state: aiogram.dispatcher.FSMContext):
+    """
+    Записываем всю полученную информацию в базу данных
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
     course = int(callback.data)
     chat_id = callback.message.chat.id
     message_id = callback.message.message_id
