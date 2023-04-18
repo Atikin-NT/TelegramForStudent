@@ -156,10 +156,7 @@ async def profile_newFile(callback: aiogram.types.CallbackQuery,
     :param state: aiogram.dispatcher.FSMContext
     :return:
     """
-    chat_id = callback.message.chat.id
-    message_id = callback.message.message_id
-    await state.set_state(UploadFileState.startUploadFile)
-    await uploadFile.ask_course(chat_id, message_id, bot)  #TODO: upload file form
+    await uploadFile.ask_course(callback, state)
 
 
 async def profile_fileList(callback: aiogram.types.CallbackQuery,
@@ -210,7 +207,7 @@ async def profile_fileListAdmin(callback: aiogram.types.CallbackQuery,
     buttons.append([types.InlineKeyboardButton(text="Назад в меню", callback_data="main_menu")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
-    await state.set_state(AdminFileListForApprove.showFileList)
+    await state.set_state(FindFile.showFile)
 
 
 async def profile_findFile(callback: aiogram.types.CallbackQuery,

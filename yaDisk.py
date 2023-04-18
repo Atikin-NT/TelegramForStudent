@@ -14,7 +14,7 @@ y = yadisk.YaDisk(token=YA_TOKEN)
 
 
 async def upload_to_yadisk(file_id: str,
-                           download_path: str,
+                           download_path: list[str],
                            bot: aiogram.Bot):
     """
     Загружает файл на Яндекс диск
