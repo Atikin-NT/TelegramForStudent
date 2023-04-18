@@ -34,6 +34,7 @@ reg.register_handle_register(dp)
 profileMenu.register_handle_profileMenu(dp)
 admin.register_handle_admin(dp)
 showFl.register_handle_showFiles(dp)
+uploadFile.register_handle_uploadFile(dp)
 
 
 # @dp.callback_query_handler()

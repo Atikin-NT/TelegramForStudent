@@ -32,7 +32,7 @@ class DataBase:
         :param username: username в телеграме
         :return:
         """
-        statement = f"INSERT INTO users (user_id, username) VALUES ({user_id}, {username})"
+        statement = f"INSERT INTO users (user_id, username) VALUES ({user_id}, '{username}')"
         self._execute(statement)
     def update_user_data(self,
                          faculty: int,
@@ -77,31 +77,25 @@ class DataBase:
                     user_id: int,
                     course: int,
                     subject: int,
-                    direction: int) -> int:
+                    direction: int) -> int | None:
         """
         :param filename: имя файла
         :param user_id: id в телеграме
         :param course: курс обучения
         :param subject: id предмета
         :param direction: id направления
-        :return: Если произошла ошибка в запросах, то ответ будет -2. В случае успеха вернется -1, иначе id файла с
-        таким же именем
+        :return: Если найден файл с таким же названием, то вернется id этого файла из нашел базы, иначе - None
         """
         statement = f"SELECT file_id, filename FROM files WHERE owner = {user_id}"
         owner_files = self._execute(statement)
-        if owner_files is None:
-            return -2
+        if owner_files is not None:
+            for i in range(len(owner_files)):
+                if filename == owner_files[i][1]:
+                    return owner_files[i][0]
 
-        for i in range(len(owner_files)):
-            if filename == owner_files[i][1]:
-                return owner_files[i][0]
-
-        statement = f"INSERT INTO files (filename, owner, course, subject, direction_id) VALUES ({filename}, {user_id}, " \
-                    f"{course}, {subject}, {direction})"
+        statement = f"INSERT INTO files (filename, owner, course, subject, direction_id) VALUES ('{filename}', " \
+                    f"{user_id}, {course}, {subject}, {direction})"
         res = self._execute(statement)
-        if res is None:
-            return -2
-        return -1
     def get_files_by_user(self,
                           user_id: int,
                           course: int,

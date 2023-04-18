@@ -8,7 +8,10 @@ class UserRegisterState(StatesGroup):
 
 
 class UploadFileState(StatesGroup):
-    startUploadFile = State()
+    course = State()
+    subject = State()
+    wait_for_file = State()
+    reloadFile = State()
 
 
 class UserFileList(StatesGroup):
