@@ -60,14 +60,5 @@ async def download_from_yadisk(chat_id: int,
     :return:
     """
     file_url = y.get_download_link(download_path)
-    print(file_url)
     file = InputFile.from_url(url=file_url, filename=caption)
     await bot.send_document(chat_id=chat_id, document=file)
-
-
-# def send_massive_message(user_id, message):
-#     db.delete_session(user_id)
-#     users = db.get_all_users()
-#     for user in users:
-#         send_message(user[0], message, False)
-#     send_message(user_id, f"Сообщение отправлено {len(users)} пользователям")

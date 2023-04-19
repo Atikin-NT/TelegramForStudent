@@ -1,5 +1,4 @@
 import logging
-
 import aiogram.types
 from database import db
 import yaDisk as ya
@@ -92,8 +91,7 @@ async def download_file(callback: aiogram.types.CallbackQuery,
         await bot.send_message(chat_id=chat_id, reply_markup=keyboard, text=msg)
         db.update_download_counter(data['file_id'])
     except Exception as ex:
-        print(ex)
-    print("everything is ok")
+        logging.error(f"ошибка в download_file, ex={ex}")
 
 
 def register_handle_fileOper(dp: aiogram.Dispatcher):
