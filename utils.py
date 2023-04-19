@@ -31,3 +31,4 @@ class FindFile(StatesGroup):
 
 class Admin(StatesGroup):
     sendMassiveMessage = State()
+    deleteFile = State()
