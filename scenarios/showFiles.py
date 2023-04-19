@@ -76,7 +76,7 @@ async def show_files_list(callback: aiogram.types.CallbackQuery,
     if len(state_data) == 0:
         subject = int(callback.data)
     else:
-        subject = state_data['']
+        subject = state_data['subject']
     filesList = db.get_files_by_faculty(0, course, subject, direction)
     if filesList is None:
         logging.error(f"Файл не найден, ошибка в функции show_files_list, chat_id={chat_id}")
@@ -109,7 +109,7 @@ async def show_files_list(callback: aiogram.types.CallbackQuery,
 async def show_file_info(callback: aiogram.types.CallbackQuery,
                          state: aiogram.dispatcher.FSMContext):
     """
-    Показыываем информацию о конкретном файле
+    Показываем информацию о конкретном файле
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -136,7 +136,8 @@ async def show_file_info(callback: aiogram.types.CallbackQuery,
         [types.InlineKeyboardButton(text="Вернуться назад", callback_data="show_files_list")]
     ]
     if user['user_id'] == file['owner'] or user['is_admin']:
-        buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data="delete")])
+        pass
+        # buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data="delete")])
     if user['is_admin']:
         if file['admin_check']:
             buttons.append([types.InlineKeyboardButton(text="Заблокировать", callback_data="ban")])
@@ -145,7 +146,7 @@ async def show_file_info(callback: aiogram.types.CallbackQuery,
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id, parse_mode=types.ParseMode.MARKDOWN)
     await state.set_state(FindFile.currentFile)
-    await state.update_data(sub_id=file['file_id'])
+    await state.update_data(sub_id=int(callback.data))
     await state.update_data(file_id=file['file_id'])
 
 

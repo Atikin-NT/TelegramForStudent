@@ -35,7 +35,7 @@ profileMenu.register_handle_profileMenu(dp)
 admin.register_handle_admin(dp)
 showFl.register_handle_showFiles(dp)
 uploadFile.register_handle_uploadFile(dp)
-
+fileOper.register_handle_fileOper(dp)
 
 # @dp.callback_query_handler()
 # async def prfMenu(callback: types.CallbackQuery, state: FSMContext):

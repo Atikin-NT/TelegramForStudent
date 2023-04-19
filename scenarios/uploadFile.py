@@ -112,8 +112,8 @@ async def upload_document(message: aiogram.types.Message,
         await state.update_data(file_id=fileID)
         msg = "Файл с таким названием уже существует"
         buttons = [
-            [types.InlineKeyboardButton(text="Изменить название", callback_data="change_name")],
-            [types.InlineKeyboardButton(text="Заменить существующий", callback_data="change_file")],
+            # [types.InlineKeyboardButton(text="Изменить название", callback_data="change_name")],
+            # [types.InlineKeyboardButton(text="Заменить существующий", callback_data="change_file")],
             [types.InlineKeyboardButton(text="Главное меню", callback_data="main_menu")],
         ]
         keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
