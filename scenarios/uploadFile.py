@@ -1,7 +1,5 @@
 import logging
-
 from aiogram.dispatcher.filters import Text
-
 from database import db
 import aiogram
 from aiogram import types

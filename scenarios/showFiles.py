@@ -14,7 +14,6 @@ def mess_about_file(fileData):
     msg = f"""Имя файла: *{filename}*
 Курс: *{course}*
 Предмет: *{subject}*"""
-    print("return")
     return msg
 
 
