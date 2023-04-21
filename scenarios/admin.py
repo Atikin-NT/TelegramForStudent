@@ -8,6 +8,7 @@ from create_bot import bot
 async def main_menu(callback: aiogram.types.CallbackQuery):
     """
     Вывод меню для админа
+
     :param callback: объект aiogram.types.CallbackQuery
     :return:
     """
@@ -26,6 +27,7 @@ async def send_message_for_all_users(callback: aiogram.types.CallbackQuery,
                                      state: aiogram.dispatcher.FSMContext):
     """
     Массовая рассылка по всем пользователям. НЕДОРАБОТАНО!!!
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None

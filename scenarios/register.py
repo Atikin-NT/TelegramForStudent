@@ -12,6 +12,7 @@ async def change_user_data(callback: aiogram.types.CallbackQuery,
                            state: aiogram.dispatcher.FSMContext):
     """
     Изменение настроек пользователя, только через callback
+
     :param state: aiogram.dispatcher.FSMContext
     :param callback: объект aiogram.types.CallbackQuery
     :return: None
@@ -23,6 +24,7 @@ async def start(message: aiogram.types.Message,
                 state: aiogram.dispatcher.FSMContext):
     """
     Вопрос про направление
+
     :param message: объект aiogram.types.Message
     :param state: aiogram.dispatcher.FSMContext
     :return:
@@ -50,6 +52,7 @@ async def ask_direction(callback: aiogram.types.CallbackQuery,
                         state: aiogram.dispatcher.FSMContext):
     """
     Спрашиваем направление у пользователя
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -73,6 +76,7 @@ async def ask_course(callback: aiogram.types.CallbackQuery,
                      state: aiogram.dispatcher.FSMContext):
     """
     Спрашиваем курс, на котором учится наш пользователь
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -98,6 +102,7 @@ async def finish(callback: aiogram.types.CallbackQuery,
                  state: aiogram.dispatcher.FSMContext):
     """
     Записываем всю полученную информацию в базу данных
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None

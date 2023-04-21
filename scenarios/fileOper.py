@@ -12,6 +12,7 @@ async def approve(callback: aiogram.types.CallbackQuery,
                   state: aiogram.dispatcher.FSMContext):
     """
     Функция подтверждения файла (доступна только админам)
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: объект aiogram.dispatcher.FSMContext
     :return: None
@@ -25,6 +26,7 @@ async def disapprove(callback: aiogram.types.CallbackQuery,
                      state: aiogram.dispatcher.FSMContext):
     """
     Функция забанивания файла (доступна только админам)
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: объект aiogram.dispatcher.FSMContext
     :return: None
@@ -38,6 +40,7 @@ async def delete_file(callback: aiogram.types.CallbackQuery,
                       state: aiogram.dispatcher.FSMContext):
     """
     Функция удаления файла (доступна только админам)
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: объект aiogram.dispatcher.FSMContext
     :return: None
@@ -58,6 +61,7 @@ async def download_file(callback: aiogram.types.CallbackQuery,
                         state: aiogram.dispatcher.FSMContext):
     """
     Скачивание файла
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: объект aiogram.dispatcher.FSMContext
     :return: None

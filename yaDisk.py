@@ -2,9 +2,11 @@ import aiogram
 import yadisk
 import json
 from aiogram.types import InputFile
+import os
 
-
-with open('env.json', 'r') as file:
+directory_path = os.path.dirname(os.path.abspath(__file__)) 
+new_path = os.path.join(directory_path, "env.json")
+with open(new_path, 'r') as file:
     config = json.load(file)
 
 TOKEN = config["BOT_TOKEN"]
@@ -18,6 +20,7 @@ async def upload_to_yadisk(file_id: str,
                            bot: aiogram.Bot):
     """
     Загружает файл на Яндекс диск
+
     :param file_id: id файла в телеграме
     :param download_path: путь для сохранения на диске
     :param bot: aiogram Bot
@@ -38,6 +41,7 @@ async def upload_to_yadisk(file_id: str,
 def delete_file_from_yadisk(filePath: str):
     """
     Удаление файла с яндекс диска по определенному пути
+
     :param filePath: путь для удаления на диске
     :return:
     """
@@ -53,6 +57,7 @@ async def download_from_yadisk(chat_id: int,
                                bot: aiogram.Bot):
     """
     Скачивание фала с яндекс диска
+    
     :param chat_id: id пользователя в телеграме
     :param download_path: путь для скачивания с яндекс диска
     :param caption: имя файла, с которым отошлется в телегу
