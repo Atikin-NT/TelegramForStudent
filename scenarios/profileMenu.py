@@ -28,6 +28,7 @@ async def callback_menu(callback: aiogram.types.CallbackQuery,
                         state: aiogram.dispatcher.FSMContext):
     """
     Вызов меню, только через callback
+    
     :param state: aiogram.dispatcher.FSMContext
     :param callback: объект aiogram.types.CallbackQuery
     :return: None
@@ -40,6 +41,7 @@ async def show_menu(message: aiogram.types.Message,
                     edit=False):
     """
     Показывает главное меню
+    
     :param state: объект aiogram.types.CallbackQuery
     :param edit: если True, то заменит предыдущее сообщение на меню. Иначе пришлет новым сообщением
     :param message: объект aiogram.types.Message
@@ -76,6 +78,7 @@ async def show_menu(message: aiogram.types.Message,
 async def profile_settings(callback: aiogram.types.CallbackQuery):
     """
     Категория Настройки. Изменяет последнее сообщение
+    
     :param callback: объект aiogram.types.CallbackQuery
     :return: None
     """
@@ -104,6 +107,7 @@ async def profile_settings(callback: aiogram.types.CallbackQuery):
 async def profile_information(callback: aiogram.types.CallbackQuery):
     """
     Краткая информация о нашем боте
+    
     :param callback: объект aiogram.types.CallbackQuery
     :return: None
     """
@@ -126,6 +130,7 @@ async def profile_MyFiles(callback: aiogram.types.CallbackQuery):
     """
     Меню связанное с файловыми операциями Добавить новый файл|Посмотреть список моих файлов|Вернуться назад
     Если пользователь админ, то еще появляется кнопка Файлы на одобрение
+    
     :param callback: объект aiogram.types.CallbackQuery
     :return: None
     """
@@ -152,6 +157,7 @@ async def profile_newFile(callback: aiogram.types.CallbackQuery,
                           state: aiogram.dispatcher.FSMContext):
     """
     Обработка нажатия на кнопку "загрузить файл"
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return:
@@ -163,6 +169,7 @@ async def profile_fileList(callback: aiogram.types.CallbackQuery,
                            state: aiogram.dispatcher.FSMContext):
     """
     Выводит список файлов пользователя
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -190,6 +197,7 @@ async def profile_fileListAdmin(callback: aiogram.types.CallbackQuery,
                                 state: aiogram.dispatcher.FSMContext):
     """
     Вывод файлов на одобрение (минимальная админка)
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -214,6 +222,7 @@ async def profile_findFile(callback: aiogram.types.CallbackQuery,
                            state: aiogram.dispatcher.FSMContext):
     """
     Подменю по поиску файлов: Предмету|
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None

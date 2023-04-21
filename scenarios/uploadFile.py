@@ -12,6 +12,7 @@ async def ask_course(callback: aiogram.types.CallbackQuery,
                      state: aiogram.dispatcher.FSMContext):
     """
     Спрашиваем какого курса файл
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -35,6 +36,7 @@ async def ask_subject(callback: aiogram.types.CallbackQuery,
                       state: aiogram.dispatcher.FSMContext):
     """
     Спрашиваем предмет для загружаемого файла
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -68,6 +70,7 @@ async def upload_msg(callback: aiogram.types.CallbackQuery,
                      state: aiogram.dispatcher.FSMContext):
     """
     Сообщение о том, чтобы пользователь загрузил файл
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -85,6 +88,7 @@ async def upload_document(message: aiogram.types.Message,
                           state: aiogram.dispatcher.FSMContext):
     """
     Обработка загрузки файла
+    
     :param message: объект aiogram.types.Message
     :param state: aiogram.dispatcher.FSMContext
     :return: None

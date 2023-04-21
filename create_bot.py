@@ -2,10 +2,12 @@ from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 import json
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+import os
 
-f = open('env.json')
-config = json.load(f)
-f.close()
+directory_path = os.path.dirname(os.path.abspath(__file__)) 
+new_path = os.path.join(directory_path, "env.json")
+with open(new_path, 'r') as file:
+    config = json.load(file)
 
 TOKEN = config["BOT_TOKEN"]
 

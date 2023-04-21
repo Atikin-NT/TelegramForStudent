@@ -21,6 +21,7 @@ async def ask_subject(callback: aiogram.types.CallbackQuery,
                       state: aiogram.dispatcher.FSMContext):
     """
     Спрашиваем предмет, по которому вывести предметы
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -55,6 +56,7 @@ async def show_files_list(callback: aiogram.types.CallbackQuery,
                           state: aiogram.dispatcher.FSMContext):
     """
     Показываем список файлов
+
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None
@@ -109,6 +111,7 @@ async def show_file_info(callback: aiogram.types.CallbackQuery,
                          state: aiogram.dispatcher.FSMContext):
     """
     Показываем информацию о конкретном файле
+    
     :param callback: объект aiogram.types.CallbackQuery
     :param state: aiogram.dispatcher.FSMContext
     :return: None

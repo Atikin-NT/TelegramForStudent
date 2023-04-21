@@ -1,7 +1,8 @@
 import logging
 import psycopg2
 import psycopg2.extras
-import json
+import json 
+import os
 
 
 class DataBase:
@@ -51,6 +52,7 @@ class DataBase:
     def get_user_by_id(self, user_id: int) -> list | None:
         """
         Получить пользователя по id телеграма
+
         :param user_id: id в телеграме
         :return: список пользователей или None, если произошла ошибка или пользователь не найден
         """
@@ -59,6 +61,7 @@ class DataBase:
     def get_user_by_username(self, username: str) -> list | None:
         """
         Пользователь по username
+
         :param username:
         :return: список пользователей или None, если произошла ошибка или пользователь не найден
         """
@@ -67,6 +70,7 @@ class DataBase:
     def get_all_users(self) -> list | None:
         """
         Получить список всех пользователей
+
         :return: список пользователей или None, если произошла ошибка или пользовательей нет
         """
         statement = "SELECT user_id FROM users"
@@ -103,6 +107,7 @@ class DataBase:
                           direction: int) -> list | None:
         """
         Получить файл по id пользователя в телеграме
+
         :param user_id: id в телеграме
         :param course: курс обучения
         :param subject: id предмета
@@ -114,6 +119,7 @@ class DataBase:
     def get_files_by_file_id(self, file_id: int) -> list | None:
         """
         Получить файл по id в БД
+
         :param file_id: id файла
         :return: список фалов или None, если произошла ошибка или файла нет
         """
@@ -122,6 +128,7 @@ class DataBase:
     def get_files_waiting_for_admin(self) -> list | None:
         """
         Список фалов, ожидающих одобрения
+
         :return: список фалов или None, если произошла ошибка или файла нет
         """
         statement = "SELECT * FROM files WHERE admin_check = false"
@@ -131,6 +138,7 @@ class DataBase:
                                  status: bool):
         """
         Поменять статус файла "проверено/непроверено админом"
+
         :param file_id: id файла в БД
         :param status: true-проверено, false-нет
         :return:
@@ -144,6 +152,7 @@ class DataBase:
                              direction: int) -> list | None:
         """
         Список предметов по направлению
+
         :param faculty: id факультета
         :param course: курс обучения
         :param subject: id предмета
@@ -155,6 +164,7 @@ class DataBase:
     def get_files_by_name(self, name: str) -> list | None:
         """
         Получить файл по имени
+
         :param name: имя файла
         :return: список файлов или None, если произошла ошибка или файлов не найдено
         """
@@ -164,6 +174,7 @@ class DataBase:
     def get_files_in_profile_page(self, user_id: int) -> list | None:
         """
         Получить список файлов конкретного пользователя
+
         :param user_id: id в телеграме
         :return: список файлов или None, если произошла ошибка или файлов не найдено
         """
@@ -172,6 +183,7 @@ class DataBase:
     def delete_file_by_file_id(self, file_id: int):
         """
         Удалить файл по id файла в БД
+
         :param file_id: id файла
         :return:
         """
@@ -183,6 +195,7 @@ class DataBase:
                      direction: int) -> list | None:
         """
         Получить список предметов по направлению и курсу
+
         :param course: курс обучения
         :param direction: id направения
         :return: список предметов или None, если произошла ошибка или предметов не найдено
@@ -206,6 +219,7 @@ class DataBase:
                        command: str):
         """
         Добавляет к существующей сессии
+
         :param user_id: id в телеграме
         :param command: команда
         :return:
@@ -215,6 +229,7 @@ class DataBase:
     def get_session(self, user_id: int) -> list | None:
         """
         Получить сессию по id в телеграме
+
         :param user_id: id в телеграме
         :return: спиок сессии или None, если произошла ошибка или сессия не найдена
         """
@@ -223,6 +238,7 @@ class DataBase:
     def delete_session(self, user_id: int):
         """
         Удалить сессию по id в телеграме
+
         :param user_id: id в телеграме
         :return:
         """
@@ -232,6 +248,7 @@ class DataBase:
     def get_all_directions(self) -> list | None:
         """
         Получить список всех направлений
+
         :return: список направлений или None, если произошла ошибка или направлений не найдена
         """
         statement = "SELECT * FROM direction"
@@ -239,6 +256,7 @@ class DataBase:
     def get_direction_by_id(self, id: int) -> list | None:
         """
         Получить направление по id в БД
+        
         :param id: id в БД
         :return: список направления или None, если произошла ошибка или направления не найдена
         """
@@ -249,7 +267,9 @@ class DataBase:
         self._execute(statement)
 
 
-with open('env.json', 'r') as file:
+directory_path = os.path.dirname(os.path.abspath(__file__)) 
+new_path = os.path.join(directory_path, "env.json")
+with open(new_path, 'r') as file:
     config = json.load(file)
 
 DBNAME = config["DBNAME"]
