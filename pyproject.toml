@@ -1,0 +1,15 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+requires-python = ">=3.10"
+name = "TFS"
+dynamic = ["version", "description"]
+
+dependencies = [
+    "aiogram=2.24",
+    "requests=2.28.1",
+    "yadisk=1.2.1",
+    "psycopg2-binary=2.9.5"
+]
