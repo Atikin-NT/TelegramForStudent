@@ -52,6 +52,11 @@ async def switchFun(callback: aiogram.types.CallbackQuery):
 
 
 async def show_menu(chat_id, message_id, edit_message):
+    last_param_to_login = db.get_user_by_id(chat_id)[0][6]
+    if last_param_to_login == -1:
+        msg = "Завершите регистрацию"
+        await bot.send_message(chat_id=chat_id, text=msg)
+        return
     msg = "Меню:"
     buttons = [
         [types.InlineKeyboardButton(text="Настройки", callback_data=f"prf_setting_{message_id}")],

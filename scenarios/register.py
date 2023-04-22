@@ -22,12 +22,16 @@ async def switchFun(callback: aiogram.types.CallbackQuery, bot: aiogram.Bot):
 
 async def start(chat_id, username, message_id, bot):
     await bot.delete_message(chat_id, message_id)
+    #user = db.get_user_by_id(chat_id)
     if username is not None:
         user = db.get_user_by_id(chat_id)
         if len(user) != 0 and user[0][4] != -1 and user[0][5] != -1 and user[0][6] != -1:
             await profileMenu.show_menu(chat_id, message_id, False)
             return
         db.insert_user(chat_id, username)
+    #if user[0][4] != -1:
+    #    types.callback_query = f"reg0_{facultyList[user[0][4]]}_{message_id+1}"
+    #    return
     msg = "В каком факультете вы обучаетесь?"
     buttons = [
         [types.InlineKeyboardButton(text="ИИТММ", callback_data=f"reg0_IITMM_{message_id+1}")]

@@ -35,7 +35,7 @@ async def ask_course(chat_id, message_id, bot: aiogram.Bot):
 async def ask_subject(chat_id, course, bot: aiogram.Bot):
     course = course.replace("upld0_", "").split("_")
     message_id = int(course[1])
-    db.delete_session(chat_id)
+    # db.delete_session(chat_id)
     db.create_new_session(chat_id, course[0])
     user = db.get_user_by_id(chat_id)[0]
     print(user)
@@ -73,7 +73,13 @@ async def upload_document(document :aiogram.types.Document, chat_id, message_id,
 
     print(document)
     if document["mime_type"] != "application/pdf":
-        await bot.send_message(chat_id, "Недопустимый формат (пока только pdf)")
+        #await bot.send_message(chat_id, "Недопустимый формат (пока только pdf)")
+        buttons = [
+            [types.InlineKeyboardButton(text="Вернуться в главное меню", callback_data=f"main_menu_{message_id}")],
+            [types.InlineKeyboardButton(text="Загрузить другой файл", callback_data=f"upld")],
+        ]
+        keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+        await bot.send_message(chat_id=chat_id, reply_markup=keyboard, text="Недопустимый формат (пока только pdf)")
         return
     fileID = document["file_id"]
     insert = db.insert_file(document["file_name"], chat_id, data[0], data[1], user_info[5])
