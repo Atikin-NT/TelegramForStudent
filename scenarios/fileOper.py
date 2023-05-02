@@ -1,10 +1,11 @@
 import logging
+import random
 import aiogram.types
 from database import db
 import yaDisk as ya
 from aiogram import types
 from aiogram.dispatcher.filters import Text
-from create_bot import bot
+from create_bot import bot, ROOT_DIR
 from utils import Admin, FindFile
 
 
@@ -79,9 +80,16 @@ async def download_file(callback: aiogram.types.CallbackQuery,
 
     download_path = f"/faculty_{file_owner['faculty']}/direction_{file['direction_id']}/course_{file['course']}" \
                     f"/sub_{file['subject']}/{file['filename']}"
+    await bot.delete_message(chat_id, message_id)
+
+    animation_id = random.randint(1, 3)
+    animation = open(f"{ROOT_DIR}/static/load_file{animation_id}.gif", "rb")
+    await bot.send_animation(chat_id=chat_id, animation=animation, caption="Пожалуйста подождите, ваш файл загружается")
+    animation.close()
+
     try:
-        await bot.delete_message(chat_id, message_id)
         await ya.download_from_yadisk(chat_id, download_path, file['filename'], bot)
+        await bot.delete_message(chat_id, message_id+1)
 
         msg = "возможные действия:"
         buttons = [
@@ -91,6 +99,8 @@ async def download_file(callback: aiogram.types.CallbackQuery,
         await bot.send_message(chat_id=chat_id, reply_markup=keyboard, text=msg)
         db.update_download_counter(data['file_id'])
     except Exception as ex:
+        await bot.delete_message(chat_id, message_id + 1)
+        await bot.send_message(chat_id=chat_id, text="Произошла ошибка, напишите пожалуйста в тех поддержку")
         logging.error(f"ошибка в download_file, ex={ex}")
 
 
