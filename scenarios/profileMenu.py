@@ -59,7 +59,8 @@ async def show_menu(message: aiogram.types.Message,
         [types.InlineKeyboardButton(text="Настройки", callback_data="menu_setting")],
         [types.InlineKeyboardButton(text="Информация о приложении", callback_data="menu_info")],
         [types.InlineKeyboardButton(text="Мои файлы", callback_data="menu_myFiles")],
-        [types.InlineKeyboardButton(text="Найти файл", callback_data="menu_findFile")]
+        [types.InlineKeyboardButton(text="Найти файл", callback_data="menu_findFile")],
+        [types.InlineKeyboardButton(text="Обратная связь", callback_data="menu_feedback")]
     ]
 
     user_info = db.get_user_by_id(chat_id)
@@ -245,6 +246,22 @@ async def profile_findFile(callback: aiogram.types.CallbackQuery,
     await state.set_state(FindFile.startFindFile)
 
 
+async def profile_feedback(callback: aiogram.types.CallbackQuery,
+                           state: aiogram.dispatcher.FSMContext):
+    """
+    Обратная связь для пользователя
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: None
+    """
+    chat_id = callback.message.chat.id
+    msg = "Напишите о вашей проблеме или предложении следующим сообщением. Разработчики рассмотрят вопрос как можно " \
+          "скорее и свяжутся с вами 😉"
+    await bot.send_message(chat_id=chat_id, text=msg)
+    await state.set_state(Admin.feedback)
+    await callback.answer()
+
+
 def register_handle_profileMenu(dp: aiogram.Dispatcher):
     dp.register_message_handler(show_menu, commands=['menu'], state="*")
     dp.register_callback_query_handler(callback_menu, Text(equals="main_menu"), state="*")
@@ -255,3 +272,4 @@ def register_handle_profileMenu(dp: aiogram.Dispatcher):
     dp.register_callback_query_handler(profile_fileList, Text(equals="profile_fileList"))
     dp.register_callback_query_handler(profile_fileListAdmin, Text(equals="profile_fileListAdmin"))
     dp.register_callback_query_handler(profile_findFile, Text(equals="menu_findFile"))
+    dp.register_callback_query_handler(profile_feedback, Text(equals="menu_feedback"))
