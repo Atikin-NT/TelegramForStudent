@@ -50,3 +50,4 @@ class Admin(StatesGroup):
     """
     sendMassiveMessage = State()  # массивная рассылка [НЕ РЕАЛИЗОВАНО]
     deleteFile = State()  # удаление файла [НЕ РЕАЛИЗОВАНО]
+    feedback = State()  # обратная связь для пользователя
