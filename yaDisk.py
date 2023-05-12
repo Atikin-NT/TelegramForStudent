@@ -1,3 +1,5 @@
+import logging
+
 import aiogram
 import yadisk
 import json
@@ -38,7 +40,7 @@ async def upload_to_yadisk(file_id: str,
     y.upload_url(download_url, path + download_path[-1])
 
 
-def delete_file_from_yadisk(filePath: str):
+def delete_file_from_yadisk(filePath: str) -> int:
     """
     Удаление файла с яндекс диска по определенному пути
 
@@ -48,7 +50,9 @@ def delete_file_from_yadisk(filePath: str):
     try:
         y.remove(filePath, permanently=True)
     except Exception as ex:
-        print(ex)
+        logging.error("can't delete from YaDisk")
+        return 1
+    return 0
 
 
 async def download_from_yadisk(chat_id: int,

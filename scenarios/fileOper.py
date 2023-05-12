@@ -1,12 +1,14 @@
 import logging
 import random
 import aiogram.types
+import yaDisk
 from database import db
 import yaDisk as ya
 from aiogram import types
 from aiogram.dispatcher.filters import Text
 from create_bot import bot, ROOT_DIR
-from utils import Admin, FindFile
+from utils import FindFile, UserFileList
+from scenarios.profileMenu import show_menu
 
 
 async def approve(callback: aiogram.types.CallbackQuery,
@@ -55,7 +57,39 @@ async def delete_file(callback: aiogram.types.CallbackQuery,
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
-    await state.set_state(Admin.deleteFile)
+    await state.set_state(UserFileList.deleteFile)
+
+
+async def delete_file_confirm(callback: aiogram.types.CallbackQuery,
+                              state: aiogram.dispatcher.FSMContext):
+    chat_id = callback.message.chat.id
+    message_id = callback.message.message_id
+    state_data = await state.get_data()
+
+    file_id = int(state_data["file_id"])
+    file = db.get_files_by_file_id(file_id)
+    if file is None:
+        logging.error(f"Не удалось удалить файл, file_id={file_id}")
+        return
+    file = file[0]
+    owner = db.get_user_by_id(file['owner'])
+    if owner is None:
+        logging.error(f"не найден создатель файла, user_id={file['owner']}")
+        return
+    owner = owner[0]
+
+    file_path = f"/faculty_{owner['faculty']}/direction_{owner['direction']}/course_{file['course']}" \
+                f"/sub_{file['subject']}/{file['filename']}"
+
+    if yaDisk.delete_file_from_yadisk(file_path):
+        await bot.send_message(chat_id=chat_id, text="Произошла ошибка, пожалуйста напишите сообщение об этом в тех "
+                                                     "поддержку")
+        return
+
+    db.delete_file_by_file_id(file_id)
+
+    await callback.answer(text="Файл удален", show_alert=True)
+    await show_menu(callback.message, state, True)
 
 
 async def download_file(callback: aiogram.types.CallbackQuery,
@@ -112,3 +146,5 @@ def register_handle_fileOper(dp: aiogram.Dispatcher):
     dp.register_callback_query_handler(approve, Text(equals="un_bun"), state=FindFile.currentFile)
     dp.register_callback_query_handler(disapprove, Text(equals="bun"), state=FindFile.currentFile)
     dp.register_callback_query_handler(download_file, Text(equals="download"), state=FindFile.currentFile)
+    dp.register_callback_query_handler(delete_file, Text(equals="delete"), state=FindFile.currentFile)
+    dp.register_callback_query_handler(delete_file_confirm, state=UserFileList.deleteFile)

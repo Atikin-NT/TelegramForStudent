@@ -25,6 +25,7 @@ class UserFileList(StatesGroup):
     Состояние, отвечающее за показ файлов
     """
     showFile = State()  # состояние, что мы показываем файл
+    deleteFile = State()  # удаление файла
 
 
 class AdminFileListForApprove(StatesGroup):

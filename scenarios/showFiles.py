@@ -137,9 +137,8 @@ async def show_file_info(callback: aiogram.types.CallbackQuery,
         [types.InlineKeyboardButton(text="Скачать", callback_data="download")],
         [types.InlineKeyboardButton(text="Вернуться назад", callback_data="show_files_list")]
     ]
-    if user['user_id'] == file['owner'] or user['is_admin']:
-        pass
-        # buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data="delete")])
+    if user['is_admin']:
+        buttons.append([types.InlineKeyboardButton(text="Удалить", callback_data="delete")])
     if user['is_admin']:
         if file['admin_check']:
             buttons.append([types.InlineKeyboardButton(text="Заблокировать", callback_data="ban")])
