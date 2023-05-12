@@ -7,6 +7,8 @@ from aiogram import types
 from aiogram.dispatcher.filters import Text
 from utils import *
 
+MSG_ABOUT_OUR_GROUP = "Подпишитесь на наш канал @telega_for_students, чтобы быть в курсе последних выложенных файлов " \
+                      "и новостей 🤩"
 
 def mess_about_user(userData):
     username = userData['username']
@@ -23,7 +25,6 @@ def mess_about_user(userData):
 Курс: *{course}*"""
     return msg
 
-
 async def callback_menu(callback: aiogram.types.CallbackQuery,
                         state: aiogram.dispatcher.FSMContext):
     """
@@ -34,7 +35,6 @@ async def callback_menu(callback: aiogram.types.CallbackQuery,
     :return: None
     """
     await show_menu(callback.message, state, True)
-
 
 async def show_menu(message: aiogram.types.Message,
                     state: aiogram.dispatcher.FSMContext,
@@ -52,6 +52,16 @@ async def show_menu(message: aiogram.types.Message,
 
     chat_id = message.chat.id
     message_id = message.message_id
+
+    # ----- проверка на наличие человека в нашей группе
+
+    try:
+        await bot.get_chat_member(chat_id="@telega_for_students", user_id=chat_id)
+    except:
+        await bot.send_message(chat_id=chat_id, text=MSG_ABOUT_OUR_GROUP)
+
+    # -----
+
     msg = "Меню:"
     buttons = [
         [types.InlineKeyboardButton(text="Настройки", callback_data="menu_setting")],
@@ -74,7 +84,6 @@ async def show_menu(message: aiogram.types.Message,
         await bot.edit_message_text(text=msg, chat_id=chat_id, reply_markup=keyboard, message_id=message_id)
     else:
         await bot.send_message(text=msg, chat_id=chat_id, reply_markup=keyboard)
-
 
 async def profile_settings(callback: aiogram.types.CallbackQuery):
     """
@@ -104,7 +113,6 @@ async def profile_settings(callback: aiogram.types.CallbackQuery):
         message_id=message_id,
         parse_mode=types.ParseMode.MARKDOWN)
 
-
 async def profile_information(callback: aiogram.types.CallbackQuery):
     """
     Краткая информация о нашем боте
@@ -125,7 +133,6 @@ async def profile_information(callback: aiogram.types.CallbackQuery):
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
-
 
 async def profile_MyFiles(callback: aiogram.types.CallbackQuery):
     """
@@ -153,7 +160,6 @@ async def profile_MyFiles(callback: aiogram.types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
 
-
 async def profile_newFile(callback: aiogram.types.CallbackQuery,
                           state: aiogram.dispatcher.FSMContext):
     """
@@ -164,7 +170,6 @@ async def profile_newFile(callback: aiogram.types.CallbackQuery,
     :return:
     """
     await uploadFile.ask_course(callback, state)
-
 
 async def profile_fileList(callback: aiogram.types.CallbackQuery,
                            state: aiogram.dispatcher.FSMContext):
@@ -193,7 +198,6 @@ async def profile_fileList(callback: aiogram.types.CallbackQuery,
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
     await state.set_state(UserFileList.showFile)
 
-
 async def profile_fileListAdmin(callback: aiogram.types.CallbackQuery,
                                 state: aiogram.dispatcher.FSMContext):
     """
@@ -218,7 +222,6 @@ async def profile_fileListAdmin(callback: aiogram.types.CallbackQuery,
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
     await state.set_state(FindFile.showFile)
 
-
 async def profile_findFile(callback: aiogram.types.CallbackQuery,
                            state: aiogram.dispatcher.FSMContext):
     """
@@ -239,7 +242,6 @@ async def profile_findFile(callback: aiogram.types.CallbackQuery,
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
     await state.set_state(FindFile.startFindFile)
 
-
 async def profile_feedback(callback: aiogram.types.CallbackQuery,
                            state: aiogram.dispatcher.FSMContext):
     """
@@ -254,7 +256,6 @@ async def profile_feedback(callback: aiogram.types.CallbackQuery,
     await bot.send_message(chat_id=chat_id, text=msg)
     await state.set_state(Admin.feedback)
     await callback.answer()
-
 
 def register_handle_profileMenu(dp: aiogram.Dispatcher):
     dp.register_message_handler(show_menu, commands=['menu'], state="*")
