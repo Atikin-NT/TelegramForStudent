@@ -265,12 +265,8 @@ class DataBase:
         return self._execute(statement)
 
     def update_download_counter(self, file_id):
-        try:
-            self.cur.execute("UPDATE files SET download_counter = download_counter + 1 WHERE file_id = %s", (file_id,))
-        except psycopg2.Error as e:
-            print(e)
-            pass
-        self.conn.commit()
+        statement = f"UPDATE files SET download_counter = download_counter + 1 WHERE file_id = {file_id}"
+        self._execute(statement)
 
 
 directory_path = os.path.dirname(os.path.abspath(__file__)) 

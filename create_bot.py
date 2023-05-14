@@ -5,11 +5,11 @@ import os
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import os
 
+directory_path = os.path.dirname(os.path.abspath(__file__)) 
+new_path = os.path.join(directory_path, "env.json")
+with open(new_path, 'r') as file:
+    config = json.load(file)
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-f = open('env.json')
-config = json.load(f)
-f.close()
 
 TOKEN = config["BOT_TOKEN"]
 

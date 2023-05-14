@@ -118,6 +118,7 @@ async def finish(callback: aiogram.types.CallbackQuery,
         user_data['direction'],
         course,
         chat_id)
+
     msg = "Данные сохранены! Добро пожаловать! ヾ(⌐■_■)ノ♪"
     await callback.answer(text=msg, show_alert=True)
     await bot.delete_message(chat_id=chat_id, message_id=message_id)
