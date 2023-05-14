@@ -19,9 +19,9 @@ fileOper.register_handle_fileOper(dp)
 
 @dp.message_handler(commands=['start'])
 async def start(msg: types.Message):
-    await bot.send_message(msg.chat.id, "Добро пожаловать.\nЭтот бот создан для того, чтобы оказать поддержку в процессе твоего обучения.\nУ тебя все получиться ʕ ᵔᴥᵔ ʔ")
+    await bot.send_message(msg.chat.id, "Добро пожаловать.\nЭтот бот создан для того, чтобы оказать поддержку в процессе твоего обучения.\nУ тебя все получится ʕ ᵔᴥᵔ ʔ")
     sleep(5)
-    await bot.send_message(msg.chat.id,"Нажми /login чтобы пройти регистрацию.")
+    await bot.send_message(msg.chat.id,"Нажми /login, чтобы пройти регистрацию.")
 
 if __name__ == '__main__':
     logging.basicConfig(filename="app.log",
