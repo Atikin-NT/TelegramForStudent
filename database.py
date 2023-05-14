@@ -260,5 +260,6 @@ with open('env.json', 'r') as file:
 
 DBNAME = config["DBNAME"]
 USER = config["USER"]
+PASSWORD = config["PASSWORD"]
 
-db = DataBase(DBNAME, USER)
+db = DataBase(DBNAME, USER, PASSWORD)
