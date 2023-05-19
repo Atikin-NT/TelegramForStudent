@@ -1,10 +1,12 @@
 import logging
 import aiogram
 from aiogram.dispatcher.filters import Text
+from aiogram.utils import exceptions
 from database import db
 from aiogram import types
 from utils import FindFile
 from create_bot import bot
+import math
 
 
 def mess_about_file(fileData):
@@ -74,7 +76,7 @@ async def show_files_list(callback: aiogram.types.CallbackQuery,
 
     course = user['course']
     direction = user['direction']
-    if len(state_data) == 0:
+    if 'subject' not in state_data:
         subject = int(callback.data)
     else:
         subject = state_data['subject']
@@ -95,16 +97,59 @@ async def show_files_list(callback: aiogram.types.CallbackQuery,
         await state.set_state(FindFile.askSubject)
         return
 
+    max_page = math.ceil(len(filesList) / 8)
+    if "page" not in state_data:
+        await state.update_data(page=1)
+        page = 1
+    else:
+        page = int(state_data['page'])
+        if page <= 0:
+            page = 1
+            await state.update_data(page=page)
+        if page > max_page:
+            page = max_page
+            await state.update_data(page=page)
+
     msg = "Какой файл вы хотите посмотреть?"
     buttons = []
-    for file in filesList:
+    for file in filesList[8 * (page-1): 8 * page]:
         if file['admin_check'] or user['is_admin']:
             buttons.append([types.InlineKeyboardButton(text=f"{file['filename']}", callback_data=f"{file['file_id']}")])
 
+    buttons.append([
+        types.InlineKeyboardButton(text="◀️", callback_data="page_left"),
+        types.InlineKeyboardButton(text=f"{page} / {max_page}", callback_data="page_none"),
+        types.InlineKeyboardButton(text="▶️", callback_data="page_right"),
+    ])
     buttons.append([types.InlineKeyboardButton(text="Вернуться назад", callback_data="ask_subject")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
-    await state.set_state(FindFile.showFile)
+    try:
+        await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id)
+        await state.set_state(FindFile.showFile)
+        await state.update_data(subject=subject)
+    except aiogram.utils.exceptions.MessageNotModified:
+        await callback.answer()
+
+
+async def page(callback: aiogram.types.CallbackQuery,
+               state: aiogram.dispatcher.FSMContext):
+    """
+    Изменение пагинации
+
+    :param callback: объект aiogram.types.CallbackQuery
+    :param state: aiogram.dispatcher.FSMContext
+    :return: пересылает на функцию show_files_list
+    """
+    callback_data = callback.data
+    state_data = await state.get_data()
+    callback.data = state_data['subject']
+    if callback_data == "page_left":
+        await state.update_data(page=state_data['page'] - 1)
+    elif callback_data == "page_right":
+        await state.update_data(page=state_data['page'] + 1)
+    else:
+        await callback.answer()
+    await show_files_list(callback, state)
 
 
 async def show_file_info(callback: aiogram.types.CallbackQuery,
@@ -147,7 +192,6 @@ async def show_file_info(callback: aiogram.types.CallbackQuery,
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.edit_message_text(chat_id=chat_id, reply_markup=keyboard, text=msg, message_id=message_id, parse_mode=types.ParseMode.MARKDOWN)
     await state.set_state(FindFile.currentFile)
-    await state.update_data(sub_id=int(callback.data))
     await state.update_data(file_id=file['file_id'])
 
 
@@ -157,5 +201,8 @@ def register_handle_showFiles(dp: aiogram.Dispatcher):
 
     dp.register_callback_query_handler(show_files_list, state=FindFile.askSubject)
     dp.register_callback_query_handler(show_files_list, Text(equals="show_files_list"), state=FindFile.currentFile)
+    dp.register_callback_query_handler(page, Text(startswith="page"), state=FindFile.showFile)
+    dp.register_callback_query_handler(page, Text(startswith="page"), state=FindFile.showFile)
+    dp.register_callback_query_handler(page, Text(startswith="page"), state=FindFile.showFile)
 
     dp.register_callback_query_handler(show_file_info, state=FindFile.showFile)
