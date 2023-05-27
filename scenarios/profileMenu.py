@@ -58,15 +58,17 @@ async def show_menu(message: aiogram.types.Message,
 
     # ----- проверка на наличие человека в нашей группе
 
+    msg = ""
+
     try:
         await bot.get_chat_member(chat_id="@telega_for_students", user_id=chat_id)
     except:
-        await bot.send_message(chat_id=chat_id, text=MSG_ABOUT_OUR_GROUP)
-        edit = False
+        msg += MSG_ABOUT_OUR_GROUP
+        msg += "\n"
 
     # -----
 
-    msg = "Меню:"
+    msg += "Меню:"
     buttons = [
         [types.InlineKeyboardButton(text="Настройки", callback_data="menu_setting")],
         [types.InlineKeyboardButton(text="Информация о приложении", callback_data="menu_info")],
