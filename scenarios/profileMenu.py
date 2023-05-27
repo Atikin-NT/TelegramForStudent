@@ -61,7 +61,9 @@ async def show_menu(message: aiogram.types.Message,
     msg = ""
 
     try:
-        await bot.get_chat_member(chat_id="@telega_for_students", user_id=chat_id)
+        tmp = await bot.get_chat_member(chat_id="@telega_for_students", user_id=chat_id)
+        if tmp["status"] == "left":
+            raise Exception("left")
     except:
         msg += MSG_ABOUT_OUR_GROUP
         msg += "\n"
