@@ -53,10 +53,10 @@ async def ask_subject(callback: aiogram.types.CallbackQuery,
         page = int(state_data['page_sub'])
         if page <= 0:
             page = 1
-            await state.update_data(page=page)
+            await state.update_data(page_sub=page)
         if page > max_page:
             page = max_page
-            await state.update_data(page=page)
+            await state.update_data(page_sub=page)
 
     msg = "Какой предмет?"
     buttons = []
@@ -83,6 +83,7 @@ async def show_files_list(callback: aiogram.types.CallbackQuery,
     :param state: aiogram.dispatcher.FSMContext
     :return: None
     """
+    await state.update_data(subject=int(callback.data))
     state_data = await state.get_data()
 
     chat_id = callback.message.chat.id
