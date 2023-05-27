@@ -5,6 +5,7 @@ log.txt
 venv/
 app.log
 *.sql
+*yaml
 docs/_build/
 docs/_static/
 docs/_templates/
