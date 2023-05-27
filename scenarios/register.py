@@ -35,6 +35,7 @@ async def start(message: aiogram.types.Message,
 
     await bot.delete_message(chat_id, message_id)
     await state.set_state(UserRegisterState.faculty)
+    await state.finish()
 
     user = db.get_user_by_id(chat_id)
     if user is None:
@@ -81,7 +82,7 @@ async def ask_course(callback: aiogram.types.CallbackQuery,
     :param state: aiogram.dispatcher.FSMContext
     :return: None
     """
-    direction = int(callback.data)
+    direction = callback.data
     await state.update_data(direction=direction)
     await state.set_state(UserRegisterState.course)
 

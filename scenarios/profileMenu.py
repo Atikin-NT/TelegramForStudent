@@ -10,6 +10,7 @@ from utils import *
 MSG_ABOUT_OUR_GROUP = "Подпишитесь на наш канал @telega_for_students, чтобы быть в курсе последних выложенных файлов " \
                       "и новостей 🤩"
 
+
 def mess_about_user(userData):
     username = userData['username']
     date = userData['login']
@@ -25,6 +26,7 @@ def mess_about_user(userData):
 Курс: *{course}*"""
     return msg
 
+
 async def callback_menu(callback: aiogram.types.CallbackQuery,
                         state: aiogram.dispatcher.FSMContext):
     """
@@ -35,6 +37,7 @@ async def callback_menu(callback: aiogram.types.CallbackQuery,
     :return: None
     """
     await show_menu(callback.message, state, True)
+
 
 async def show_menu(message: aiogram.types.Message,
                     state: aiogram.dispatcher.FSMContext,
@@ -59,6 +62,7 @@ async def show_menu(message: aiogram.types.Message,
         await bot.get_chat_member(chat_id="@telega_for_students", user_id=chat_id)
     except:
         await bot.send_message(chat_id=chat_id, text=MSG_ABOUT_OUR_GROUP)
+        edit = False
 
     # -----
 

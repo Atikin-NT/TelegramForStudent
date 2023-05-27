@@ -8,6 +8,7 @@ import scenarios.uploadFile as uploadFile
 import scenarios.fileOper as fileOper
 import scenarios.admin as admin
 from create_bot import dp, bot
+import aiogram
 
 reg.register_handle_register(dp)
 profileMenu.register_handle_profileMenu(dp)
@@ -18,9 +19,10 @@ fileOper.register_handle_fileOper(dp)
 
 
 @dp.message_handler(commands=['start'])
-async def start(msg: types.Message):
+async def start(msg: types.Message, state: aiogram.dispatcher.FSMContext):
+    await state.finish()
     await bot.send_message(msg.chat.id, "Добро пожаловать.\nЭтот бот создан для того, чтобы оказать поддержку в процессе твоего обучения.\nУ тебя все получится ʕ ᵔᴥᵔ ʔ")
-    sleep(5)
+    sleep(1)
     await bot.send_message(msg.chat.id,"Нажми /login, чтобы пройти регистрацию.")
 
 if __name__ == '__main__':
