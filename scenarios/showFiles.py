@@ -54,9 +54,11 @@ async def ask_subject(callback: aiogram.types.CallbackQuery,
         if page <= 0:
             page = 1
             await state.update_data(page_sub=page)
+            return
         if page > max_page:
             page = max_page
             await state.update_data(page_sub=page)
+            return
 
     msg = "Какой предмет?"
     buttons = []
@@ -124,9 +126,11 @@ async def show_files_list(callback: aiogram.types.CallbackQuery,
         if page <= 0:
             page = 1
             await state.update_data(page=page)
+            return
         if page > max_page:
             page = max_page
             await state.update_data(page=page)
+            return
 
     msg = "Какой файл вы хотите посмотреть?"
     buttons = []
@@ -170,8 +174,8 @@ async def page(callback: aiogram.types.CallbackQuery,
         await state.update_data(page=state_data['page'] + 1)
     elif callback_data == "page_right_sub":
         await state.update_data(page_sub=state_data['page_sub'] + 1)
-    else:
-        await callback.answer()
+    await callback.answer()
+    if callback_data == "page_none":
         return
     if "sub" in callback_data:
         await ask_subject(callback, state)
