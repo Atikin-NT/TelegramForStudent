@@ -34,8 +34,8 @@ async def start(message: aiogram.types.Message,
     username = message.from_user.username
 
     await bot.delete_message(chat_id, message_id)
-    await state.set_state(UserRegisterState.faculty)
     await state.finish()
+    await state.set_state(UserRegisterState.faculty)
 
     user = db.get_user_by_id(chat_id)
     if user is None:
