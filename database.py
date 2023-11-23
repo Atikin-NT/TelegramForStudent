@@ -9,6 +9,7 @@ class DataBase:
     def __init__(self, dbname, user, password=None):
         self.conn = psycopg2.connect(f"dbname={dbname} user={user} password={password}")
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
     def __del__(self):
         self.cur.close()
         self.conn.close()
@@ -262,6 +263,7 @@ class DataBase:
         """
         statement = f"SELECT * FROM directions WHERE direction_id = {id}"
         return self._execute(statement)
+
     def update_download_counter(self, file_id):
         statement = f"UPDATE files SET download_counter = download_counter + 1 WHERE file_id = {file_id}"
         self._execute(statement)
@@ -274,5 +276,6 @@ with open(new_path, 'r') as file:
 
 DBNAME = config["DBNAME"]
 USER = config["USER"]
+PASSWORD = config["PASSWORD"]
 
-db = DataBase(DBNAME, USER)
+db = DataBase(DBNAME, USER, PASSWORD)

@@ -15,8 +15,10 @@ def mess_about_user(userData):
     username = userData['username']
     date = userData['login']
 
-    faculty = userData['faculty']
-    direction = userData['direction']
+    #faculty = userData['faculty']
+    faculty = userData['faculty'] #Факультет: 0
+    #direction = userData['direction']
+    direction = db.get_all_directions()[userData['direction']][1]
     course = userData['course']
 
     msg = f"""Имя пользователя: *{username}*
@@ -81,6 +83,10 @@ async def show_menu(message: aiogram.types.Message,
 
     user_info = db.get_user_by_id(chat_id)
     if user_info is None or len(user_info) == 0:
+        return
+
+    if user_info[0][4] == -1:
+        await bot.send_message(text="Завершите регистрацию. Ведите /login", chat_id=chat_id)
         return
 
     user_info = user_info[0]
